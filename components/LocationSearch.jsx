@@ -18,23 +18,43 @@ export default function LocationSearch({ onSelect, mapRef, onToggleFilters, filt
   // TODO: const ready = useGooglePlaces(API_KEY);
 
   useEffect(() => {
-    // TODO: init Places services when SDK + map ready
+    // TODO: uncomment once useGooglePlaces + usePlacesCache are added
+    // if (ready && mapRef?.current) initServices(mapRef.current);
   }, [mapRef]);
 
   const fetchPredictions = useCallback((value) => {
-    // TODO
+    clearTimeout(debounceRef.current);
+    if (!value.trim()) {
+      setPredictions([]);
+      setOpen(false);
+      return;
+    }
+    debounceRef.current = setTimeout(async () => {
+      // TODO: uncomment once usePlacesCache is added
+      // const results = await getPredictions(value);
+      const results = [];
+      setPredictions(results);
+      setOpen(results.length > 0);
+    }, DEBOUNCE_MS);
   }, []);
 
   function handleChange(e) {
-    // TODO
+    const value = e.target.value;
+    setQuery(value);
+    fetchPredictions(value);
   }
 
   async function handleSelect(prediction) {
-    // TODO
-  }
-
-  function handleBlur() {
-    // TODO
+    setQuery(prediction.description);
+    setPredictions([]);
+    setOpen(false);
+    // TODO: uncomment once usePlacesCache is added
+    // const place = await getPlaceDetails(prediction.place_id);
+    window.gtag?.('event', 'search', {
+      search_term: prediction.description,
+      place_id: prediction.place_id,
+    });
+    // onSelect(place);
   }
 
   return (
@@ -56,7 +76,6 @@ export default function LocationSearch({ onSelect, mapRef, onToggleFilters, filt
           aria-label="Location search"
           value={query}
           onChange={handleChange}
-          onBlur={handleBlur}
           onFocus={() => predictions.length > 0 && setOpen(true)}
           autoComplete="off"
         />
