@@ -8,7 +8,7 @@ const placeCache = new Map<string, Place>();
 let autocompleteService: google.maps.places.AutocompleteService | null = null;
 let placesService: google.maps.places.PlacesService | null = null;
 
-export function initServices(map: google.maps.Map): void {
+export function initServices(map: google.maps.Map | null): void {
   if (!autocompleteService) {
     autocompleteService = new window.google.maps.places.AutocompleteService();
   }

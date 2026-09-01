@@ -29,7 +29,7 @@ export default function LocationSearch({ onSelect, mapRef, onToggleFilters, filt
   const ready = useGooglePlaces(API_KEY);
 
   useEffect(() => {
-    if (ready && mapRef?.current) initServices(mapRef.current);
+    if (ready) initServices(mapRef?.current ?? null);
   }, [ready, mapRef]);
 
   const fetchPredictions = useCallback((value: string) => {
