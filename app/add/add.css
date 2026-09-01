@@ -1,0 +1,161 @@
+.add-page {
+  max-width: 620px;
+  margin: 0 auto;
+  padding: 60px 24px 80px;
+  font-family: Arial, sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+.add-page__back {
+  align-self: flex-start;
+  font-size: 14px;
+  color: #9aa0a6;
+  text-decoration: none;
+}
+
+.add-page__back:hover {
+  color: #e0e0e0;
+}
+
+.add-page__header {
+  text-align: center;
+}
+
+.add-page__title {
+  font-size: 32px;
+  font-weight: 400;
+  color: #e0e0e0;
+  margin: 0 0 12px;
+}
+
+.add-page__subtitle {
+  font-size: 15px;
+  color: #9aa0a6;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.add-page__card {
+  width: 100%;
+  background: #fff;
+  border-radius: 16px;
+  padding: 20px 24px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.12);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.add-page__place {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  border-bottom: 1px solid #f1f3f4;
+  padding-bottom: 16px;
+}
+
+.add-page__place-name {
+  font-size: 20px;
+  font-weight: 600;
+  color: #202124;
+}
+
+.add-page__place-address {
+  font-size: 13px;
+  color: #5f6368;
+}
+
+.add-page__question-label {
+  font-size: 15px;
+  font-weight: 500;
+  color: #202124;
+  margin: 0 0 14px;
+}
+
+.add-page__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.add-page__btn {
+  width: 100%;
+  border: none;
+  border-radius: 10px;
+  padding: 14px 20px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.15s;
+  text-align: center;
+}
+
+.add-page__btn:hover {
+  opacity: 0.85;
+}
+
+.add-page__btn--yes {
+  background: #e6f4ea;
+  color: #1e7e34;
+}
+
+.add-page__btn--no {
+  background: #fce8e6;
+  color: #c5221f;
+}
+
+.add-page__confirm {
+  font-size: 15px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.add-page__confirm--yes {
+  color: #1e7e34;
+}
+
+.add-page__confirm--no {
+  color: #c5221f;
+}
+
+.add-page__change {
+  background: none;
+  border: 1px solid #dadce0;
+  border-radius: 6px;
+  padding: 3px 10px;
+  font-size: 12px;
+  color: #5f6368;
+  cursor: pointer;
+  margin-left: auto;
+}
+
+.add-page__change:hover {
+  background: #f5f5f5;
+}
+
+.add-page__already-listed {
+  font-size: 14px;
+  color: #1e7e34;
+  background: #e6f4ea;
+  border-radius: 8px;
+  padding: 12px 16px;
+}
+
+.add-page__already-listed a {
+  color: #1a73e8;
+  text-decoration: underline;
+}
+
+.add-page__hint {
+  font-size: 14px;
+  color: #9aa0a6;
+  text-align: center;
+  margin: 0;
+}
