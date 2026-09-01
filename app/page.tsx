@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import './home.css';
 
@@ -42,9 +42,10 @@ export default function HomePage() {
   const [filtersOpen, setFiltersOpen] = useState(false);
   const mapRef = useRef<google.maps.Map | null>(null);
   const { locations, loading } = useLocations();
-  const visibleLocations: Location[] = approvedOnly
-    ? locations.filter((l) => isApproved(l.adminApproved))
-    : locations;
+  const visibleLocations = useMemo(
+    () => approvedOnly ? locations.filter((l) => isApproved(l.adminApproved)) : locations,
+    [approvedOnly, locations]
+  );
   const { resolved, loading: resolvedLoading } = useResolvedLocations(visibleLocations, servicesReady);
   const { grouped, expandedCities, expandedSuburbs, expandedPlaces, toggleCity, toggleSuburb } = useGroupedLocations(resolved, { onCitySelect, onSuburbSelect });
 
