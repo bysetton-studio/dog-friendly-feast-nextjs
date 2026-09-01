@@ -104,7 +104,7 @@ export default function LocationSearch({ onSelect, mapRef, onToggleFilters, filt
         </button>
       </div>
 
-      {filtersOpen && (
+      {filtersOpen && onTypesChange && (
         <TypeFilter selected={selectedTypes} onChange={onTypesChange} />
       )}
 
