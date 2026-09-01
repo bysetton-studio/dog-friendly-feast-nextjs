@@ -91,7 +91,6 @@ export default function LocationList({ onSelect, grouped, expandedCities, expand
                                   className={`place-item${isFriendly ? '' : ' place-item--unfriendly'}`}
                                   onClick={() => onSelect((place ?? { name, formatted_address: address }) as Place)}
                                 >
-                                  <span className="place-icon">{isFriendly ? '🦴' : '✕'}</span>
                                   <span className="place-info">
                                     <span className="place-name">{name}</span>
                                     <span className="place-address">{address}</span>

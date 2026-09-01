@@ -2,7 +2,7 @@
   width: 100%;
   max-width: 1150px;
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 12px;
   padding-bottom: 60px;
   align-items: start;
@@ -46,10 +46,6 @@
   align-items: center;
   transition: background 0.15s;
   user-select: none;
-}
-
-.city-heading:hover {
-  background: #f1f3f4;
 }
 
 .city-heading__name {
