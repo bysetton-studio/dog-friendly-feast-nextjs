@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useGooglePlaces } from '@/hooks/useGooglePlaces';
 import { initServices, getPredictions, getPlaceDetails } from '@/hooks/usePlacesCache';
-// TODO: import TypeFilter from '@/components/TypeFilter';
+import TypeFilter from '@/components/TypeFilter';
 import './LocationSearch.css';
 import type { Prediction, Place } from '@/types';
 
@@ -105,7 +105,7 @@ export default function LocationSearch({ onSelect, mapRef, onToggleFilters, filt
       </div>
 
       {filtersOpen && (
-        <div>{/* TODO: <TypeFilter selected={selectedTypes} onChange={onTypesChange} /> */}</div>
+        <TypeFilter selected={selectedTypes} onChange={onTypesChange} />
       )}
 
       {open && (

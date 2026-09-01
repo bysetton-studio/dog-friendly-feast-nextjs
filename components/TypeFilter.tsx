@@ -22,12 +22,28 @@ interface Props {
 
 export default function TypeFilter({ selected, onChange }: Props) {
   function toggle(key: string): void {
-    // TODO
+    const next = new Set(selected);
+    next.has(key) ? next.delete(key) : next.add(key);
+    onChange(next);
   }
 
   return (
     <div className="type-filter">
-      {/* TODO: chips */}
+      {TYPE_FILTERS.map(({ key, label, emoji }) => {
+        const checked = selected.has(key);
+        return (
+          <label key={key} className={`type-filter__chip${checked ? ' type-filter__chip--on' : ''}`}>
+            <input
+              type="checkbox"
+              className="type-filter__input"
+              checked={checked}
+              onChange={() => toggle(key)}
+            />
+            <span className="type-filter__emoji">{emoji}</span>
+            <span className="type-filter__label">{label}</span>
+          </label>
+        );
+      })}
     </div>
   );
 }
