@@ -86,7 +86,7 @@ function buildInfoWindowContent(place: google.maps.places.PlaceResult): string {
           </div>` : ''}
         ${place.website ? `
           <div style="font-size:12px;margin-bottom:10px">
-            🌐 <a href="${place.website}" target="_blank" rel="noopener noreferrer" style="color:#1a73e8;text-decoration:none">${new URL(place.website).hostname}</a>
+            <a href="${place.website}" target="_blank" rel="noopener noreferrer" style="color:#1a73e8;text-decoration:none">${new URL(place.website).hostname}</a>
           </div>` : ''}
         <a href="${directionsUrl}" target="_blank" rel="noopener noreferrer"
           style="display:inline-block;background:#1a73e8;color:#fff;font-size:12px;padding:6px 14px;border-radius:4px;text-decoration:none;margin-top:2px">
@@ -105,12 +105,164 @@ export default function MapView({ selected, mapRef, onServicesReady, selectedSub
   const ready = useGooglePlaces(API_KEY);
   const [pinsLoading, setPinsLoading] = useState(true);
 
-  // TODO: useEffect — init map
-  // TODO: useEffect — sync pins when locations change
-  // TODO: useEffect — dim/highlight markers when selectedSuburbs changes
-  // TODO: useEffect — show/hide markers when selectedTypes changes
-  // TODO: useEffect — fit map to city when selectedCity changes
-  // TODO: useEffect — pan + marker when selected changes
+  // Init map once
+  useEffect(() => {
+    if (!ready || !containerRef.current) return;
+
+    mapRef.current = new window.google.maps.Map(containerRef.current, {
+      center: DEFAULT_CENTER,
+      zoom: DEFAULT_ZOOM,
+      disableDefaultUI: false,
+      mapTypeControl: false,
+      streetViewControl: false,
+      fullscreenControl: true,
+    });
+
+    initServices(mapRef.current);
+    onServicesReady?.();
+
+    return () => {
+      locationMarkersRef.current.forEach(({ marker }) => marker.setMap(null));
+      locationMarkersRef.current = [];
+      mapRef.current = null;
+      markerRef.current = null;
+    };
+  }, [ready, mapRef]);
+
+  // Sync pins whenever locations change
+  useEffect(() => {
+    if (!ready || !mapRef.current) return;
+
+    const visibleNames = new Set(locations.map(({ name }) => name as string));
+
+    const removed = locationMarkersRef.current.filter(({ marker }) => !visibleNames.has(marker.getTitle() ?? ''));
+    removed.forEach(({ marker }) => marker.setMap(null));
+    locationMarkersRef.current = locationMarkersRef.current.filter(({ marker }) => visibleNames.has(marker.getTitle() ?? ''));
+
+    const existingNames = new Set(locationMarkersRef.current.map(({ marker }) => marker.getTitle()));
+    const newLocations = locations.filter(({ name }) => !existingNames.has(name as string));
+
+    if (newLocations.length === 0) { setPinsLoading(false); return; }
+    if (locationMarkersRef.current.length === 0) setPinsLoading(true);
+    let resolved = 0;
+
+    newLocations.forEach((loc) => {
+      const { name, address, friendly, adminApproved } = loc as Record<string, unknown>;
+      findPlaceDetails(name as string, address as string)
+        .then((place) => {
+          const fullPlace = place as google.maps.places.PlaceResult;
+          const suburb = getSuburb(fullPlace.address_components);
+          const isFriendly = friendly !== false && friendly !== 'FALSE' && friendly !== 'false';
+          const isApproved = adminApproved !== false && adminApproved !== 'FALSE' && adminApproved !== 'false';
+
+          const icon: google.maps.Symbol = isFriendly
+            ? { path: window.google.maps.SymbolPath.CIRCLE, scale: 16, fillColor: '#1e7e34', fillOpacity: isApproved ? 1 : 0.5, strokeColor: isApproved ? '#00420a' : '#1e7e34', strokeWeight: 2 }
+            : { path: window.google.maps.SymbolPath.CIRCLE, scale: 11, fillColor: '#c5221f', fillOpacity: isApproved ? 1 : 0.5, strokeColor: isApproved ? '#530000' : '#c5221f', strokeWeight: 1.5 };
+
+          const label: google.maps.MarkerLabel = isFriendly
+            ? { text: getTypeEmoji(fullPlace.types), fontSize: '16px', color: '#fff' }
+            : { text: '✕', fontSize: '9px', fontWeight: '700', color: '#fff' };
+
+          const marker = new window.google.maps.Marker({
+            position: fullPlace.geometry!.location,
+            map: mapRef.current,
+            title: name as string,
+            zIndex: isFriendly ? 2 : 1,
+            icon,
+            label,
+          });
+
+          const infoWindow = new window.google.maps.InfoWindow({ content: buildInfoWindowContent(fullPlace) });
+          marker.addListener('click', () => {
+            if (openInfoWindowRef.current) openInfoWindowRef.current.close();
+            infoWindow.open(mapRef.current, marker);
+            openInfoWindowRef.current = infoWindow;
+          });
+
+          const city = fullPlace.address_components?.find((c) =>
+            ['locality', 'administrative_area_level_2', 'administrative_area_level_1'].some((t) => c.types.includes(t))
+          )?.long_name ?? 'Other';
+
+          locationMarkersRef.current.push({ marker, suburb, city, types: fullPlace.types ?? [], icon, label, isFriendly });
+        })
+        .catch((err: Error) => console.warn(err.message))
+        .finally(() => { resolved++; if (resolved === newLocations.length) setPinsLoading(false); });
+    });
+  }, [ready, mapRef, locations]);
+
+  // Dim/highlight markers when selectedSuburbs changes
+  useEffect(() => {
+    if (!mapRef.current || !window.google?.maps) return;
+
+    const dimmedIcon: google.maps.Symbol = {
+      path: window.google.maps.SymbolPath.CIRCLE,
+      scale: 4, fillColor: '#9aa0a6', fillOpacity: 0.7, strokeColor: '#6b7175', strokeWeight: 1.5,
+    };
+
+    locationMarkersRef.current.forEach(({ marker, suburb, icon, label, isFriendly }) => {
+      const isFiltering = selectedSuburbs && selectedSuburbs.length > 0;
+      const inExpandedSuburb = isFiltering && selectedSuburbs!.includes(suburb ?? '');
+
+      if (!isFiltering) {
+        marker.setVisible(true); marker.setIcon(icon); marker.setLabel(label); marker.setOpacity(1);
+      } else if (inExpandedSuburb) {
+        marker.setVisible(true); marker.setIcon(icon); marker.setLabel(label); marker.setOpacity(1);
+      } else if (!isFriendly) {
+        marker.setVisible(false);
+      } else {
+        marker.setVisible(true); marker.setIcon(dimmedIcon); marker.setLabel(''); marker.setOpacity(1);
+      }
+    });
+  }, [selectedSuburbs]);
+
+  // Show/hide markers when selectedTypes changes
+  useEffect(() => {
+    locationMarkersRef.current.forEach(({ marker, types }) => {
+      marker.setVisible(matchesTypeFilter(types, selectedTypes));
+    });
+  }, [selectedTypes]);
+
+  // Fit map to city when selectedCity changes
+  useEffect(() => {
+    if (!mapRef.current || !window.google?.maps || !selectedCity) return;
+
+    const bounds = new window.google.maps.LatLngBounds();
+    let matchCount = 0;
+
+    locationMarkersRef.current.forEach(({ marker, city }) => {
+      if (city === selectedCity) { bounds.extend(marker.getPosition()!); matchCount++; }
+    });
+
+    if (matchCount === 1) { mapRef.current.panTo(bounds.getCenter()); mapRef.current.setZoom(14); }
+    else if (matchCount > 1) { mapRef.current.fitBounds(bounds, 80); }
+  }, [selectedCity]);
+
+  // Pan + marker when a location is selected via search
+  useEffect(() => {
+    if (!mapRef.current || !(selected as google.maps.places.PlaceResult)?.geometry?.location) return;
+
+    const location = (selected as google.maps.places.PlaceResult).geometry!.location!;
+    mapRef.current.panTo(location);
+    mapRef.current.setZoom(14);
+
+    if (markerRef.current) { markerRef.current.setMap(null); markerRef.current = null; }
+
+    const GEOGRAPHIC_TYPES = new Set([
+      'locality', 'sublocality', 'sublocality_level_1', 'sublocality_level_2',
+      'administrative_area_level_1', 'administrative_area_level_2',
+      'country', 'route', 'neighborhood', 'postal_code', 'political',
+    ]);
+    const isGeographic = selected?.types?.every((t) => GEOGRAPHIC_TYPES.has(t)) ?? false;
+
+    if (!isGeographic) {
+      markerRef.current = new window.google.maps.Marker({
+        position: location,
+        map: mapRef.current,
+        title: selected?.formatted_address as string,
+        animation: window.google.maps.Animation.DROP,
+      });
+    }
+  }, [selected, mapRef]);
 
   return (
     <div className="map-container">
