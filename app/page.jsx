@@ -40,23 +40,31 @@ export default function HomePage() {
   const { locations, loading } = useLocations();
 
   function isGeographic(place) {
-    // TODO
+    return place?.types?.every((t) => GEOGRAPHIC_TYPES.has(t)) ?? true;
   }
 
   function isInList(place, locs) {
-    // TODO
+    if (!place?.formatted_address) return false;
+    const address = place.formatted_address.toLowerCase();
+    return locs.some((l) => l.address.toLowerCase() === address);
   }
 
   function handleSelect(place) {
-    // TODO
+    setSelected(place);
   }
 
   function handleExpandedPlacesChange(places) {
-    // TODO
+    if (!mapRef.current || !window.google?.maps || places.length === 0) return;
+    const bounds = new window.google.maps.LatLngBounds();
+    places.forEach((p) => bounds.extend(p.geometry.location));
+    mapRef.current.fitBounds(bounds);
   }
 
-  const visibleLocations = []; // TODO: filter by approvedOnly
-  const showSubmitBanner = false; // TODO: derive from selected + loading + helpers
+  const visibleLocations = approvedOnly
+    ? locations.filter((l) => l.adminApproved !== false && l.adminApproved !== 'FALSE' && l.adminApproved !== 'false')
+    : locations;
+
+  const showSubmitBanner = selected && !loading && !isGeographic(selected) && !isInList(selected, locations);
 
   return (
     <>
