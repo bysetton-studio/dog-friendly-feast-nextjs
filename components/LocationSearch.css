@@ -1,0 +1,138 @@
+.search-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 582px;
+  position: relative;
+  gap: 8px;
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  border: 1px solid #dfe1e5;
+  border-radius: 24px;
+  padding: 10px 16px;
+  background: #fff;
+  box-shadow: none;
+  transition: box-shadow 0.2s, border-color 0.2s;
+  position: relative;
+  z-index: 2;
+}
+
+.search-box:focus-within {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-color: transparent;
+}
+
+.search-box--open {
+  border-radius: 24px 24px 0 0;
+  border-bottom-color: #f1f3f4;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-color: transparent;
+}
+
+.search-icon {
+  display: flex;
+  align-items: center;
+  margin-right: 12px;
+  flex-shrink: 0;
+}
+
+.search-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 16px;
+  color: #202124;
+  background: transparent;
+  font-family: Arial, sans-serif;
+}
+
+.search-input::placeholder {
+  color: #9aa0a6;
+}
+
+.suggestions {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: #fff;
+  border: 1px solid transparent;
+  border-top: 1px solid #f1f3f4;
+  border-radius: 0 0 24px 24px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  list-style: none;
+  margin: 0;
+  padding: 4px 0 8px;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.suggestion-item {
+  display: flex;
+  flex-direction: column;
+  padding: 10px 16px 10px 52px;
+  cursor: pointer;
+  transition: background 0.1s;
+}
+
+.suggestion-item:hover {
+  background: #f5f5f5;
+}
+
+.suggestion-main {
+  font-size: 14px;
+  color: #202124;
+}
+
+.suggestion-secondary {
+  font-size: 12px;
+  color: #5f6368;
+  margin-top: 2px;
+}
+
+.filter-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: #9aa0a6;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  margin-left: 4px;
+}
+
+.filter-btn:hover {
+  background: #f1f3f4;
+  color: #5f6368;
+}
+
+.filter-btn--open,
+.filter-btn--active {
+  color: #1a73e8;
+}
+
+.filter-btn--open {
+  background: #e8f0fe;
+}
+
+.filter-btn__dot {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #1a73e8;
+  border: 1.5px solid #fff;
+}
