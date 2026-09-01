@@ -36,23 +36,65 @@ interface Props {
 }
 
 function matchesTypeFilter(types: string[] | undefined, selectedTypes: Set<string>): boolean {
-  // TODO
-  return true;
+  if (selectedTypes.size === 0) return true;
+  if (!types) return true;
+  return TYPE_FILTERS.some(
+    (f) => selectedTypes.has(f.key) && f.types.some((t) => types.includes(t))
+  );
 }
 
 function getTypeEmoji(types: string[] | undefined): string {
-  // TODO
-  return '🦴';
+  if (!types) return '🦴';
+  const match = TYPE_FILTERS.find((f) => f.types.some((t) => types.includes(t)));
+  return match ? match.emoji : '🦴';
 }
 
 function getSuburb(addressComponents: google.maps.GeocoderAddressComponent[] | undefined): string | null {
-  // TODO
+  const types = ['sublocality_level_1', 'sublocality', 'neighborhood', 'locality'];
+  for (const type of types) {
+    const component = addressComponents?.find((c) => c.types.includes(type));
+    if (component) return component.long_name;
+  }
   return null;
 }
 
 function buildInfoWindowContent(place: google.maps.places.PlaceResult): string {
-  // TODO
-  return '';
+  const photoUrl = place.photos?.[0]?.getUrl({ maxWidth: 280, maxHeight: 140 });
+  const stars = place.rating
+    ? '★'.repeat(Math.round(place.rating)) + '☆'.repeat(5 - Math.round(place.rating))
+    : null;
+  const todayIndex = new Date().getDay();
+  const todayHours = place.opening_hours?.weekday_text?.[todayIndex === 0 ? 6 : todayIndex - 1];
+  const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination_place_id=${place.place_id}`;
+
+  return `
+    <div style="font-family:Arial,sans-serif;width:280px;overflow:hidden;border-radius:4px">
+      ${photoUrl ? `<img src="${photoUrl}" style="width:100%;height:140px;object-fit:cover;display:block;margin-bottom:10px;border-radius:4px 4px 0 0" />` : ''}
+      <div style="padding:4px 2px 8px">
+        <div style="font-size:15px;font-weight:600;color:#202124;margin-bottom:4px">${place.name}</div>
+        <div style="font-size:12px;color:#5f6368;margin-bottom:8px">${place.formatted_address || ''}</div>
+        ${stars ? `
+          <div style="margin-bottom:8px;display:flex;align-items:center;gap:6px">
+            <span style="color:#f5a623;font-size:14px;letter-spacing:1px">${stars}</span>
+            <span style="font-size:12px;color:#5f6368">${place.rating} (${place.user_ratings_total?.toLocaleString() ?? 0} reviews)</span>
+          </div>` : ''}
+        ${todayHours ? `
+          <div style="font-size:12px;color:#5f6368;margin-bottom:6px">🕐 ${todayHours}</div>` : ''}
+        ${place.formatted_phone_number ? `
+          <div style="font-size:12px;margin-bottom:6px">
+            📞 <a href="tel:${place.formatted_phone_number}" style="color:#1a73e8;text-decoration:none">${place.formatted_phone_number}</a>
+          </div>` : ''}
+        ${place.website ? `
+          <div style="font-size:12px;margin-bottom:10px">
+            🌐 <a href="${place.website}" target="_blank" rel="noopener noreferrer" style="color:#1a73e8;text-decoration:none">${new URL(place.website).hostname}</a>
+          </div>` : ''}
+        <a href="${directionsUrl}" target="_blank" rel="noopener noreferrer"
+          style="display:inline-block;background:#1a73e8;color:#fff;font-size:12px;padding:6px 14px;border-radius:4px;text-decoration:none;margin-top:2px">
+          Get directions
+        </a>
+      </div>
+    </div>
+  `;
 }
 
 export default function MapView({ selected, mapRef, onServicesReady, selectedSuburbs, onSuburbDetected, selectedCity, locations = [], locationsLoading, approvedOnly, onApprovedOnlyToggle, selectedTypes = new Set() }: Props) {
