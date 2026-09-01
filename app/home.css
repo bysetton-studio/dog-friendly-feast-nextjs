@@ -116,6 +116,7 @@
     width: 100%;
     min-width: unset;
     max-width: unset;
+    height: unset;
     order: 1;
   }
 
@@ -186,4 +187,21 @@
 @keyframes sticker-spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
+}
+
+@media (max-width: 768px) {
+  .add_sticker {
+    position: fixed;
+    top: auto;
+    left: auto;
+    bottom: 20px;
+    right: 20px;
+    width: 100px;
+    height: 100px;
+  }
+
+  .add_sticker__text {
+    font-size: 12px;
+    padding: 14px;
+  }
 }
