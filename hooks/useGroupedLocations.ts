@@ -3,6 +3,11 @@ import type { ResolvedLocation } from '@/types';
 
 type Grouped = Record<string, Record<string, ResolvedLocation[]>>;
 
+interface Options {
+  onCitySelect?: (city: string | null) => void;
+  onSuburbSelect?: (suburbs: Set<string> | null) => void;
+}
+
 export interface GroupedLocationsResult {
   grouped: Grouped;
   expandedCities: Record<string, boolean>;
@@ -12,7 +17,8 @@ export interface GroupedLocationsResult {
   toggleSuburb: (suburb: string) => void;
 }
 
-export function useGroupedLocations(resolved: ResolvedLocation[]): GroupedLocationsResult {
+export function useGroupedLocations(resolved: ResolvedLocation[], options: Options = {}): GroupedLocationsResult {
+  const { onCitySelect, onSuburbSelect } = options;
   const [grouped, setGrouped] = useState<Grouped>({});
   const [expandedCities, setExpandedCities] = useState<Record<string, boolean>>({});
   const [expandedSuburbs, setExpandedSuburbs] = useState<Record<string, boolean>>({});
@@ -56,11 +62,25 @@ export function useGroupedLocations(resolved: ResolvedLocation[]): GroupedLocati
   }, [grouped, expandedCities, expandedSuburbs]);
 
   function toggleCity(city: string): void {
-    setExpandedCities((prev) => ({ ...prev, [city]: !prev[city] }));
+    setExpandedCities((prev) => {
+      const opening = !prev[city];
+      if (!opening) {
+        onCitySelect?.(null);
+        onSuburbSelect?.(null);
+      } else {
+        onCitySelect?.(city);
+      }
+      return { ...prev, [city]: opening };
+    });
   }
 
   function toggleSuburb(suburb: string): void {
-    setExpandedSuburbs((prev) => ({ ...prev, [suburb]: !prev[suburb] }));
+    setExpandedSuburbs((prev) => {
+      const next = { ...prev, [suburb]: !prev[suburb] };
+      const openSet = new Set(Object.entries(next).filter(([, v]) => v).map(([k]) => k));
+      onSuburbSelect?.(openSet.size > 0 ? openSet : null);
+      return next;
+    });
   }
 
   return { grouped, expandedCities, expandedSuburbs, expandedPlaces, toggleCity, toggleSuburb };

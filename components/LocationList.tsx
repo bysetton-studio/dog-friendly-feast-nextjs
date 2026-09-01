@@ -8,8 +8,6 @@ type Grouped = Record<string, Record<string, ResolvedLocation[]>>;
 
 interface Props {
   onSelect: (place: Place) => void;
-  onSuburbSelect: (suburbs: Set<string> | null) => void;
-  onCitySelect: (city: string | null) => void;
   grouped: Grouped;
   expandedCities: Record<string, boolean>;
   expandedSuburbs: Record<string, boolean>;
@@ -27,13 +25,7 @@ function matchesTypeFilter(place: google.maps.places.PlaceResult | null, selecte
   );
 }
 
-export default function LocationList({ onSelect, onSuburbSelect, onCitySelect, grouped, expandedCities, expandedSuburbs, toggleCity, toggleSuburb, loading, selectedTypes = new Set() }: Props) {
-  function handleSuburbClick(suburb: string): void {
-    toggleSuburb(suburb);
-    const newExpanded = { ...expandedSuburbs, [suburb]: !expandedSuburbs[suburb] };
-    const openSet = new Set(Object.entries(newExpanded).filter(([, v]) => v).map(([k]) => k));
-    onSuburbSelect?.(openSet.size > 0 ? openSet : null);
-  }
+export default function LocationList({ onSelect, grouped, expandedCities, expandedSuburbs, toggleCity, toggleSuburb, loading, selectedTypes = new Set() }: Props) {
 
   const sortedCities = Object.entries(grouped).sort(([a], [b]) => a.localeCompare(b));
 
@@ -42,7 +34,75 @@ export default function LocationList({ onSelect, onSuburbSelect, onCitySelect, g
 
   return (
     <div className="location-list">
-      {/* TODO: city/suburb/place tree */}
+      {sortedCities.map(([city, suburbs]) => {
+        const isCityOpen = expandedCities[city] ?? false;
+        const totalCount = Object.values(suburbs).reduce(
+          (sum, entries) => sum + entries.filter((e) => e.isFriendly && matchesTypeFilter(e.place, selectedTypes)).length,
+          0
+        );
+
+        return (
+          <div key={city} className="location-group">
+            <h2
+              className="city-heading"
+              onClick={() => toggleCity(city)}
+            >
+              <span className="city-heading__name">{city}</span>
+              <span className="city-heading__meta">
+                <span className="city-heading__count">{totalCount}</span>
+                <span className="city-heading__chevron">{isCityOpen ? '▲' : '▼'}</span>
+              </span>
+            </h2>
+
+            {isCityOpen && (
+              <div className="suburb-list">
+                {Object.entries(suburbs)
+                  .sort(([a], [b]) => a.localeCompare(b))
+                  .map(([suburb, entries]) => {
+                    const isSuburbOpen = expandedSuburbs[suburb] ?? false;
+                    const suburbCount = entries.filter((e) => e.isFriendly && matchesTypeFilter(e.place, selectedTypes)).length;
+
+                    return (
+                      <div key={suburb} className="suburb-group">
+                        <h3 className="suburb-heading" onClick={() => toggleSuburb(suburb)}>
+                          <span className="suburb-heading__name">{suburb}</span>
+                          <span className="suburb-heading__meta">
+                            <span className="city-heading__count">{suburbCount}</span>
+                            <span className="city-heading__chevron">{isSuburbOpen ? '▲' : '▼'}</span>
+                          </span>
+                        </h3>
+
+                        {isSuburbOpen && (
+                          <ul className="place-list">
+                            {[...entries]
+                              .filter(({ place }) => matchesTypeFilter(place, selectedTypes))
+                              .sort((a, b) => Number(b.isFriendly) - Number(a.isFriendly))
+                              .map(({ name, address, isFriendly, isApproved, place }) => (
+                                <li
+                                  key={name}
+                                  className={`place-item${isFriendly ? '' : ' place-item--unfriendly'}`}
+                                  onClick={() => onSelect((place ?? { name, formatted_address: address }) as Place)}
+                                >
+                                  <span className="place-icon">{isFriendly ? '🦴' : '✕'}</span>
+                                  <span className="place-info">
+                                    <span className="place-name">{name}</span>
+                                    <span className="place-address">{address}</span>
+                                    {!isApproved && (
+                                      <span className="place-community-tag">Community suggested</span>
+                                    )}
+                                  </span>
+                                </li>
+                              ))}
+                          </ul>
+                        )}
+                      </div>
+                    );
+                  })}
+              </div>
+            )}
+          </div>
+        );
+      })}
     </div>
   );
 }

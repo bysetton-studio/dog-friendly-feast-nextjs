@@ -7,14 +7,14 @@ import './home.css';
 import LocationSearch from '@/components/LocationSearch';
 import MapView from '@/components/MapView';
 
-// TODO: import components
-// import LocationList from '@/components/LocationList';
-// import SubmitBanner from '@/components/SubmitBanner';
+import LocationList from '@/components/LocationList';
+import SubmitBanner from '@/components/SubmitBanner';
 
 import { backgroundArt } from '@/data/backgroundArt';
 import { useLocations } from '@/hooks/useLocations';
 import { useResolvedLocations } from '@/hooks/useResolvedLocations';
 import { useGroupedLocations } from '@/hooks/useGroupedLocations';
+import { useLocationSelection } from '@/hooks/useLocationSelection';
 import { isApproved } from '@/lib/placeUtils';
 import type { Location, Place } from '@/types';
 
@@ -36,8 +36,7 @@ const GEOGRAPHIC_TYPES = new Set([
 export default function HomePage() {
   const [selected, setSelected] = useState<Place | null>(null);
   const [servicesReady, setServicesReady] = useState(false);
-  const [selectedSuburbs, setSelectedSuburbs] = useState<string[] | null>(null);
-  const [selectedCity, setSelectedCity] = useState<string | null>(null);
+  const { selectedCity, selectedSuburbs, onCitySelect, onSuburbSelect } = useLocationSelection();
   const [approvedOnly, setApprovedOnly] = useState(false);
   const [selectedTypes, setSelectedTypes] = useState<Set<string>>(new Set());
   const [filtersOpen, setFiltersOpen] = useState(false);
@@ -47,7 +46,7 @@ export default function HomePage() {
     ? locations.filter((l) => isApproved(l.adminApproved))
     : locations;
   const { resolved, loading: resolvedLoading } = useResolvedLocations(visibleLocations, servicesReady);
-  const { grouped, expandedCities, expandedSuburbs, expandedPlaces, toggleCity, toggleSuburb } = useGroupedLocations(resolved);
+  const { grouped, expandedCities, expandedSuburbs, expandedPlaces, toggleCity, toggleSuburb } = useGroupedLocations(resolved, { onCitySelect, onSuburbSelect });
 
   function isGeographic(place: Place): boolean {
     return place?.types?.every((t) => GEOGRAPHIC_TYPES.has(t)) ?? true;
@@ -96,20 +95,20 @@ export default function HomePage() {
           onTypesChange={setSelectedTypes}
         />
 
-        {/* TODO: {showSubmitBanner && (
+        {showSubmitBanner && (
           <SubmitBanner
             place={selected}
             onDismiss={() => setSelected(null)}
             inList={isInList(selected, locations)}
           />
-        )} */}
+        )}
 
         <MapView
           selected={selected}
           mapRef={mapRef}
           onServicesReady={() => setServicesReady(true)}
           selectedSuburbs={selectedSuburbs}
-          onSuburbDetected={setSelectedSuburbs}
+          onSuburbDetected={(s) => onSuburbSelect(s ? new Set(s) : null)}
           selectedCity={selectedCity}
           resolved={resolved}
           resolvedLoading={resolvedLoading}
@@ -123,10 +122,8 @@ export default function HomePage() {
           Don&apos;t see your spot? Add a restaurant →
         </Link>
 
-        {/* TODO: <LocationList
+        <LocationList
           onSelect={handleSelect}
-          onSuburbSelect={(suburbs) => setSelectedSuburbs(suburbs ?? null)}
-          onCitySelect={setSelectedCity}
           grouped={grouped}
           expandedCities={expandedCities}
           expandedSuburbs={expandedSuburbs}
@@ -134,7 +131,7 @@ export default function HomePage() {
           toggleSuburb={toggleSuburb}
           loading={resolvedLoading}
           selectedTypes={selectedTypes}
-        /> */}
+        />
       </main>
     </>
   );
