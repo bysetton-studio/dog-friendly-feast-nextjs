@@ -12,8 +12,9 @@ import './home.css';
 
 import { backgroundArt } from '@/data/backgroundArt';
 import { useLocations } from '@/hooks/useLocations';
+import type { Location, Place } from '@/types';
 
-const POSITIONS = [
+const POSITIONS: React.CSSProperties[] = [
   { top: '2%',    left: '1%'  },
   { top: '2%',    right: '1%' },
   { top: '50%',   left: '1%'  },
@@ -29,38 +30,38 @@ const GEOGRAPHIC_TYPES = new Set([
 ]);
 
 export default function HomePage() {
-  const [selected, setSelected] = useState(null);
+  const [selected, setSelected] = useState<Place | null>(null);
   const [servicesReady, setServicesReady] = useState(false);
-  const [selectedSuburbs, setSelectedSuburbs] = useState(null);
-  const [selectedCity, setSelectedCity] = useState(null);
+  const [selectedSuburbs, setSelectedSuburbs] = useState<string[] | null>(null);
+  const [selectedCity, setSelectedCity] = useState<string | null>(null);
   const [approvedOnly, setApprovedOnly] = useState(false);
-  const [selectedTypes, setSelectedTypes] = useState(new Set());
+  const [selectedTypes, setSelectedTypes] = useState<Set<string>>(new Set());
   const [filtersOpen, setFiltersOpen] = useState(false);
-  const mapRef = useRef(null);
+  const mapRef = useRef<google.maps.Map | null>(null);
   const { locations, loading } = useLocations();
 
-  function isGeographic(place) {
+  function isGeographic(place: Place): boolean {
     return place?.types?.every((t) => GEOGRAPHIC_TYPES.has(t)) ?? true;
   }
 
-  function isInList(place, locs) {
+  function isInList(place: Place, locs: Location[]): boolean {
     if (!place?.formatted_address) return false;
     const address = place.formatted_address.toLowerCase();
     return locs.some((l) => l.address.toLowerCase() === address);
   }
 
-  function handleSelect(place) {
+  function handleSelect(place: Place): void {
     setSelected(place);
   }
 
-  function handleExpandedPlacesChange(places) {
+  function handleExpandedPlacesChange(places: google.maps.places.PlaceResult[]): void {
     if (!mapRef.current || !window.google?.maps || places.length === 0) return;
     const bounds = new window.google.maps.LatLngBounds();
-    places.forEach((p) => bounds.extend(p.geometry.location));
+    places.forEach((p) => bounds.extend(p.geometry!.location!));
     mapRef.current.fitBounds(bounds);
   }
 
-  const visibleLocations = approvedOnly
+  const visibleLocations: Location[] = approvedOnly
     ? locations.filter((l) => l.adminApproved !== false && l.adminApproved !== 'FALSE' && l.adminApproved !== 'false')
     : locations;
 

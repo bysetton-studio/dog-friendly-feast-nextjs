@@ -5,15 +5,26 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 // TODO: import { initServices, getPredictions, getPlaceDetails } from '@/hooks/usePlacesCache';
 // TODO: import TypeFilter from '@/components/TypeFilter';
 import './LocationSearch.css';
+import type { Prediction, Place } from '@/types';
 
-const API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+const API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!;
 const DEBOUNCE_MS = 300;
 
-export default function LocationSearch({ onSelect, mapRef, onToggleFilters, filtersOpen, filtersActive, selectedTypes, onTypesChange }) {
-  const inputRef = useRef(null);
-  const debounceRef = useRef(null);
+interface Props {
+  onSelect: (place: Place) => void;
+  mapRef: React.RefObject<google.maps.Map | null>;
+  onToggleFilters: () => void;
+  filtersOpen: boolean;
+  filtersActive: boolean;
+  selectedTypes: Set<string>;
+  onTypesChange: (types: Set<string>) => void;
+}
+
+export default function LocationSearch({ onSelect, mapRef, onToggleFilters, filtersOpen, filtersActive, selectedTypes, onTypesChange }: Props) {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [query, setQuery] = useState('');
-  const [predictions, setPredictions] = useState([]);
+  const [predictions, setPredictions] = useState<Prediction[]>([]);
   const [open, setOpen] = useState(false);
   // TODO: const ready = useGooglePlaces(API_KEY);
 
@@ -22,8 +33,8 @@ export default function LocationSearch({ onSelect, mapRef, onToggleFilters, filt
     // if (ready && mapRef?.current) initServices(mapRef.current);
   }, [mapRef]);
 
-  const fetchPredictions = useCallback((value) => {
-    clearTimeout(debounceRef.current);
+  const fetchPredictions = useCallback((value: string) => {
+    clearTimeout(debounceRef.current ?? undefined);
     if (!value.trim()) {
       setPredictions([]);
       setOpen(false);
@@ -32,19 +43,19 @@ export default function LocationSearch({ onSelect, mapRef, onToggleFilters, filt
     debounceRef.current = setTimeout(async () => {
       // TODO: uncomment once usePlacesCache is added
       // const results = await getPredictions(value);
-      const results = [];
+      const results: Prediction[] = [];
       setPredictions(results);
       setOpen(results.length > 0);
     }, DEBOUNCE_MS);
   }, []);
 
-  function handleChange(e) {
+  function handleChange(e: React.ChangeEvent<HTMLInputElement>): void {
     const value = e.target.value;
     setQuery(value);
     fetchPredictions(value);
   }
 
-  async function handleSelect(prediction) {
+  async function handleSelect(prediction: Prediction): Promise<void> {
     setQuery(prediction.description);
     setPredictions([]);
     setOpen(false);
@@ -55,6 +66,10 @@ export default function LocationSearch({ onSelect, mapRef, onToggleFilters, filt
       place_id: prediction.place_id,
     });
     // onSelect(place);
+  }
+
+  function handleBlur(): void {
+    setTimeout(() => setOpen(false), 150);
   }
 
   return (
@@ -76,6 +91,7 @@ export default function LocationSearch({ onSelect, mapRef, onToggleFilters, filt
           aria-label="Location search"
           value={query}
           onChange={handleChange}
+          onBlur={handleBlur}
           onFocus={() => predictions.length > 0 && setOpen(true)}
           autoComplete="off"
         />

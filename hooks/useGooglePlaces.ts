@@ -4,14 +4,14 @@ const SCRIPT_ID = 'google-maps-script';
 
 // Module-level state shared across all hook instances
 let isLoaded = false;
-const listeners = new Set();
+const listeners = new Set<() => void>();
 
-function notifyAll() {
+function notifyAll(): void {
   isLoaded = true;
   listeners.forEach((fn) => fn());
 }
 
-export function useGooglePlaces(apiKey) {
+export function useGooglePlaces(apiKey: string): boolean {
   const [ready, setReady] = useState(() => isLoaded);
 
   useEffect(() => {
