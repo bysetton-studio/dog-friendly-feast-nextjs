@@ -58,7 +58,37 @@ export default function SubmitBanner({ place, onDismiss, inList }: Props) {
 
   return (
     <div className="submit-banner">
-      {/* TODO: info + actions */}
+      <div className="submit-banner__info">
+        <span className="submit-banner__name">
+          {(place as google.maps.places.PlaceResult).name}
+        </span>
+        {!inList && (
+          <span className="submit-banner__sub">Not in our list — is it dog friendly?</span>
+        )}
+      </div>
+
+      {submission !== null ? (
+        <div className={`submit-banner__result submit-banner__result--${submission ? 'friendly' : 'not'}`}>
+          {submission ? '🐾 Marked as friendly' : '✕ Marked as not friendly'}
+        </div>
+      ) : (
+        <div className="submit-banner__actions">
+          <button
+            className="submit-banner__btn submit-banner__btn--friendly"
+            onClick={() => handleSubmit(true)}
+            disabled={submitting !== null}
+          >
+            {submitting === true ? <span className="submit-banner__spinner" /> : '🐾 Friendly'}
+          </button>
+          <button
+            className="submit-banner__btn submit-banner__btn--not"
+            onClick={() => handleSubmit(false)}
+            disabled={submitting !== null}
+          >
+            {submitting === false ? <span className="submit-banner__spinner" /> : '✕ Not Friendly'}
+          </button>
+        </div>
+      )}
     </div>
   );
 }
