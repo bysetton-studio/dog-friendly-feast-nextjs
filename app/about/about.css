@@ -1,0 +1,48 @@
+.about {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 60px 24px 80px;
+  font-family: Arial, sans-serif;
+  color: #e0e0e0;
+}
+
+.about__back {
+  display: inline-block;
+  margin-bottom: 40px;
+  font-size: 14px;
+  color: #9aa0a6;
+  text-decoration: none;
+}
+
+.about__back:hover {
+  color: #e0e0e0;
+}
+
+.about__title {
+  font-size: 36px;
+  font-weight: 400;
+  margin: 0 0 40px;
+}
+
+.about__section {
+  margin-bottom: 36px;
+}
+
+.about__section h2 {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 12px;
+  color: #ffffff;
+}
+
+.about__section p,
+.about__section li {
+  font-size: 15px;
+  line-height: 1.7;
+  color: #c0c0c0;
+  margin: 0 0 8px;
+}
+
+.about__section ul {
+  padding-left: 20px;
+}
