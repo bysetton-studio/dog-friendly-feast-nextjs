@@ -1,0 +1,64 @@
+'use client';
+
+import { useEffect, useRef, useState } from 'react';
+import { addLocationToCache } from '@/hooks/useLocations';
+import './SubmitBanner.css';
+import type { Place } from '@/types';
+
+const STORAGE_KEY = 'dff_submissions';
+const SHEET_URL = process.env.NEXT_PUBLIC_SHEET_URL!;
+
+interface Submission {
+  name: string;
+  address: string;
+  submission: boolean;
+}
+
+interface Props {
+  place: Place;
+  onDismiss: () => void;
+  inList: boolean;
+}
+
+function getSubmissions(): Record<string, Submission> {
+  // TODO
+  return {};
+}
+
+function saveSubmissionLocally(placeId: string, place: Place, submission: boolean): void {
+  // TODO
+}
+
+export function submitToSheet(place: Place, submission: boolean): Promise<void> {
+  // TODO
+  return Promise.resolve();
+}
+
+export function getExistingSubmission(placeId: string): Submission | null {
+  // TODO
+  return null;
+}
+
+export default function SubmitBanner({ place, onDismiss, inList }: Props) {
+  const placeId = (place as google.maps.places.PlaceResult).place_id;
+  const existing = placeId ? getExistingSubmission(placeId) : null;
+  const [submission, setSubmission] = useState<boolean | null>(existing?.submission ?? null);
+  const [submitting, setSubmitting] = useState<boolean | null>(null);
+  const dismissTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => { if (dismissTimer.current) clearTimeout(dismissTimer.current); };
+  }, []);
+
+  if (!place) return null;
+
+  async function handleSubmit(value: boolean): Promise<void> {
+    // TODO
+  }
+
+  return (
+    <div className="submit-banner">
+      {/* TODO: info + actions */}
+    </div>
+  );
+}

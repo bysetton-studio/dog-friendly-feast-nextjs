@@ -5,9 +5,9 @@ import Link from 'next/link';
 import './home.css';
 
 import LocationSearch from '@/components/LocationSearch';
+import MapView from '@/components/MapView';
 
 // TODO: import components
-// import MapView from '@/components/MapView';
 // import LocationList from '@/components/LocationList';
 // import SubmitBanner from '@/components/SubmitBanner';
 
@@ -100,7 +100,7 @@ export default function HomePage() {
           />
         )} */}
 
-        {/* TODO: <MapView
+        <MapView
           selected={selected}
           mapRef={mapRef}
           onServicesReady={() => setServicesReady(true)}
@@ -112,7 +112,7 @@ export default function HomePage() {
           approvedOnly={approvedOnly}
           onApprovedOnlyToggle={() => setApprovedOnly((v) => !v)}
           selectedTypes={selectedTypes}
-        /> */}
+        />
 
         <Link href="/add" className="add-location-link">
           Don&apos;t see your spot? Add a restaurant →
