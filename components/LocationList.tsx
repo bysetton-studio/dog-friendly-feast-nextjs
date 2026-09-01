@@ -15,6 +15,8 @@ interface Props {
   toggleSuburb: (suburb: string) => void;
   loading: boolean;
   selectedTypes: Set<string>;
+  onlyCity?: string;
+  excludeCity?: string;
 }
 
 function matchesTypeFilter(place: google.maps.places.PlaceResult | null, selectedTypes: Set<string>): boolean {
@@ -25,15 +27,21 @@ function matchesTypeFilter(place: google.maps.places.PlaceResult | null, selecte
   );
 }
 
-export default function LocationList({ onSelect, grouped, expandedCities, expandedSuburbs, toggleCity, toggleSuburb, loading, selectedTypes = new Set() }: Props) {
+export default function LocationList({ onSelect, grouped, expandedCities, expandedSuburbs, toggleCity, toggleSuburb, loading, selectedTypes = new Set(), onlyCity, excludeCity }: Props) {
 
-  const sortedCities = Object.entries(grouped).sort(([a], [b]) => a.localeCompare(b));
+  const sortedCities = Object.entries(grouped)
+    .filter(([city]) => {
+      if (onlyCity != null) return city === onlyCity;
+      if (excludeCity != null) return city !== excludeCity;
+      return true;
+    })
+    .sort(([a], [b]) => a.localeCompare(b));
 
   if (loading) return <p style={{ color: '#9aa0a6', fontSize: 14 }}>Loading locations...</p>;
   if (sortedCities.length === 0) return null;
 
   return (
-    <div className="location-list">
+    <div className={`location-list${onlyCity ? ' location-list--sidebar' : ''}`}>
       {sortedCities.map(([city, suburbs]) => {
         const isCityOpen = expandedCities[city] ?? false;
         const totalCount = Object.values(suburbs).reduce(

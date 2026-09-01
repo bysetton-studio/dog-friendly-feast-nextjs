@@ -39,6 +39,8 @@ export default function HomePage() {
   const { resolved, loading: resolvedLoading } = useResolvedLocations(visibleLocations, servicesReady);
   const { grouped, expandedCities, expandedSuburbs, expandedPlaces, toggleCity, toggleSuburb } = useGroupedLocations(resolved, { onCitySelect, onSuburbSelect });
 
+  const expandedCity = Object.entries(expandedCities).find(([, v]) => v)?.[0] ?? null;
+
   function isGeographic(place: Place): boolean {
     return place?.types?.every((t) => GEOGRAPHIC_TYPES.has(t)) ?? true;
   }
@@ -88,20 +90,35 @@ export default function HomePage() {
           />
         )}
 
-        <MapView
-          selected={selected}
-          mapRef={mapRef}
-          onServicesReady={() => setServicesReady(true)}
-          selectedSuburbs={selectedSuburbs}
-          onSuburbDetected={(s) => onSuburbSelect(s ? new Set(s) : null)}
-          selectedCity={selectedCity}
-          resolved={resolved}
-          resolvedLoading={resolvedLoading}
-          locationsLoading={loading}
-          approvedOnly={approvedOnly}
-          onApprovedOnlyToggle={() => setApprovedOnly((v) => !v)}
-          selectedTypes={selectedTypes}
-        />
+        <div className="map-row">
+          {expandedCity && (
+            <LocationList
+              onSelect={handleSelect}
+              grouped={grouped}
+              expandedCities={expandedCities}
+              expandedSuburbs={expandedSuburbs}
+              toggleCity={toggleCity}
+              toggleSuburb={toggleSuburb}
+              loading={resolvedLoading}
+              selectedTypes={selectedTypes}
+              onlyCity={expandedCity}
+            />
+          )}
+          <MapView
+            selected={selected}
+            mapRef={mapRef}
+            onServicesReady={() => setServicesReady(true)}
+            selectedSuburbs={selectedSuburbs}
+            onSuburbDetected={(s) => onSuburbSelect(s ? new Set(s) : null)}
+            selectedCity={selectedCity}
+            resolved={resolved}
+            resolvedLoading={resolvedLoading}
+            locationsLoading={loading}
+            approvedOnly={approvedOnly}
+            onApprovedOnlyToggle={() => setApprovedOnly((v) => !v)}
+            selectedTypes={selectedTypes}
+          />
+        </div>
 
         <Link href="/add" className="add-location-link">
           Don&apos;t see your spot? Add a restaurant →
@@ -116,6 +133,7 @@ export default function HomePage() {
           toggleSuburb={toggleSuburb}
           loading={resolvedLoading}
           selectedTypes={selectedTypes}
+          excludeCity={expandedCity ?? undefined}
         />
     </main>
   );

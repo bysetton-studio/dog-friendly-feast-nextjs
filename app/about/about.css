@@ -46,3 +46,32 @@
 .about__section ul {
   padding-left: 20px;
 }
+
+.copy-email {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 14px;
+  color: #c0c0c0;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.copy-email:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #e0e0e0;
+}
+
+.copy-email__label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #9aa0a6;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+  padding: 2px 7px;
+  flex-shrink: 0;
+}

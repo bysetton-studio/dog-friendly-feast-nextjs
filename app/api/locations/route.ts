@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
   }
 
   const location = await prisma.location.create({
-    data: { name, address, isFriendly, isAdminApproved: false },
+    data: { name, address, isFriendly, isAdminApproved: false, updatedAt: new Date() },
   });
 
   return NextResponse.json(location, { status: 201 });

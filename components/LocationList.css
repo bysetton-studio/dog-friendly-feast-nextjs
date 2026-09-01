@@ -8,6 +8,17 @@
   align-items: start;
 }
 
+.location-list--sidebar {
+  width: 220px;
+  min-width: 220px;
+  max-width: 220px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-bottom: 0;
+  align-items: stretch;
+}
+
 @media (max-width: 600px) {
   .location-list {
     grid-template-columns: 1fr;
@@ -18,7 +29,6 @@
   background: #fff;
   border: 1px solid #e8eaed;
   border-radius: 16px;
-  overflow: hidden;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
   position: relative;
   z-index: 1;
@@ -28,7 +38,6 @@
   font-size: 13px;
   font-weight: 600;
   color: #202124;
-  background: #fff;
   margin: 0;
   padding: 14px 16px;
   cursor: pointer;
@@ -37,7 +46,6 @@
   align-items: center;
   transition: background 0.15s;
   user-select: none;
-  border-bottom: 1px solid #e8eaed;
 }
 
 .city-heading:hover {
@@ -71,6 +79,7 @@
 }
 
 .suburb-list {
+  overflow: scroll;
   padding: 6px 8px;
   display: flex;
   flex-direction: column;

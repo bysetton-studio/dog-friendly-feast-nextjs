@@ -70,7 +70,9 @@ export function useGroupedLocations(resolved: ResolvedLocation[], options: Optio
       } else {
         onCitySelect?.(city);
       }
-      return { ...prev, [city]: opening };
+      const next: Record<string, boolean> = {};
+      Object.keys(prev).forEach((c) => { next[c] = c === city ? opening : false; });
+      return next;
     });
   }
 
