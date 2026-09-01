@@ -1,0 +1,49 @@
+.type-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  width: 100%;
+  max-width: 582px;
+}
+
+.type-filter__chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: rgba(30, 30, 30, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #9aa0a6;
+  font-size: 13px;
+  font-family: Arial, sans-serif;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.type-filter__chip:hover {
+  background: rgba(50, 50, 50, 0.85);
+  color: #e0e0e0;
+}
+
+.type-filter__chip--on {
+  background: #1a73e8;
+  border-color: #1a73e8;
+  color: #fff;
+  font-weight: 600;
+}
+
+.type-filter__input {
+  display: none;
+}
+
+.type-filter__emoji {
+  font-size: 14px;
+  line-height: 1;
+}
+
+.type-filter__label {
+  line-height: 1;
+}
