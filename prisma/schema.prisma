@@ -7,7 +7,7 @@ datasource db {
 }
 
 model Location {
-  id              Int      @id @default(autoincrement())
+  id              String   @id @default(uuid())
   name            String
   address         String
   isFriendly      Boolean
