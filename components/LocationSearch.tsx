@@ -1,8 +1,8 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-// TODO: import { useGooglePlaces } from '@/hooks/useGooglePlaces';
-// TODO: import { initServices, getPredictions, getPlaceDetails } from '@/hooks/usePlacesCache';
+import { useGooglePlaces } from '@/hooks/useGooglePlaces';
+import { initServices, getPredictions, getPlaceDetails } from '@/hooks/usePlacesCache';
 // TODO: import TypeFilter from '@/components/TypeFilter';
 import './LocationSearch.css';
 import type { Prediction, Place } from '@/types';
@@ -26,12 +26,11 @@ export default function LocationSearch({ onSelect, mapRef, onToggleFilters, filt
   const [query, setQuery] = useState('');
   const [predictions, setPredictions] = useState<Prediction[]>([]);
   const [open, setOpen] = useState(false);
-  // TODO: const ready = useGooglePlaces(API_KEY);
+  const ready = useGooglePlaces(API_KEY);
 
   useEffect(() => {
-    // TODO: uncomment once useGooglePlaces + usePlacesCache are added
-    // if (ready && mapRef?.current) initServices(mapRef.current);
-  }, [mapRef]);
+    if (ready && mapRef?.current) initServices(mapRef.current);
+  }, [ready, mapRef]);
 
   const fetchPredictions = useCallback((value: string) => {
     clearTimeout(debounceRef.current ?? undefined);
@@ -41,9 +40,7 @@ export default function LocationSearch({ onSelect, mapRef, onToggleFilters, filt
       return;
     }
     debounceRef.current = setTimeout(async () => {
-      // TODO: uncomment once usePlacesCache is added
-      // const results = await getPredictions(value);
-      const results: Prediction[] = [];
+      const results = await getPredictions(value);
       setPredictions(results);
       setOpen(results.length > 0);
     }, DEBOUNCE_MS);
@@ -59,13 +56,12 @@ export default function LocationSearch({ onSelect, mapRef, onToggleFilters, filt
     setQuery(prediction.description);
     setPredictions([]);
     setOpen(false);
-    // TODO: uncomment once usePlacesCache is added
-    // const place = await getPlaceDetails(prediction.place_id);
+    const place = await getPlaceDetails(prediction.place_id);
     window.gtag?.('event', 'search', {
       search_term: prediction.description,
       place_id: prediction.place_id,
     });
-    // onSelect(place);
+    onSelect(place);
   }
 
   function handleBlur(): void {
