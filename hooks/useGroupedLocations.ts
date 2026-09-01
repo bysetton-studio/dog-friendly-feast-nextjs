@@ -1,0 +1,67 @@
+import { useEffect, useMemo, useState } from 'react';
+import type { ResolvedLocation } from '@/types';
+
+type Grouped = Record<string, Record<string, ResolvedLocation[]>>;
+
+export interface GroupedLocationsResult {
+  grouped: Grouped;
+  expandedCities: Record<string, boolean>;
+  expandedSuburbs: Record<string, boolean>;
+  expandedPlaces: google.maps.places.PlaceResult[];
+  toggleCity: (city: string) => void;
+  toggleSuburb: (suburb: string) => void;
+}
+
+export function useGroupedLocations(resolved: ResolvedLocation[]): GroupedLocationsResult {
+  const [grouped, setGrouped] = useState<Grouped>({});
+  const [expandedCities, setExpandedCities] = useState<Record<string, boolean>>({});
+  const [expandedSuburbs, setExpandedSuburbs] = useState<Record<string, boolean>>({});
+
+  useEffect(() => {
+    if (resolved.length === 0) { setGrouped({}); return; }
+
+    const next: Grouped = {};
+    resolved.forEach((entry) => {
+      const { city, suburb } = entry;
+      const suburbKey = suburb ?? city;
+      const cityGroup = next[city] ?? {};
+      next[city] = { ...cityGroup, [suburbKey]: [...(cityGroup[suburbKey] ?? []), entry] };
+    });
+    setGrouped(next);
+    setExpandedCities((prev) => {
+      const updated = { ...prev };
+      Object.keys(next).forEach((city) => { if (!(city in updated)) updated[city] = false; });
+      return updated;
+    });
+    setExpandedSuburbs((prev) => {
+      const updated = { ...prev };
+      resolved.forEach(({ suburb, city }) => {
+        const key = suburb ?? city;
+        if (!(key in updated)) updated[key] = false;
+      });
+      return updated;
+    });
+  }, [resolved]);
+
+  const expandedPlaces = useMemo(() => {
+    const places: google.maps.places.PlaceResult[] = [];
+    Object.entries(grouped).forEach(([city, suburbs]) => {
+      if (!expandedCities[city]) return;
+      Object.entries(suburbs).forEach(([suburb, entries]) => {
+        if (!expandedSuburbs[suburb]) return;
+        entries.forEach(({ place }) => { if (place) places.push(place); });
+      });
+    });
+    return places;
+  }, [grouped, expandedCities, expandedSuburbs]);
+
+  function toggleCity(city: string): void {
+    setExpandedCities((prev) => ({ ...prev, [city]: !prev[city] }));
+  }
+
+  function toggleSuburb(suburb: string): void {
+    setExpandedSuburbs((prev) => ({ ...prev, [suburb]: !prev[suburb] }));
+  }
+
+  return { grouped, expandedCities, expandedSuburbs, expandedPlaces, toggleCity, toggleSuburb };
+}

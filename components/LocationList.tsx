@@ -1,58 +1,38 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { findPlaceDetails } from '@/hooks/usePlacesCache';
 import { TYPE_FILTERS } from '@/components/TypeFilter';
 import './LocationList.css';
-import type { Location, Place } from '@/types';
+import type { Place, ResolvedLocation } from '@/types';
 
-interface PlaceEntry {
-  name: string;
-  address: string;
-  isFriendly: boolean;
-  isApproved: boolean;
-  place: google.maps.places.PlaceResult | null;
-}
-
-type Grouped = Record<string, Record<string, PlaceEntry[]>>;
+type Grouped = Record<string, Record<string, ResolvedLocation[]>>;
 
 interface Props {
   onSelect: (place: Place) => void;
-  servicesReady: boolean;
-  selectedSuburb: string[] | null;
   onSuburbSelect: (suburbs: Set<string> | null) => void;
   onCitySelect: (city: string | null) => void;
-  onExpandedPlacesChange: (places: google.maps.places.PlaceResult[]) => void;
-  locations: Location[];
+  grouped: Grouped;
+  expandedCities: Record<string, boolean>;
+  expandedSuburbs: Record<string, boolean>;
+  toggleCity: (city: string) => void;
+  toggleSuburb: (suburb: string) => void;
   loading: boolean;
   selectedTypes: Set<string>;
 }
 
 function matchesTypeFilter(place: google.maps.places.PlaceResult | null, selectedTypes: Set<string>): boolean {
-  // TODO
-  return true;
+  if (selectedTypes.size === 0) return true;
+  if (!place?.types) return true;
+  return TYPE_FILTERS.some(
+    (f) => selectedTypes.has(f.key) && f.types.some((t) => place.types!.includes(t))
+  );
 }
 
-function getCity(addressComponents: google.maps.GeocoderAddressComponent[] | undefined): string {
-  // TODO
-  return 'Other';
-}
-
-function getSuburb(addressComponents: google.maps.GeocoderAddressComponent[] | undefined): string | null {
-  // TODO
-  return null;
-}
-
-export default function LocationList({ onSelect, servicesReady, selectedSuburb, onSuburbSelect, onCitySelect, onExpandedPlacesChange, locations = [], loading, selectedTypes = new Set() }: Props) {
-  const [grouped, setGrouped] = useState<Grouped>({});
-  const [expandedCities, setExpandedCities] = useState<Record<string, boolean>>({});
-  const [expandedSuburbs, setExpandedSuburbs] = useState<Record<string, boolean>>({});
-
-  // TODO: useEffect — build grouped from locations
-  // TODO: useEffect — notify onExpandedPlacesChange when expanded state changes
-
+export default function LocationList({ onSelect, onSuburbSelect, onCitySelect, grouped, expandedCities, expandedSuburbs, toggleCity, toggleSuburb, loading, selectedTypes = new Set() }: Props) {
   function handleSuburbClick(suburb: string): void {
-    // TODO
+    toggleSuburb(suburb);
+    const newExpanded = { ...expandedSuburbs, [suburb]: !expandedSuburbs[suburb] };
+    const openSet = new Set(Object.entries(newExpanded).filter(([, v]) => v).map(([k]) => k));
+    onSuburbSelect?.(openSet.size > 0 ? openSet : null);
   }
 
   const sortedCities = Object.entries(grouped).sort(([a], [b]) => a.localeCompare(b));

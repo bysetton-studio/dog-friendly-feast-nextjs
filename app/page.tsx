@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import './home.css';
 
@@ -13,6 +13,9 @@ import MapView from '@/components/MapView';
 
 import { backgroundArt } from '@/data/backgroundArt';
 import { useLocations } from '@/hooks/useLocations';
+import { useResolvedLocations } from '@/hooks/useResolvedLocations';
+import { useGroupedLocations } from '@/hooks/useGroupedLocations';
+import { isApproved } from '@/lib/placeUtils';
 import type { Location, Place } from '@/types';
 
 const POSITIONS: React.CSSProperties[] = [
@@ -40,6 +43,11 @@ export default function HomePage() {
   const [filtersOpen, setFiltersOpen] = useState(false);
   const mapRef = useRef<google.maps.Map | null>(null);
   const { locations, loading } = useLocations();
+  const visibleLocations: Location[] = approvedOnly
+    ? locations.filter((l) => isApproved(l.adminApproved))
+    : locations;
+  const { resolved, loading: resolvedLoading } = useResolvedLocations(visibleLocations, servicesReady);
+  const { grouped, expandedCities, expandedSuburbs, expandedPlaces, toggleCity, toggleSuburb } = useGroupedLocations(resolved);
 
   function isGeographic(place: Place): boolean {
     return place?.types?.every((t) => GEOGRAPHIC_TYPES.has(t)) ?? true;
@@ -55,16 +63,12 @@ export default function HomePage() {
     setSelected(place);
   }
 
-  function handleExpandedPlacesChange(places: google.maps.places.PlaceResult[]): void {
-    if (!mapRef.current || !window.google?.maps || places.length === 0) return;
+  useEffect(() => {
+    if (!mapRef.current || !window.google?.maps || expandedPlaces.length === 0) return;
     const bounds = new window.google.maps.LatLngBounds();
-    places.forEach((p) => bounds.extend(p.geometry!.location!));
+    expandedPlaces.forEach((p) => bounds.extend(p.geometry!.location!));
     mapRef.current.fitBounds(bounds);
-  }
-
-  const visibleLocations: Location[] = approvedOnly
-    ? locations.filter((l) => l.adminApproved !== false && l.adminApproved !== 'FALSE' && l.adminApproved !== 'false')
-    : locations;
+  }, [expandedPlaces]);
 
   const showSubmitBanner = selected && !loading && !isGeographic(selected) && !isInList(selected, locations);
 
@@ -107,7 +111,8 @@ export default function HomePage() {
           selectedSuburbs={selectedSuburbs}
           onSuburbDetected={setSelectedSuburbs}
           selectedCity={selectedCity}
-          locations={visibleLocations}
+          resolved={resolved}
+          resolvedLoading={resolvedLoading}
           locationsLoading={loading}
           approvedOnly={approvedOnly}
           onApprovedOnlyToggle={() => setApprovedOnly((v) => !v)}
@@ -120,13 +125,14 @@ export default function HomePage() {
 
         {/* TODO: <LocationList
           onSelect={handleSelect}
-          servicesReady={servicesReady}
-          selectedSuburb={selectedSuburbs}
           onSuburbSelect={(suburbs) => setSelectedSuburbs(suburbs ?? null)}
           onCitySelect={setSelectedCity}
-          onExpandedPlacesChange={handleExpandedPlacesChange}
-          locations={visibleLocations}
-          loading={loading}
+          grouped={grouped}
+          expandedCities={expandedCities}
+          expandedSuburbs={expandedSuburbs}
+          toggleCity={toggleCity}
+          toggleSuburb={toggleSuburb}
+          loading={resolvedLoading}
           selectedTypes={selectedTypes}
         /> */}
       </main>

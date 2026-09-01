@@ -1,11 +1,11 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { useGooglePlaces } from '@/hooks/useGooglePlaces';
-import { initServices, findPlaceDetails } from '@/hooks/usePlacesCache';
+import { initServices } from '@/hooks/usePlacesCache';
 import { TYPE_FILTERS } from '@/components/TypeFilter';
 import './MapView.css';
-import type { Location, Place } from '@/types';
+import type { Place, ResolvedLocation } from '@/types';
 
 const API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!;
 const DEFAULT_CENTER = { lat: -33.9249, lng: 18.4241 }; // Cape Town
@@ -28,7 +28,8 @@ interface Props {
   selectedSuburbs: string[] | null;
   onSuburbDetected: (suburbs: string[] | null) => void;
   selectedCity: string | null;
-  locations: Location[];
+  resolved: ResolvedLocation[];
+  resolvedLoading: boolean;
   locationsLoading: boolean;
   approvedOnly: boolean;
   onApprovedOnlyToggle: () => void;
@@ -47,15 +48,6 @@ function getTypeEmoji(types: string[] | undefined): string {
   if (!types) return '🦴';
   const match = TYPE_FILTERS.find((f) => f.types.some((t) => types.includes(t)));
   return match ? match.emoji : '🦴';
-}
-
-function getSuburb(addressComponents: google.maps.GeocoderAddressComponent[] | undefined): string | null {
-  const types = ['sublocality_level_1', 'sublocality', 'neighborhood', 'locality'];
-  for (const type of types) {
-    const component = addressComponents?.find((c) => c.types.includes(type));
-    if (component) return component.long_name;
-  }
-  return null;
 }
 
 function buildInfoWindowContent(place: google.maps.places.PlaceResult): string {
@@ -97,13 +89,12 @@ function buildInfoWindowContent(place: google.maps.places.PlaceResult): string {
   `;
 }
 
-export default function MapView({ selected, mapRef, onServicesReady, selectedSuburbs, onSuburbDetected, selectedCity, locations = [], locationsLoading, approvedOnly, onApprovedOnlyToggle, selectedTypes = new Set() }: Props) {
+export default function MapView({ selected, mapRef, onServicesReady, selectedSuburbs, onSuburbDetected, selectedCity, resolved = [], resolvedLoading, locationsLoading, approvedOnly, onApprovedOnlyToggle, selectedTypes = new Set() }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const markerRef = useRef<google.maps.Marker | null>(null);
   const locationMarkersRef = useRef<MarkerEntry[]>([]);
   const openInfoWindowRef = useRef<google.maps.InfoWindow | null>(null);
   const ready = useGooglePlaces(API_KEY);
-  const [pinsLoading, setPinsLoading] = useState(true);
 
   // Init map once
   useEffect(() => {
@@ -129,66 +120,52 @@ export default function MapView({ selected, mapRef, onServicesReady, selectedSub
     };
   }, [ready, mapRef]);
 
-  // Sync pins whenever locations change
+  // Sync pins from resolved locations
   useEffect(() => {
     if (!ready || !mapRef.current) return;
 
-    const visibleNames = new Set(locations.map(({ name }) => name as string));
+    const visibleNames = new Set(resolved.map(({ name }) => name));
 
-    const removed = locationMarkersRef.current.filter(({ marker }) => !visibleNames.has(marker.getTitle() ?? ''));
-    removed.forEach(({ marker }) => marker.setMap(null));
-    locationMarkersRef.current = locationMarkersRef.current.filter(({ marker }) => visibleNames.has(marker.getTitle() ?? ''));
+    // Remove stale markers
+    locationMarkersRef.current
+      .filter(({ marker }) => !visibleNames.has(marker.getTitle() ?? ''))
+      .forEach(({ marker }) => marker.setMap(null));
+    locationMarkersRef.current = locationMarkersRef.current.filter(
+      ({ marker }) => visibleNames.has(marker.getTitle() ?? '')
+    );
 
+    // Add new markers
     const existingNames = new Set(locationMarkersRef.current.map(({ marker }) => marker.getTitle()));
-    const newLocations = locations.filter(({ name }) => !existingNames.has(name as string));
+    const newEntries = resolved.filter(({ name }) => !existingNames.has(name));
 
-    if (newLocations.length === 0) { setPinsLoading(false); return; }
-    if (locationMarkersRef.current.length === 0) setPinsLoading(true);
-    let resolved = 0;
+    newEntries.forEach(({ name, isFriendly, isApproved, place, suburb, city }) => {
+      const icon: google.maps.Symbol = isFriendly
+        ? { path: window.google.maps.SymbolPath.CIRCLE, scale: 16, fillColor: '#1e7e34', fillOpacity: isApproved ? 1 : 0.5, strokeColor: isApproved ? '#00420a' : '#1e7e34', strokeWeight: 2 }
+        : { path: window.google.maps.SymbolPath.CIRCLE, scale: 11, fillColor: '#c5221f', fillOpacity: isApproved ? 1 : 0.5, strokeColor: isApproved ? '#530000' : '#c5221f', strokeWeight: 1.5 };
 
-    newLocations.forEach((loc) => {
-      const { name, address, friendly, adminApproved } = loc as Record<string, unknown>;
-      findPlaceDetails(name as string, address as string)
-        .then((place) => {
-          const fullPlace = place as google.maps.places.PlaceResult;
-          const suburb = getSuburb(fullPlace.address_components);
-          const isFriendly = friendly !== false && friendly !== 'FALSE' && friendly !== 'false';
-          const isApproved = adminApproved !== false && adminApproved !== 'FALSE' && adminApproved !== 'false';
+      const label: google.maps.MarkerLabel = isFriendly
+        ? { text: getTypeEmoji(place.types), fontSize: '16px', color: '#fff' }
+        : { text: '✕', fontSize: '9px', fontWeight: '700', color: '#fff' };
 
-          const icon: google.maps.Symbol = isFriendly
-            ? { path: window.google.maps.SymbolPath.CIRCLE, scale: 16, fillColor: '#1e7e34', fillOpacity: isApproved ? 1 : 0.5, strokeColor: isApproved ? '#00420a' : '#1e7e34', strokeWeight: 2 }
-            : { path: window.google.maps.SymbolPath.CIRCLE, scale: 11, fillColor: '#c5221f', fillOpacity: isApproved ? 1 : 0.5, strokeColor: isApproved ? '#530000' : '#c5221f', strokeWeight: 1.5 };
+      const marker = new window.google.maps.Marker({
+        position: place.geometry!.location,
+        map: mapRef.current,
+        title: name,
+        zIndex: isFriendly ? 2 : 1,
+        icon,
+        label,
+      });
 
-          const label: google.maps.MarkerLabel = isFriendly
-            ? { text: getTypeEmoji(fullPlace.types), fontSize: '16px', color: '#fff' }
-            : { text: '✕', fontSize: '9px', fontWeight: '700', color: '#fff' };
+      const infoWindow = new window.google.maps.InfoWindow({ content: buildInfoWindowContent(place) });
+      marker.addListener('click', () => {
+        if (openInfoWindowRef.current) openInfoWindowRef.current.close();
+        infoWindow.open(mapRef.current, marker);
+        openInfoWindowRef.current = infoWindow;
+      });
 
-          const marker = new window.google.maps.Marker({
-            position: fullPlace.geometry!.location,
-            map: mapRef.current,
-            title: name as string,
-            zIndex: isFriendly ? 2 : 1,
-            icon,
-            label,
-          });
-
-          const infoWindow = new window.google.maps.InfoWindow({ content: buildInfoWindowContent(fullPlace) });
-          marker.addListener('click', () => {
-            if (openInfoWindowRef.current) openInfoWindowRef.current.close();
-            infoWindow.open(mapRef.current, marker);
-            openInfoWindowRef.current = infoWindow;
-          });
-
-          const city = fullPlace.address_components?.find((c) =>
-            ['locality', 'administrative_area_level_2', 'administrative_area_level_1'].some((t) => c.types.includes(t))
-          )?.long_name ?? 'Other';
-
-          locationMarkersRef.current.push({ marker, suburb, city, types: fullPlace.types ?? [], icon, label, isFriendly });
-        })
-        .catch((err: Error) => console.warn(err.message))
-        .finally(() => { resolved++; if (resolved === newLocations.length) setPinsLoading(false); });
+      locationMarkersRef.current.push({ marker, suburb, city, types: place.types ?? [], icon, label, isFriendly });
     });
-  }, [ready, mapRef, locations]);
+  }, [ready, mapRef, resolved]);
 
   // Dim/highlight markers when selectedSuburbs changes
   useEffect(() => {
@@ -273,7 +250,7 @@ export default function MapView({ selected, mapRef, onServicesReady, selectedSub
           <div className="toggle-switch__thumb" />
         </div>
       </label>
-      {(locationsLoading || pinsLoading) && (
+      {(locationsLoading || resolvedLoading) && (
         <div className="map-loading">
           <div className="map-loading__spinner" />
           <span className="map-loading__text">Loading locations...</span>
