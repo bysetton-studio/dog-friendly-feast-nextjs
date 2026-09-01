@@ -5,104 +5,98 @@ const predictionsCache = new Map<string, Prediction[]>();
 const detailsCache = new Map<string, Place>();
 const placeCache = new Map<string, Place>();
 
-let autocompleteService: google.maps.places.AutocompleteService | null = null;
-let placesService: google.maps.places.PlacesService | null = null;
+// No-op: new Places API doesn't require service initialization
+export function initServices(_map: google.maps.Map | null): void {}
 
-export function initServices(map: google.maps.Map | null): void {
-  if (!autocompleteService) {
-    autocompleteService = new window.google.maps.places.AutocompleteService();
-  }
-  if (!placesService && map) {
-    placesService = new window.google.maps.places.PlacesService(map);
-  }
+// Adapts the new google.maps.places.Place to the PlaceResult shape expected by the rest of the app
+function placeToResult(place: google.maps.places.Place): google.maps.places.PlaceResult {
+  return {
+    place_id: place.id,
+    name: place.displayName ?? undefined,
+    formatted_address: place.formattedAddress ?? undefined,
+    geometry: place.location
+      ? { location: place.location, viewport: place.viewport ?? undefined }
+      : undefined,
+    address_components: place.addressComponents?.map((c) => ({
+      long_name: c.longText,
+      short_name: c.shortText,
+      types: c.types,
+    })),
+    types: place.types ?? undefined,
+    rating: place.rating ?? undefined,
+    user_ratings_total: place.userRatingCount ?? undefined,
+    formatted_phone_number: place.nationalPhoneNumber ?? undefined,
+    website: place.websiteURI ?? undefined,
+    opening_hours: place.regularOpeningHours
+      ? ({ weekday_text: place.regularOpeningHours.weekdayDescriptions } as google.maps.places.PlaceOpeningHours)
+      : undefined,
+    photos: place.photos?.map((p) => ({
+      getUrl: () => p.getURI(),
+    })) as unknown as google.maps.places.PlacePhoto[] | undefined,
+  } as google.maps.places.PlaceResult;
 }
 
-export function getPredictions(query: string): Promise<Prediction[]> {
+export async function getPredictions(query: string): Promise<Prediction[]> {
   const key = query.trim().toLowerCase();
-  if (predictionsCache.has(key)) {
-    return Promise.resolve(predictionsCache.get(key)!);
-  }
+  if (predictionsCache.has(key)) return predictionsCache.get(key)!;
 
-  return new Promise((resolve) => {
-    autocompleteService!.getPlacePredictions(
-      { input: query, componentRestrictions: { country: 'za' } },
-      (results, status) => {
-        const predictions =
-          status === window.google.maps.places.PlacesServiceStatus.OK
-            ? (results as unknown as Prediction[])
-            : [];
-        predictionsCache.set(key, predictions);
-        resolve(predictions);
-      }
-    );
-  });
-}
+  const { suggestions } =
+    await window.google.maps.places.AutocompleteSuggestion.fetchAutocompleteSuggestions({
+      input: query,
+      includedRegionCodes: ['za'],
+    });
 
-export function getPlaceDetails(placeId: string): Promise<Place> {
-  if (detailsCache.has(placeId)) {
-    return Promise.resolve(detailsCache.get(placeId)!);
-  }
-
-  return new Promise((resolve, reject) => {
-    placesService!.getDetails(
-      { placeId, fields: ['geometry', 'name', 'formatted_address', 'address_components', 'types'] },
-      (place, status) => {
-        if (status === window.google.maps.places.PlacesServiceStatus.OK && place) {
-          detailsCache.set(placeId, place as Place);
-          resolve(place as Place);
-        } else {
-          reject(new Error(`PlacesService failed: ${status}`));
-        }
-      }
-    );
-  });
-}
-
-export function findPlaceDetails(name: string, address: string): Promise<Place> {
-  const key = `${name}|${address}`;
-  if (placeCache.has(key)) {
-    return Promise.resolve(placeCache.get(key)!);
-  }
-
-  return new Promise((resolve, reject) => {
-    const southAfrica = new window.google.maps.LatLngBounds(
-      { lat: -34.8, lng: 16.5 },
-      { lat: -22.1, lng: 32.9 }
-    );
-
-    placesService!.findPlaceFromQuery(
-      {
-        query: `${name}, ${address}`,
-        fields: ['place_id', 'geometry', 'name'],
-        locationBias: southAfrica,
+  const predictions: Prediction[] = suggestions
+    .flatMap((s) => (s.placePrediction ? [s.placePrediction] : []))
+    .map((p) => ({
+      place_id: p.placeId,
+      description: p.text.text,
+      structured_formatting: {
+        main_text: p.mainText?.text ?? '',
+        secondary_text: p.secondaryText?.text ?? '',
       },
-      (results, status) => {
-        if (status !== window.google.maps.places.PlacesServiceStatus.OK || !results?.[0]) {
-          reject(new Error(`Could not find place: "${name}"`));
-          return;
-        }
+    }));
 
-        const placeId = results[0].place_id!;
+  predictionsCache.set(key, predictions);
+  return predictions;
+}
 
-        placesService!.getDetails(
-          {
-            placeId,
-            fields: [
-              'place_id', 'name', 'formatted_address', 'formatted_phone_number',
-              'website', 'opening_hours', 'rating', 'user_ratings_total',
-              'photos', 'geometry', 'address_components', 'types',
-            ],
-          },
-          (place, detailStatus) => {
-            if (detailStatus === window.google.maps.places.PlacesServiceStatus.OK && place) {
-              placeCache.set(key, place as Place);
-              resolve(place as Place);
-            } else {
-              reject(new Error(`getDetails failed for "${name}": ${detailStatus}`));
-            }
-          }
-        );
-      }
-    );
+export async function getPlaceDetails(placeId: string): Promise<Place> {
+  if (detailsCache.has(placeId)) return detailsCache.get(placeId)!;
+
+  const place = new window.google.maps.places.Place({ id: placeId });
+  await place.fetchFields({
+    fields: ['location', 'displayName', 'formattedAddress', 'addressComponents', 'types'],
   });
+
+  const result = placeToResult(place) as Place;
+  detailsCache.set(placeId, result);
+  return result;
+}
+
+export async function findPlaceDetails(name: string, address: string): Promise<Place> {
+  const key = `${name}|${address}`;
+  if (placeCache.has(key)) return placeCache.get(key)!;
+
+  const southAfrica = new window.google.maps.LatLngBounds(
+    { lat: -34.8, lng: 16.5 },
+    { lat: -22.1, lng: 32.9 }
+  );
+
+  const { places } = await window.google.maps.places.Place.searchByText({
+    textQuery: `${name}, ${address}`,
+    fields: [
+      'id', 'location', 'displayName', 'formattedAddress', 'nationalPhoneNumber',
+      'websiteURI', 'regularOpeningHours', 'rating', 'userRatingCount',
+      'photos', 'addressComponents', 'types',
+    ],
+    locationBias: southAfrica,
+    maxResultCount: 1,
+  });
+
+  if (!places[0]) throw new Error(`Could not find place: "${name}"`);
+
+  const result = placeToResult(places[0]) as Place;
+  placeCache.set(key, result);
+  return result;
 }

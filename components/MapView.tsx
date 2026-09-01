@@ -8,17 +8,28 @@ import './MapView.css';
 import type { Place, ResolvedLocation } from '@/types';
 
 const API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!;
+const MAP_ID = process.env.NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID!;
 const DEFAULT_CENTER = { lat: -33.9249, lng: 18.4241 }; // Cape Town
 const DEFAULT_ZOOM = 12;
 
+interface SavedStyle {
+  width: string;
+  height: string;
+  background: string;
+  border: string;
+  fontSize: string;
+  opacity: string;
+}
+
 interface MarkerEntry {
-  marker: google.maps.Marker;
+  marker: google.maps.marker.AdvancedMarkerElement;
+  el: HTMLElement;
   suburb: string | null;
   city: string;
   types: string[];
-  icon: google.maps.Symbol;
-  label: google.maps.MarkerLabel | string;
   isFriendly: boolean;
+  savedStyle: SavedStyle;
+  savedText: string;
 }
 
 interface Props {
@@ -89,9 +100,62 @@ function buildInfoWindowContent(place: google.maps.places.PlaceResult): string {
   `;
 }
 
+function createMarkerEl(isFriendly: boolean, isApproved: boolean, emoji: string): { el: HTMLElement; savedStyle: SavedStyle; savedText: string } {
+  const el = document.createElement('div');
+  const size = isFriendly ? '32px' : '22px';
+  const bg = isFriendly ? '#1e7e34' : '#c5221f';
+  const border = isFriendly
+    ? `2px solid ${isApproved ? '#00420a' : '#1e7e34'}`
+    : `1.5px solid ${isApproved ? '#530000' : '#c5221f'}`;
+  const opacity = isApproved ? '1' : '0.5';
+  const fontSize = isFriendly ? '16px' : '9px';
+  const text = isFriendly ? emoji : '✕';
+
+  el.style.cssText = `
+    width: ${size}; height: ${size};
+    border-radius: 50%;
+    background: ${bg};
+    border: ${border};
+    opacity: ${opacity};
+    font-size: ${fontSize};
+    font-weight: ${isFriendly ? 'normal' : '700'};
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-sizing: border-box;
+  `;
+  el.textContent = text;
+
+  const savedStyle: SavedStyle = { width: size, height: size, background: bg, border, fontSize, opacity };
+  return { el, savedStyle, savedText: text };
+}
+
+function applyDefaultStyle(entry: MarkerEntry): void {
+  const { el, savedStyle, savedText } = entry;
+  el.style.width = savedStyle.width;
+  el.style.height = savedStyle.height;
+  el.style.background = savedStyle.background;
+  el.style.border = savedStyle.border;
+  el.style.fontSize = savedStyle.fontSize;
+  el.style.opacity = savedStyle.opacity;
+  el.textContent = savedText;
+}
+
+function applyDimmedStyle(el: HTMLElement): void {
+  el.style.width = '8px';
+  el.style.height = '8px';
+  el.style.background = '#9aa0a6';
+  el.style.border = '1.5px solid #6b7175';
+  el.style.fontSize = '0px';
+  el.style.opacity = '0.7';
+  el.textContent = '';
+}
+
 export default function MapView({ selected, mapRef, onServicesReady, selectedSuburbs, onSuburbDetected, selectedCity, resolved = [], resolvedLoading, locationsLoading, approvedOnly, onApprovedOnlyToggle, selectedTypes = new Set() }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const markerRef = useRef<google.maps.Marker | null>(null);
+  const markerRef = useRef<google.maps.marker.AdvancedMarkerElement | null>(null);
   const locationMarkersRef = useRef<MarkerEntry[]>([]);
   const openInfoWindowRef = useRef<google.maps.InfoWindow | null>(null);
   const ready = useGooglePlaces(API_KEY);
@@ -107,13 +171,14 @@ export default function MapView({ selected, mapRef, onServicesReady, selectedSub
       mapTypeControl: false,
       streetViewControl: false,
       fullscreenControl: true,
+      mapId: MAP_ID,
     });
 
     initServices(mapRef.current);
     onServicesReady?.();
 
     return () => {
-      locationMarkersRef.current.forEach(({ marker }) => marker.setMap(null));
+      locationMarkersRef.current.forEach(({ marker }) => { marker.map = null; });
       locationMarkersRef.current = [];
       mapRef.current = null;
       markerRef.current = null;
@@ -128,42 +193,36 @@ export default function MapView({ selected, mapRef, onServicesReady, selectedSub
 
     // Remove stale markers
     locationMarkersRef.current
-      .filter(({ marker }) => !visibleNames.has(marker.getTitle() ?? ''))
-      .forEach(({ marker }) => marker.setMap(null));
+      .filter(({ marker }) => !visibleNames.has(marker.title ?? ''))
+      .forEach(({ marker }) => { marker.map = null; });
     locationMarkersRef.current = locationMarkersRef.current.filter(
-      ({ marker }) => visibleNames.has(marker.getTitle() ?? '')
+      ({ marker }) => visibleNames.has(marker.title ?? '')
     );
 
     // Add new markers
-    const existingNames = new Set(locationMarkersRef.current.map(({ marker }) => marker.getTitle()));
+    const existingNames = new Set(locationMarkersRef.current.map(({ marker }) => marker.title));
     const newEntries = resolved.filter(({ name }) => !existingNames.has(name));
 
     newEntries.forEach(({ name, isFriendly, isApproved, place, suburb, city }) => {
-      const icon: google.maps.Symbol = isFriendly
-        ? { path: window.google.maps.SymbolPath.CIRCLE, scale: 16, fillColor: '#1e7e34', fillOpacity: isApproved ? 1 : 0.5, strokeColor: isApproved ? '#00420a' : '#1e7e34', strokeWeight: 2 }
-        : { path: window.google.maps.SymbolPath.CIRCLE, scale: 11, fillColor: '#c5221f', fillOpacity: isApproved ? 1 : 0.5, strokeColor: isApproved ? '#530000' : '#c5221f', strokeWeight: 1.5 };
+      const emoji = getTypeEmoji(place.types);
+      const { el, savedStyle, savedText } = createMarkerEl(isFriendly, isApproved, emoji);
 
-      const label: google.maps.MarkerLabel = isFriendly
-        ? { text: getTypeEmoji(place.types), fontSize: '16px', color: '#fff' }
-        : { text: '✕', fontSize: '9px', fontWeight: '700', color: '#fff' };
-
-      const marker = new window.google.maps.Marker({
+      const marker = new window.google.maps.marker.AdvancedMarkerElement({
         position: place.geometry!.location,
         map: mapRef.current,
         title: name,
         zIndex: isFriendly ? 2 : 1,
-        icon,
-        label,
+        content: el,
       });
 
       const infoWindow = new window.google.maps.InfoWindow({ content: buildInfoWindowContent(place) });
-      marker.addListener('click', () => {
+      marker.addListener('gmp-click', () => {
         if (openInfoWindowRef.current) openInfoWindowRef.current.close();
         infoWindow.open(mapRef.current, marker);
         openInfoWindowRef.current = infoWindow;
       });
 
-      locationMarkersRef.current.push({ marker, suburb, city, types: place.types ?? [], icon, label, isFriendly });
+      locationMarkersRef.current.push({ marker, el, suburb, city, types: place.types ?? [], isFriendly, savedStyle, savedText });
     });
   }, [ready, mapRef, resolved]);
 
@@ -171,23 +230,19 @@ export default function MapView({ selected, mapRef, onServicesReady, selectedSub
   useEffect(() => {
     if (!mapRef.current || !window.google?.maps) return;
 
-    const dimmedIcon: google.maps.Symbol = {
-      path: window.google.maps.SymbolPath.CIRCLE,
-      scale: 4, fillColor: '#9aa0a6', fillOpacity: 0.7, strokeColor: '#6b7175', strokeWeight: 1.5,
-    };
-
-    locationMarkersRef.current.forEach(({ marker, suburb, icon, label, isFriendly }) => {
+    locationMarkersRef.current.forEach((entry) => {
+      const { marker, el, suburb, isFriendly } = entry;
       const isFiltering = selectedSuburbs && selectedSuburbs.length > 0;
       const inExpandedSuburb = isFiltering && selectedSuburbs!.includes(suburb ?? '');
 
-      if (!isFiltering) {
-        marker.setVisible(true); marker.setIcon(icon); marker.setLabel(label); marker.setOpacity(1);
-      } else if (inExpandedSuburb) {
-        marker.setVisible(true); marker.setIcon(icon); marker.setLabel(label); marker.setOpacity(1);
+      if (!isFiltering || inExpandedSuburb) {
+        marker.map = mapRef.current;
+        applyDefaultStyle(entry);
       } else if (!isFriendly) {
-        marker.setVisible(false);
+        marker.map = null;
       } else {
-        marker.setVisible(true); marker.setIcon(dimmedIcon); marker.setLabel(''); marker.setOpacity(1);
+        marker.map = mapRef.current;
+        applyDimmedStyle(el);
       }
     });
   }, [selectedSuburbs]);
@@ -195,7 +250,7 @@ export default function MapView({ selected, mapRef, onServicesReady, selectedSub
   // Show/hide markers when selectedTypes changes
   useEffect(() => {
     locationMarkersRef.current.forEach(({ marker, types }) => {
-      marker.setVisible(matchesTypeFilter(types, selectedTypes));
+      marker.map = matchesTypeFilter(types, selectedTypes) ? mapRef.current : null;
     });
   }, [selectedTypes]);
 
@@ -207,7 +262,10 @@ export default function MapView({ selected, mapRef, onServicesReady, selectedSub
     let matchCount = 0;
 
     locationMarkersRef.current.forEach(({ marker, city }) => {
-      if (city === selectedCity) { bounds.extend(marker.getPosition()!); matchCount++; }
+      if (city === selectedCity) {
+        bounds.extend(marker.position as google.maps.LatLng);
+        matchCount++;
+      }
     });
 
     if (matchCount === 1) { mapRef.current.panTo(bounds.getCenter()); mapRef.current.setZoom(14); }
@@ -222,7 +280,7 @@ export default function MapView({ selected, mapRef, onServicesReady, selectedSub
     mapRef.current.panTo(location);
     mapRef.current.setZoom(14);
 
-    if (markerRef.current) { markerRef.current.setMap(null); markerRef.current = null; }
+    if (markerRef.current) { markerRef.current.map = null; markerRef.current = null; }
 
     const GEOGRAPHIC_TYPES = new Set([
       'locality', 'sublocality', 'sublocality_level_1', 'sublocality_level_2',
@@ -232,11 +290,10 @@ export default function MapView({ selected, mapRef, onServicesReady, selectedSub
     const isGeographic = selected?.types?.every((t) => GEOGRAPHIC_TYPES.has(t)) ?? false;
 
     if (!isGeographic) {
-      markerRef.current = new window.google.maps.Marker({
+      markerRef.current = new window.google.maps.marker.AdvancedMarkerElement({
         position: location,
         map: mapRef.current,
         title: selected?.formatted_address as string,
-        animation: window.google.maps.Animation.DROP,
       });
     }
   }, [selected, mapRef]);
