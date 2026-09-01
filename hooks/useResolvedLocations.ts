@@ -11,9 +11,11 @@ export function useResolvedLocations(
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (!servicesReady || locations.length === 0) return;
+    if (!servicesReady) return;
 
     setResolved([]);
+    if (locations.length === 0) return;
+
     setLoading(true);
     let completed = 0;
 
