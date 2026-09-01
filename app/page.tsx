@@ -4,8 +4,9 @@ import { useRef, useState } from 'react';
 import Link from 'next/link';
 import './home.css';
 
+import LocationSearch from '@/components/LocationSearch';
+
 // TODO: import components
-// import LocationSearch from '@/components/LocationSearch';
 // import MapView from '@/components/MapView';
 // import LocationList from '@/components/LocationList';
 // import SubmitBanner from '@/components/SubmitBanner';
@@ -81,7 +82,7 @@ export default function HomePage() {
           <p className="tagline">Find dog-friendly restaurants near you</p>
         </div>
 
-        {/* TODO: <LocationSearch
+        <LocationSearch
           onSelect={handleSelect}
           mapRef={mapRef}
           onToggleFilters={() => setFiltersOpen((v) => !v)}
@@ -89,7 +90,7 @@ export default function HomePage() {
           filtersActive={selectedTypes.size > 0}
           selectedTypes={selectedTypes}
           onTypesChange={setSelectedTypes}
-        /> */}
+        />
 
         {/* TODO: {showSubmitBanner && (
           <SubmitBanner
