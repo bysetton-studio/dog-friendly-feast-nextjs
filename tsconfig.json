@@ -11,7 +11,7 @@
     "strict": true,
     "noEmit": true,
     "esModuleInterop": true,
-    "module": "esnext",
+    "module": "preserve",
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
@@ -27,7 +27,10 @@
         "./*"
       ]
     },
-    "types": ["google.maps"]
+    "types": [
+      "google.maps",
+      "node"
+    ]
   },
   "include": [
     "next-env.d.ts",

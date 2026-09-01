@@ -1,32 +1,14 @@
 import { useEffect, useState } from 'react';
 import type { Location } from '@/types';
 
-const SHEET_URL = process.env.NEXT_PUBLIC_SHEET_URL!;
-
 let cache: Location[] | null = null;
-let inflight: Promise<Location[]> | null = null; // shared promise so duplicate calls wait on the same request
+let inflight: Promise<Location[]> | null = null;
 const subscribers = new Set<(locs: Location[]) => void>();
 
-function fetchJSONP(url: string): Promise<Location[]> {
-  return new Promise((resolve, reject) => {
-    const callbackName = `jsonp_${Date.now()}_${Math.random().toString(36).slice(2)}`;
-    const script = document.createElement('script');
-
-    (window as unknown as Record<string, unknown>)[callbackName] = (data: Location[]) => {
-      resolve(data);
-      delete (window as unknown as Record<string, unknown>)[callbackName];
-      script.remove();
-    };
-
-    script.src = `${url}?callback=${callbackName}`;
-    script.onerror = () => {
-      delete (window as unknown as Record<string, unknown>)[callbackName];
-      script.remove();
-      reject(new Error('Failed to load locations'));
-    };
-
-    document.head.appendChild(script);
-  });
+async function fetchLocations(): Promise<Location[]> {
+  const res = await fetch('/api/locations');
+  if (!res.ok) throw new Error('Failed to load locations');
+  return res.json();
 }
 
 export function invalidateLocationsCache(): void {
@@ -57,7 +39,7 @@ export function useLocations(): { locations: Location[]; loading: boolean; error
     }
 
     if (!inflight) {
-      inflight = fetchJSONP(SHEET_URL);
+      inflight = fetchLocations();
     }
 
     inflight
