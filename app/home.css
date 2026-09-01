@@ -100,7 +100,7 @@
 }
 
 .map-row > .location-list--sidebar {
-  height: 550px;
+  max-height: 550px;
   overflow-y: auto;
   padding-bottom: 0;
 }
