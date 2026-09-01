@@ -31,6 +31,23 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+.bg-art {
+  position: fixed;
+  font-size: 10px;
+  line-height: 1.1;
+  pointer-events: none;
+  user-select: none;
+  white-space: pre;
+  color: #c7c7c7;
+  z-index: 0;
+}
+
+@media (max-width: 600px) {
+  .bg-art {
+    font-size: 5px;
+  }
+}
+
 * {
   box-sizing: border-box;
   padding: 0;

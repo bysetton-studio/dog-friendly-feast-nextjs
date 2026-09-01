@@ -10,22 +10,12 @@ import MapView from '@/components/MapView';
 import LocationList from '@/components/LocationList';
 import SubmitBanner from '@/components/SubmitBanner';
 
-import { backgroundArt } from '@/data/backgroundArt';
 import { useLocations } from '@/hooks/useLocations';
 import { useResolvedLocations } from '@/hooks/useResolvedLocations';
 import { useGroupedLocations } from '@/hooks/useGroupedLocations';
 import { useLocationSelection } from '@/hooks/useLocationSelection';
 import { isApproved } from '@/lib/placeUtils';
 import type { Location, Place } from '@/types';
-
-const POSITIONS: React.CSSProperties[] = [
-  { top: '2%',    left: '1%'  },
-  { top: '2%',    right: '1%' },
-  { top: '50%',   left: '1%'  },
-  { top: '50%',   right: '1%' },
-  { bottom: '2%', left: '1%'  },
-  { bottom: '2%', right: '1%' },
-];
 
 const GEOGRAPHIC_TYPES = new Set([
   'locality', 'sublocality', 'sublocality_level_1', 'sublocality_level_2',
@@ -73,13 +63,7 @@ export default function HomePage() {
   const showSubmitBanner = selected && !loading && !isGeographic(selected) && !isInList(selected, locations);
 
   return (
-    <>
-      {POSITIONS.map((pos, i) => (
-        <pre key={i} className="bg-art" style={pos} aria-hidden="true">
-          {backgroundArt[i % backgroundArt.length]}
-        </pre>
-      ))}
-      <main className="home">
+    <main className="home">
         <Link href="/about" className="about-link">About</Link>
         <div className="logo-area">
           <h1 className="logo">Dog Friendly Feast</h1>
@@ -133,7 +117,6 @@ export default function HomePage() {
           loading={resolvedLoading}
           selectedTypes={selectedTypes}
         />
-      </main>
-    </>
+    </main>
   );
 }
