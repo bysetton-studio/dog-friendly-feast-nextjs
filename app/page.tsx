@@ -9,6 +9,7 @@ import MapView from '@/components/MapView';
 
 import LocationList from '@/components/LocationList';
 import SubmitBanner from '@/components/SubmitBanner';
+import AddSticker from '@/components/AddSticker';
 
 import { useLocations } from '@/hooks/useLocations';
 import { useResolvedLocations } from '@/hooks/useResolvedLocations';
@@ -67,6 +68,8 @@ export default function HomePage() {
   return (
     <main className="home">
         <Link href="/about" className="about-link">About</Link>
+        <div className="page-container">
+        <AddSticker />
         <div className="logo-area">
           <h1 className="logo">Dog Friendly Feast</h1>
           <p className="tagline">Find dog-friendly restaurants near you</p>
@@ -135,6 +138,7 @@ export default function HomePage() {
           selectedTypes={selectedTypes}
           excludeCity={expandedCity ?? undefined}
         />
+        </div>
     </main>
   );
 }
