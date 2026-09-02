@@ -19,7 +19,7 @@
   box-shadow: none;
   transition: box-shadow 0.2s, border-color 0.2s;
   position: relative;
-  z-index: 2;
+  z-index: 20;
 }
 
 .search-box:focus-within {
@@ -68,7 +68,7 @@
   list-style: none;
   margin: 0;
   padding: 4px 0 8px;
-  z-index: 1;
+  z-index: 20;
   overflow: hidden;
 }
 

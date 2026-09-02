@@ -1,52 +1,17 @@
 import { useEffect, useState } from 'react';
-import { findPlaceDetails } from '@/hooks/usePlacesCache';
-import { getCity, getSuburb, isFriendly, isApproved } from '@/lib/placeUtils';
-import type { Location, ResolvedLocation } from '@/types';
+import type { ResolvedLocation } from '@/types';
 
-export function useResolvedLocations(
-  locations: Location[],
-  servicesReady: boolean
-): { resolved: ResolvedLocation[]; loading: boolean } {
+export function useResolvedLocations(): { resolved: ResolvedLocation[]; loading: boolean } {
   const [resolved, setResolved] = useState<ResolvedLocation[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!servicesReady) return;
-
-    setResolved([]);
-    if (locations.length === 0) return;
-
-    setLoading(true);
-    let completed = 0;
-
-    locations.forEach((loc) => {
-      const { name, address, friendly, adminApproved } = loc;
-
-      findPlaceDetails(name, address)
-        .then((place) => {
-          const fullPlace = place as google.maps.places.PlaceResult;
-          setResolved((prev) => [
-            ...prev,
-            {
-              name,
-              address,
-              isFriendly: isFriendly(friendly),
-              isApproved: isApproved(adminApproved),
-              place: fullPlace,
-              city: getCity(fullPlace.address_components),
-              suburb: getSuburb(fullPlace.address_components),
-            },
-          ]);
-        })
-        .catch(() => {
-          // Skip unresolvable locations silently
-        })
-        .finally(() => {
-          completed++;
-          if (completed === locations.length) setLoading(false);
-        });
-    });
-  }, [servicesReady, locations]);
+    fetch('/api/locations')
+      .then((res) => res.json())
+      .then((data: ResolvedLocation[]) => setResolved(data))
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
 
   return { resolved, loading };
 }

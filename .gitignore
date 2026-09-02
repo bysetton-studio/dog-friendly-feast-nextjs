@@ -42,3 +42,6 @@ next-env.d.ts
 node_modules/
 dist/
 .env
+
+# Maps API daily request counter (runtime state, not source)
+.maps-counter.json

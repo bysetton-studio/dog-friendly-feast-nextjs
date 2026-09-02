@@ -7,7 +7,7 @@ import { TYPE_FILTERS } from '@/components/TypeFilter';
 import './MapView.css';
 import type { Place, ResolvedLocation } from '@/types';
 
-const API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!;
+const API_KEY = process.env.GOOGLE_MAPS_API_KEY ?? process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? '';
 const MAP_ID = process.env.NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID!;
 const DEFAULT_CENTER = { lat: -33.9249, lng: 18.4241 }; // Cape Town
 const DEFAULT_ZOOM = 12;
@@ -35,9 +35,7 @@ interface MarkerEntry {
 interface Props {
   selected: Place | null;
   mapRef: React.RefObject<google.maps.Map | null>;
-  onServicesReady: () => void;
   selectedSuburbs: string[] | null;
-  onSuburbDetected: (suburbs: string[] | null) => void;
   selectedCity: string | null;
   resolved: ResolvedLocation[];
   resolvedLoading: boolean;
@@ -62,7 +60,14 @@ function getTypeEmoji(types: string[] | undefined): string {
 }
 
 function buildInfoWindowContent(place: google.maps.places.PlaceResult): string {
-  const photoUrl = place.photos?.[0]?.getUrl({ maxWidth: 280, maxHeight: 140 });
+  const firstPhoto = place.photos?.[0] as
+    | google.maps.places.PlacePhoto
+    | { photoReference: string }
+    | undefined;
+  const photoUrl =
+    (firstPhoto as { photoReference?: string })?.photoReference != null
+      ? `/api/maps/photo?name=${encodeURIComponent((firstPhoto as { photoReference: string }).photoReference)}&maxWidth=280`
+      : (firstPhoto as google.maps.places.PlacePhoto | undefined)?.getUrl?.({ maxWidth: 280, maxHeight: 140 });
   const stars = place.rating
     ? '★'.repeat(Math.round(place.rating)) + '☆'.repeat(5 - Math.round(place.rating))
     : null;
@@ -153,7 +158,7 @@ function applyDimmedStyle(el: HTMLElement): void {
   el.textContent = '';
 }
 
-export default function MapView({ selected, mapRef, onServicesReady, selectedSuburbs, onSuburbDetected, selectedCity, resolved = [], resolvedLoading, locationsLoading, approvedOnly, onApprovedOnlyToggle, selectedTypes = new Set() }: Props) {
+export default function MapView({ selected, mapRef, selectedSuburbs, selectedCity, resolved = [], resolvedLoading, locationsLoading, approvedOnly, onApprovedOnlyToggle, selectedTypes = new Set() }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const markerRef = useRef<google.maps.marker.AdvancedMarkerElement | null>(null);
   const locationMarkersRef = useRef<MarkerEntry[]>([]);
@@ -175,7 +180,6 @@ export default function MapView({ selected, mapRef, onServicesReady, selectedSub
     });
 
     initServices(mapRef.current);
-    onServicesReady?.();
 
     return () => {
       locationMarkersRef.current.forEach(({ marker }) => { marker.map = null; });

@@ -31,7 +31,7 @@ export function useGooglePlaces(apiKey: string): boolean {
       const script = document.createElement('script');
       script.id = SCRIPT_ID;
       // loading=async requires a callback= param; onload fires too early with this mode
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places,marker&loading=async&callback=${CALLBACK_NAME}`;
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=marker&loading=async&callback=${CALLBACK_NAME}`;
       script.async = true;
       document.head.appendChild(script);
     }

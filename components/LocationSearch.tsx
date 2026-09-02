@@ -1,14 +1,12 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { useGooglePlaces } from '@/hooks/useGooglePlaces';
-import { initServices, getPredictions, getPlaceDetails } from '@/hooks/usePlacesCache';
+import { useCallback, useRef, useState } from 'react';
+import { getPredictions, getPlaceDetails } from '@/hooks/usePlacesCache';
 import TypeFilter from '@/components/TypeFilter';
 import './LocationSearch.css';
 import type { Prediction, Place } from '@/types';
 
-const API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!;
-const DEBOUNCE_MS = 300;
+const DEBOUNCE_MS = 800;
 
 interface Props {
   onSelect: (place: Place) => void;
@@ -26,11 +24,6 @@ export default function LocationSearch({ onSelect, mapRef, onToggleFilters, filt
   const [query, setQuery] = useState('');
   const [predictions, setPredictions] = useState<Prediction[]>([]);
   const [open, setOpen] = useState(false);
-  const ready = useGooglePlaces(API_KEY);
-
-  useEffect(() => {
-    if (ready) initServices(mapRef?.current ?? null);
-  }, [ready, mapRef]);
 
   const fetchPredictions = useCallback((value: string) => {
     clearTimeout(debounceRef.current ?? undefined);

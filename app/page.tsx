@@ -11,13 +11,11 @@ import LocationList from '@/components/LocationList';
 import SubmitBanner from '@/components/SubmitBanner';
 import AddSticker from '@/components/AddSticker';
 
-import { useLocations } from '@/hooks/useLocations';
 import { useResolvedLocations } from '@/hooks/useResolvedLocations';
 import { useGroupedLocations } from '@/hooks/useGroupedLocations';
 import { useLocationSelection } from '@/hooks/useLocationSelection';
 import { useIpCity } from '@/hooks/useIpCity';
-import { isApproved } from '@/lib/placeUtils';
-import type { Location, Place } from '@/types';
+import type { Place, ResolvedLocation } from '@/types';
 
 const GEOGRAPHIC_TYPES = new Set([
   'locality', 'sublocality', 'sublocality_level_1', 'sublocality_level_2',
@@ -30,18 +28,16 @@ export default function HomePage() {
   const [cityFlipRect, setCityFlipRect] = useState<DOMRect | null>(null);
   const ipCity = useIpCity();
   const hasAutoExpanded = useRef(false);
-  const [servicesReady, setServicesReady] = useState(false);
   const { selectedCity, selectedSuburbs, onCitySelect, onSuburbSelect } = useLocationSelection();
   const [approvedOnly, setApprovedOnly] = useState(false);
   const [selectedTypes, setSelectedTypes] = useState<Set<string>>(new Set());
   const [filtersOpen, setFiltersOpen] = useState(false);
   const mapRef = useRef<google.maps.Map | null>(null);
-  const { locations, loading } = useLocations();
-  const visibleLocations = useMemo(
-    () => approvedOnly ? locations.filter((l) => isApproved(l.adminApproved)) : locations,
-    [approvedOnly, locations]
+  const { resolved: allResolved, loading: resolvedLoading } = useResolvedLocations();
+  const resolved = useMemo(
+    () => approvedOnly ? allResolved.filter((r) => r.isApproved) : allResolved,
+    [approvedOnly, allResolved]
   );
-  const { resolved, loading: resolvedLoading } = useResolvedLocations(visibleLocations, servicesReady);
   const { grouped, expandedCities, expandedSuburbs, expandedPlaces, toggleCity, toggleSuburb } = useGroupedLocations(resolved, { onCitySelect, onSuburbSelect });
 
   const expandedCity = Object.entries(expandedCities).find(([, v]) => v)?.[0] ?? null;
@@ -62,14 +58,10 @@ export default function HomePage() {
     return place?.types?.every((t) => GEOGRAPHIC_TYPES.has(t)) ?? true;
   }
 
-  function isInList(place: Place, locs: Location[]): boolean {
+  function isInList(place: Place, locs: ResolvedLocation[]): boolean {
     if (!place?.formatted_address) return false;
     const address = place.formatted_address.toLowerCase();
     return locs.some((l) => l.address.toLowerCase() === address);
-  }
-
-  function handleSelect(place: Place): void {
-    setSelected(place);
   }
 
   useEffect(() => {
@@ -79,7 +71,7 @@ export default function HomePage() {
     mapRef.current.fitBounds(bounds);
   }, [expandedPlaces]);
 
-  const showSubmitBanner = selected && !loading && !isGeographic(selected) && !isInList(selected, locations);
+  const showSubmitBanner = selected && !resolvedLoading && !isGeographic(selected) && !isInList(selected, allResolved);
 
   return (
     <main className="home">
@@ -92,7 +84,7 @@ export default function HomePage() {
         </div>
 
         <LocationSearch
-          onSelect={handleSelect}
+          onSelect={setSelected}
           mapRef={mapRef}
           onToggleFilters={() => setFiltersOpen((v) => !v)}
           filtersOpen={filtersOpen}
@@ -105,14 +97,14 @@ export default function HomePage() {
           <SubmitBanner
             place={selected}
             onDismiss={() => setSelected(null)}
-            inList={isInList(selected, locations)}
+            inList={isInList(selected, allResolved)}
           />
         )}
 
         <div className="map-row">
           {expandedCity && (
             <LocationList
-              onSelect={handleSelect}
+              onSelect={setSelected}
               grouped={grouped}
               expandedCities={expandedCities}
               expandedSuburbs={expandedSuburbs}
@@ -127,13 +119,11 @@ export default function HomePage() {
           <MapView
             selected={selected}
             mapRef={mapRef}
-            onServicesReady={() => setServicesReady(true)}
             selectedSuburbs={selectedSuburbs}
-            onSuburbDetected={(s) => onSuburbSelect(s ? new Set(s) : null)}
             selectedCity={selectedCity}
             resolved={resolved}
             resolvedLoading={resolvedLoading}
-            locationsLoading={loading}
+            locationsLoading={resolvedLoading}
             approvedOnly={approvedOnly}
             onApprovedOnlyToggle={() => setApprovedOnly((v) => !v)}
             selectedTypes={selectedTypes}
@@ -145,7 +135,7 @@ export default function HomePage() {
         </Link>
 
         <LocationList
-          onSelect={handleSelect}
+          onSelect={setSelected}
           grouped={grouped}
           expandedCities={expandedCities}
           expandedSuburbs={expandedSuburbs}
