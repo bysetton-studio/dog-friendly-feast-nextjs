@@ -168,6 +168,7 @@ export default function MapView({ selected, mapRef, selectedSuburbs, selectedCit
 
   // Init map once
   useEffect(() => {
+    console.log(ready)
     if (!ready || !containerRef.current || capReached) return;
 
     mapRef.current = new window.google.maps.Map(containerRef.current, {
