@@ -1,5 +1,6 @@
 'use client';
 
+import { useLayoutEffect, useRef } from 'react';
 import { TYPE_FILTERS } from '@/components/TypeFilter';
 import './LocationList.css';
 import type { Place, ResolvedLocation } from '@/types';
@@ -17,6 +18,8 @@ interface Props {
   selectedTypes: Set<string>;
   onlyCity?: string;
   excludeCity?: string;
+  flipFromRect?: DOMRect | null;
+  onCityClickCapture?: (city: string, rect: DOMRect) => void;
 }
 
 function matchesTypeFilter(place: google.maps.places.PlaceResult | null, selectedTypes: Set<string>): boolean {
@@ -27,7 +30,26 @@ function matchesTypeFilter(place: google.maps.places.PlaceResult | null, selecte
   );
 }
 
-export default function LocationList({ onSelect, grouped, expandedCities, expandedSuburbs, toggleCity, toggleSuburb, loading, selectedTypes = new Set(), onlyCity, excludeCity }: Props) {
+export default function LocationList({ onSelect, grouped, expandedCities, expandedSuburbs, toggleCity, toggleSuburb, loading, selectedTypes = new Set(), onlyCity, excludeCity, flipFromRect, onCityClickCapture }: Props) {
+  const groupRef = useRef<HTMLDivElement | null>(null);
+
+  useLayoutEffect(() => {
+    if (!onlyCity || !flipFromRect || !groupRef.current) return;
+    const el = groupRef.current;
+    const toRect = el.getBoundingClientRect();
+    const dx = flipFromRect.left - toRect.left;
+    const dy = flipFromRect.top - toRect.top;
+
+    el.style.transition = 'none';
+    el.style.transform = `translate(${dx}px, ${dy}px)`;
+    el.style.opacity = '0.6';
+
+    requestAnimationFrame(() => {
+      el.style.transition = 'transform 0.45s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.35s ease';
+      el.style.transform = '';
+      el.style.opacity = '';
+    });
+  }, [onlyCity, flipFromRect]);
 
   const sortedCities = Object.entries(grouped)
     .filter(([city]) => {
@@ -50,10 +72,16 @@ export default function LocationList({ onSelect, grouped, expandedCities, expand
         );
 
         return (
-          <div key={city} className="location-group">
+          <div key={city} className="location-group" ref={onlyCity ? groupRef : undefined}>
             <h2
               className="city-heading"
-              onClick={() => toggleCity(city)}
+              onClick={(e) => {
+                if (!isCityOpen && onCityClickCapture) {
+                  const groupEl = (e.currentTarget as HTMLElement).closest('.location-group');
+                  if (groupEl) onCityClickCapture(city, groupEl.getBoundingClientRect());
+                }
+                toggleCity(city);
+              }}
             >
               <span className="city-heading__name">{city}</span>
               <span className="city-heading__meta">

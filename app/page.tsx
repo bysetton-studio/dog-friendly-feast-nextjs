@@ -15,6 +15,7 @@ import { useLocations } from '@/hooks/useLocations';
 import { useResolvedLocations } from '@/hooks/useResolvedLocations';
 import { useGroupedLocations } from '@/hooks/useGroupedLocations';
 import { useLocationSelection } from '@/hooks/useLocationSelection';
+import { useIpCity } from '@/hooks/useIpCity';
 import { isApproved } from '@/lib/placeUtils';
 import type { Location, Place } from '@/types';
 
@@ -26,6 +27,9 @@ const GEOGRAPHIC_TYPES = new Set([
 
 export default function HomePage() {
   const [selected, setSelected] = useState<Place | null>(null);
+  const [cityFlipRect, setCityFlipRect] = useState<DOMRect | null>(null);
+  const ipCity = useIpCity();
+  const hasAutoExpanded = useRef(false);
   const [servicesReady, setServicesReady] = useState(false);
   const { selectedCity, selectedSuburbs, onCitySelect, onSuburbSelect } = useLocationSelection();
   const [approvedOnly, setApprovedOnly] = useState(false);
@@ -41,6 +45,18 @@ export default function HomePage() {
   const { grouped, expandedCities, expandedSuburbs, expandedPlaces, toggleCity, toggleSuburb } = useGroupedLocations(resolved, { onCitySelect, onSuburbSelect });
 
   const expandedCity = Object.entries(expandedCities).find(([, v]) => v)?.[0] ?? null;
+
+  useEffect(() => {
+    if (hasAutoExpanded.current) return;
+    if (!ipCity || Object.keys(grouped).length === 0) return;
+    const match = Object.keys(grouped).find(
+      (c) => c.toLowerCase().includes(ipCity.toLowerCase()) || ipCity.toLowerCase().includes(c.toLowerCase())
+    );
+    if (match) {
+      hasAutoExpanded.current = true;
+      toggleCity(match);
+    }
+  }, [ipCity, grouped]);
 
   function isGeographic(place: Place): boolean {
     return place?.types?.every((t) => GEOGRAPHIC_TYPES.has(t)) ?? true;
@@ -105,6 +121,7 @@ export default function HomePage() {
               loading={resolvedLoading}
               selectedTypes={selectedTypes}
               onlyCity={expandedCity}
+              flipFromRect={cityFlipRect}
             />
           )}
           <MapView
@@ -137,6 +154,7 @@ export default function HomePage() {
           loading={resolvedLoading}
           selectedTypes={selectedTypes}
           excludeCity={expandedCity ?? undefined}
+          onCityClickCapture={(_, rect) => setCityFlipRect(rect)}
         />
         </div>
     </main>

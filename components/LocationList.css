@@ -27,7 +27,8 @@
 
 .location-group {
   background: #fff;
-  border: 1px solid #e8eaed;
+  max-height: 550px;
+  overflow: auto;
   border-radius: 16px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
   position: relative;
