@@ -1,7 +1,7 @@
 import { canMakeMapsRequest } from '@/lib/mapsRateLimit';
 import { getCachedPlace, setCachedPlace } from '@/lib/mapsServerCache';
 
-const API_KEY = process.env.GOOGLE_MAPS_API_SECRET;
+const API_KEY = process.env.GOOGLE_MAPS_API_SECRET ?? "";
 
 const FIELD_MASK = [
   'places.id', 'places.location', 'places.displayName', 'places.formattedAddress',

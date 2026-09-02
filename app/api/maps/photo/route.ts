@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { canMakeMapsRequest } from '@/lib/mapsRateLimit';
 import { getCachedPhotoUrl, setCachedPhotoUrl } from '@/lib/mapsServerCache';
 
-const API_KEY = process.env.GOOGLE_MAPS_API_SECRET;
+const API_KEY = process.env.GOOGLE_MAPS_API_SECRET ?? "";
 
 // Proxies a Google Places photo so the API key never reaches the browser.
 // Usage: GET /api/maps/photo?name=places/.../photos/...&maxWidth=280
