@@ -43,7 +43,7 @@ interface Props {
   approvedOnly: boolean;
   onApprovedOnlyToggle: () => void;
   selectedTypes: Set<string>;
-  capReached?: boolean;
+  capReached: boolean | null;
 }
 
 function matchesTypeFilter(types: string[] | undefined, selectedTypes: Set<string>): boolean {

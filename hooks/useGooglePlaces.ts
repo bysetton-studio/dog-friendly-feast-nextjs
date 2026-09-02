@@ -13,7 +13,7 @@ function notifyAll(): void {
   delete (window as unknown as Record<string, unknown>)[CALLBACK_NAME];
 }
 
-export function useGooglePlaces(apiKey: string, skip = false): boolean {
+export function useGooglePlaces(apiKey: string, skip: boolean | null): boolean {
   const [ready, setReady] = useState(() => isLoaded);
 
   useEffect(() => {

@@ -4,7 +4,7 @@ import type { ResolvedLocation } from '@/types';
 interface Result {
   resolved: ResolvedLocation[];
   loading: boolean;
-  capReached: boolean;
+  capReached: boolean | null;
   fetchResolvedLocations: () => Promise<void>;
 }
 
@@ -20,7 +20,7 @@ export function addResolvedLocation(location: ResolvedLocation): void {
 export function useResolvedLocations(): Result {
   const [resolved, setResolved] = useState<ResolvedLocation[]>(cache ?? []);
   const [loading, setLoading] = useState(cache === null);
-  const [capReached, setCapReached] = useState(null);
+  const [capReached, setCapReached] = useState<boolean | null>(null);
 
   async function fetchResolvedLocations(): Promise<void> {
     setLoading(true);
