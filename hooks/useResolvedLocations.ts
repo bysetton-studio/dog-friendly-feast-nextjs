@@ -20,7 +20,7 @@ export function addResolvedLocation(location: ResolvedLocation): void {
 export function useResolvedLocations(): Result {
   const [resolved, setResolved] = useState<ResolvedLocation[]>(cache ?? []);
   const [loading, setLoading] = useState(cache === null);
-  const [capReached, setCapReached] = useState(cachedCapReached);
+  const [capReached, setCapReached] = useState(null);
 
   async function fetchResolvedLocations(): Promise<void> {
     setLoading(true);
