@@ -137,7 +137,7 @@ export default function HomePage() {
             <img src="/run_out_of_money.svg" className="page-cap-svg" aria-hidden="true" />
             <div className="page-cap-content">
               <span className="cap-main-text">
-                <p>We have run out of <br/>map credits for today. <br/>We need support to <br/>keep this going</p>
+                <p><b>Daily map limit reached ! ! ! :(</b> <br/>Consider supporting us to keep the lights on.</p>
               </span>
               <span className="cap-contact-group">
                 <span className="cap-contact-label">contact us to support</span>
@@ -151,6 +151,7 @@ export default function HomePage() {
                 >
                   {emailCopied ? 'Copied!' : 'bysetton+dogfriendlyfeast@gmail.com'}
                 </button>
+                <Link href="/about" className="cap-about-link">Find out what we do →</Link>
               </span>
             </div>
           </div>

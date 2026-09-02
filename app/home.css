@@ -178,10 +178,13 @@
   box-sizing: border-box;
 }
 
+.cap-main-text{
+    max-width: 478px;
+}
+
 .cap-main-text p {
   text-align: center;
   font-size: 34px;
-  font-weight: 700;
   color: #fff;
   line-height: 1.5;
   font-family: Arial, sans-serif;
@@ -220,6 +223,19 @@
 .cap-copy-email:hover {
   background: rgba(255, 255, 255, 0.3);
   border-color: #fff;
+}
+
+.cap-about-link {
+  font-size: 0.75em;
+  color: rgba(255, 255, 255, 0.7);
+  text-decoration: none;
+  letter-spacing: 0.3px;
+  margin-top: 18px;
+}
+
+.cap-about-link:hover {
+  color: #fff;
+  text-decoration: underline;
 }
 
 .add_sticker {
