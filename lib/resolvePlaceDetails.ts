@@ -31,7 +31,7 @@ export type PlaceData = Record<string, unknown>;
 
 /**
  * Resolves a place by name + address via the Google Places Text Search API.
- * Checks Redis first; only calls Google on a cache miss.
+ * Checks cache first; only calls Google on a cache miss.
  * Returns null if the cap is reached or the place cannot be found.
  */
 export async function resolvePlaceDetails(name: string, address: string): Promise<PlaceData | null> {

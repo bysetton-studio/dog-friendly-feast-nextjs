@@ -13,10 +13,12 @@ function notifyAll(): void {
   delete (window as unknown as Record<string, unknown>)[CALLBACK_NAME];
 }
 
-export function useGooglePlaces(apiKey: string): boolean {
+export function useGooglePlaces(apiKey: string, skip = false): boolean {
   const [ready, setReady] = useState(() => isLoaded);
 
   useEffect(() => {
+    if (skip) return;
+
     if (isLoaded) {
       setReady(true);
       return;
@@ -39,7 +41,7 @@ export function useGooglePlaces(apiKey: string): boolean {
     return () => {
       listeners.delete(notify);
     };
-  }, [apiKey]);
+  }, [apiKey, skip]);
 
   return ready;
 }

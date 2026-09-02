@@ -12,6 +12,7 @@ const placeCache = new Map<string, Record<string, unknown>>();
 const PHOTO_TTL_MS = 50 * 60 * 1000;
 const photoCache = new Map<string, { url: string; expiresAt: number }>();
 
+
 export async function getCachedPredictions(query: string): Promise<Prediction[] | null> {
   return predictionsCache.get(query) ?? null;
 }

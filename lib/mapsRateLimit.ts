@@ -56,3 +56,8 @@ export async function getMapsRequestCount(): Promise<{ date: string; count: numb
     return { date, count: 0 };
   }
 }
+
+export async function isMapsCapReached(): Promise<boolean> {
+  const { count } = await getMapsRequestCount();
+  return count >= DAILY_CAP;
+}

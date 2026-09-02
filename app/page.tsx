@@ -32,8 +32,9 @@ export default function HomePage() {
   const [approvedOnly, setApprovedOnly] = useState(false);
   const [selectedTypes, setSelectedTypes] = useState<Set<string>>(new Set());
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [emailCopied, setEmailCopied] = useState(false);
   const mapRef = useRef<google.maps.Map | null>(null);
-  const { resolved: allResolved, loading: resolvedLoading } = useResolvedLocations();
+  const { resolved: allResolved, loading: resolvedLoading, capReached } = useResolvedLocations();
   const resolved = useMemo(
     () => approvedOnly ? allResolved.filter((r) => r.isApproved) : allResolved,
     [approvedOnly, allResolved]
@@ -127,8 +128,33 @@ export default function HomePage() {
             approvedOnly={approvedOnly}
             onApprovedOnlyToggle={() => setApprovedOnly((v) => !v)}
             selectedTypes={selectedTypes}
+            capReached={capReached}
           />
         </div>
+
+        {capReached && (
+          <div className="page-cap-backdrop">
+            <img src="/run_out_of_money.svg" className="page-cap-svg" aria-hidden="true" />
+            <div className="page-cap-content">
+              <span className="cap-main-text">
+                <p>We have run out of <br/>map credits for today. <br/>We need support to <br/>keep this going</p>
+              </span>
+              <span className="cap-contact-group">
+                <span className="cap-contact-label">contact us to support</span>
+                <button
+                  className="cap-copy-email"
+                  onClick={() => {
+                    navigator.clipboard.writeText('bysetton+dogfriendlyfeast@gmail.com');
+                    setEmailCopied(true);
+                    setTimeout(() => setEmailCopied(false), 2000);
+                  }}
+                >
+                  {emailCopied ? 'Copied!' : 'bysetton+dogfriendlyfeast@gmail.com'}
+                </button>
+              </span>
+            </div>
+          </div>
+        )}
 
         <Link href="/add" className="add-location-link">
           Don&apos;t see your spot? Add a restaurant →

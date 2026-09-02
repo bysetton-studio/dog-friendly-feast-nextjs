@@ -2,11 +2,13 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { resolvePlaceDetails } from '@/lib/resolvePlaceDetails';
 import { getCity, getSuburb } from '@/lib/placeUtils';
+import { isMapsCapReached } from '@/lib/mapsRateLimit';
 
 export async function GET() {
-  const locations = await prisma.location.findMany({
-    orderBy: { createdAt: 'desc' },
-  });
+  const [locations, capReached] = await Promise.all([
+    prisma.location.findMany({ orderBy: { createdAt: 'desc' } }),
+    isMapsCapReached(),
+  ]);
 
   const resolved = await Promise.all(
     locations.map(async (l) => {
@@ -29,7 +31,7 @@ export async function GET() {
     })
   );
 
-  return NextResponse.json(resolved.filter(Boolean));
+  return NextResponse.json({ resolved: resolved.filter(Boolean), capReached });
 }
 
 export async function POST(req: NextRequest) {

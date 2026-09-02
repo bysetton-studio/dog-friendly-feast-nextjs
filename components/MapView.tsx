@@ -43,6 +43,7 @@ interface Props {
   approvedOnly: boolean;
   onApprovedOnlyToggle: () => void;
   selectedTypes: Set<string>;
+  capReached?: boolean;
 }
 
 function matchesTypeFilter(types: string[] | undefined, selectedTypes: Set<string>): boolean {
@@ -158,7 +159,7 @@ function applyDimmedStyle(el: HTMLElement): void {
   el.textContent = '';
 }
 
-export default function MapView({ selected, mapRef, selectedSuburbs, selectedCity, resolved = [], resolvedLoading, locationsLoading, approvedOnly, onApprovedOnlyToggle, selectedTypes = new Set() }: Props) {
+export default function MapView({ selected, mapRef, selectedSuburbs, selectedCity, resolved = [], resolvedLoading, locationsLoading, approvedOnly, onApprovedOnlyToggle, selectedTypes = new Set(), capReached }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const markerRef = useRef<google.maps.marker.AdvancedMarkerElement | null>(null);
   const locationMarkersRef = useRef<MarkerEntry[]>([]);
