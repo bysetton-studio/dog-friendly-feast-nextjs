@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { canMakeMapsRequest } from '@/lib/mapsRateLimit';
-import { detailsCache } from '@/lib/mapsServerCache';
+import { getCachedDetails, setCachedDetails } from '@/lib/mapsServerCache';
 
 const API_KEY = process.env.GOOGLE_MAPS_API_KEY ?? process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? '';
 
@@ -13,20 +13,19 @@ interface AddressComponent {
 }
 
 export async function POST(req: NextRequest) {
-  const body = await req.json().catch(() => ({
-        // TOOD: log this error
-  }));
-  
+  const body = await req.json().catch(() => ({}));
+
   const placeId: unknown = body.placeId;
   if (!placeId || typeof placeId !== 'string') {
     return NextResponse.json({ error: 'placeId required' }, { status: 400 });
   }
 
-  if (detailsCache.has(placeId)) {
-    return NextResponse.json(detailsCache.get(placeId));
+  const cached = await getCachedDetails(placeId);
+  if (cached) {
+    return NextResponse.json(cached);
   }
 
-  if (!canMakeMapsRequest('places_details')) {
+  if (!(await canMakeMapsRequest('places_details'))) {
     return NextResponse.json({ error: 'cap_reached' }, { status: 429 });
   }
 
@@ -56,6 +55,6 @@ export async function POST(req: NextRequest) {
     types: p.types,
   };
 
-  detailsCache.set(placeId, place);
+  await setCachedDetails(placeId, place);
   return NextResponse.json(place);
 }

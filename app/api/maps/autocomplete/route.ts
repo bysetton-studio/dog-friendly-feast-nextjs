@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { canMakeMapsRequest } from '@/lib/mapsRateLimit';
-import { predictionsCache } from '@/lib/mapsServerCache';
+import { getCachedPredictions, setCachedPredictions } from '@/lib/mapsServerCache';
 
 const API_KEY = process.env.GOOGLE_MAPS_API_KEY ?? process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? '';
 
@@ -14,21 +14,20 @@ interface PlacePrediction {
 }
 
 export async function POST(req: NextRequest) {
-  const body = await req.json().catch(() => ({
-    // TOOD: log this error
-  }));
-  
+  const body = await req.json().catch(() => ({}));
+
   const input: unknown = body.input;
   if (!input || typeof input !== 'string') {
     return NextResponse.json({ predictions: [] });
   }
 
   const cacheKey = input.trim().toLowerCase();
-  if (predictionsCache.has(cacheKey)) {
-    return NextResponse.json({ predictions: predictionsCache.get(cacheKey) });
+  const cached = await getCachedPredictions(cacheKey);
+  if (cached) {
+    return NextResponse.json({ predictions: cached });
   }
 
-  if (!canMakeMapsRequest('autocomplete')) {
+  if (!(await canMakeMapsRequest('autocomplete'))) {
     return NextResponse.json({ predictions: [] }, { status: 429 });
   }
 
@@ -56,6 +55,6 @@ export async function POST(req: NextRequest) {
       },
     }));
 
-  predictionsCache.set(cacheKey, predictions);
+  await setCachedPredictions(cacheKey, predictions);
   return NextResponse.json({ predictions });
 }

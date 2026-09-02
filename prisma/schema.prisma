@@ -15,3 +15,12 @@ model Location {
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 }
+
+// Daily request counter for the Maps API rate-limit cap.
+// One row per UTC date; count is incremented atomically via raw SQL.
+model MapsRateLimit {
+  date  String @id // YYYY-MM-DD UTC
+  count Int    @default(0)
+
+  @@map("maps_rate_limit")
+}

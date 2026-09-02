@@ -1,5 +1,5 @@
 import { canMakeMapsRequest } from '@/lib/mapsRateLimit';
-import { placeCache } from '@/lib/mapsServerCache';
+import { getCachedPlace, setCachedPlace } from '@/lib/mapsServerCache';
 
 const API_KEY = process.env.GOOGLE_MAPS_API_KEY ?? process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? '';
 
@@ -31,14 +31,16 @@ export type PlaceData = Record<string, unknown>;
 
 /**
  * Resolves a place by name + address via the Google Places Text Search API.
- * Checks the server cache first; only calls Google on a cache miss.
+ * Checks Redis first; only calls Google on a cache miss.
  * Returns null if the cap is reached or the place cannot be found.
  */
 export async function resolvePlaceDetails(name: string, address: string): Promise<PlaceData | null> {
   const cacheKey = `${name}|${address}`;
-  if (placeCache.has(cacheKey)) return placeCache.get(cacheKey)!;
 
-  if (!canMakeMapsRequest('places_text_search')) {
+  const cached = await getCachedPlace(cacheKey);
+  if (cached) return cached;
+
+  if (!(await canMakeMapsRequest('places_text_search'))) {
     return null;
   }
 
@@ -90,6 +92,6 @@ export async function resolvePlaceDetails(name: string, address: string): Promis
     })),
   };
 
-  placeCache.set(cacheKey, place);
+  await setCachedPlace(cacheKey, place);
   return place;
 }

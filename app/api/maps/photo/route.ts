@@ -15,12 +15,12 @@ export async function GET(req: NextRequest) {
     return new NextResponse('missing name', { status: 400 });
   }
 
-  const cached = getCachedPhotoUrl(name);
+  const cached = await getCachedPhotoUrl(name);
   if (cached) {
     return NextResponse.redirect(cached, { status: 302 });
   }
 
-  if (!canMakeMapsRequest('place_photo')) {
+  if (!(await canMakeMapsRequest('place_photo'))) {
     return new NextResponse('photo unavailable', { status: 429 });
   }
 
@@ -37,8 +37,7 @@ export async function GET(req: NextRequest) {
     return new NextResponse('photo unavailable', { status: 404 });
   }
 
-  setCachedPhotoUrl(name, photoUri);
+  await setCachedPhotoUrl(name, photoUri);
 
-  // Redirect the browser to the signed photo URL (no key in the client-visible URL)
   return NextResponse.redirect(photoUri, { status: 302 });
 }
