@@ -7,13 +7,24 @@ datasource db {
 }
 
 model Location {
-  id              String   @id @default(uuid())
+  id              String            @id @default(uuid())
   name            String
   address         String
   isFriendly      Boolean
-  isAdminApproved Boolean  @default(false)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  isAdminApproved Boolean           @default(false)
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  resolved        ResolvedLocation?
+}
+
+// Caches the Google Places API response for a Location so we don't re-query on every request.
+model ResolvedLocation {
+  locationId String   @id
+  location   Location @relation(fields: [locationId], references: [id], onDelete: Cascade)
+  placeData  Json
+  resolvedAt DateTime @default(now())
+
+  @@map("resolved_locations")
 }
 
 // Daily request counter for the Maps API rate-limit cap.

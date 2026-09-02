@@ -3,16 +3,32 @@ import { prisma } from '@/lib/prisma';
 import { resolvePlaceDetails } from '@/lib/resolvePlaceDetails';
 import { getCity, getSuburb } from '@/lib/placeUtils';
 import { isMapsCapReached } from '@/lib/mapsRateLimit';
+import { PlaceData } from '@/lib/resolvePlaceDetails';
 
 export async function GET() {
   const [locations, capReached] = await Promise.all([
-    prisma.location.findMany({ orderBy: { createdAt: 'desc' } }),
+    prisma.location.findMany({
+      orderBy: { createdAt: 'desc' },
+      include: { resolved: true },
+    }),
     isMapsCapReached(),
   ]);
 
   const resolved = await Promise.all(
     locations.map(async (l) => {
-      const place = await resolvePlaceDetails(l.name, l.address);
+      let place: PlaceData | null = null;
+
+      if (l.resolved) {
+        place = l.resolved.placeData as PlaceData;
+      } else {
+        place = await resolvePlaceDetails(l.name, l.address);
+        if (place) {
+          await prisma.resolvedLocation.create({
+            data: { locationId: l.id, placeData: place as object },
+          });
+        }
+      }
+
       if (!place) return null;
 
       const addressComponents = place.address_components as
@@ -50,9 +66,12 @@ export async function POST(req: NextRequest) {
     data: { name, address, isFriendly: friendly, isAdminApproved: false, updatedAt: new Date() },
   });
 
-  // Resolve and cache the new location so the next GET doesn't need a Maps API call for it
   const place = await resolvePlaceDetails(name, address);
   if (place) {
+    await prisma.resolvedLocation.create({
+      data: { locationId: location.id, placeData: place as object },
+    });
+
     const addressComponents = place.address_components as
       | { long_name: string; types: string[] }[]
       | undefined;
