@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { resolvePlaceDetails } from '@/lib/resolvePlaceDetails';
-import { isFriendly, isApproved, getCity, getSuburb } from '@/lib/placeUtils';
+import { getCity, getSuburb } from '@/lib/placeUtils';
 
 export async function GET() {
   const locations = await prisma.location.findMany({
