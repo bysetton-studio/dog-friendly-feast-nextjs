@@ -170,7 +170,7 @@ export default function MapView({ selected, mapRef, selectedSuburbs, selectedCit
   // Init map once
   useEffect(() => {
     console.log(ready, ' --- ready')
-    if (!ready || !containerRef.current || capReached) return;
+    if (!ready || !containerRef.current || capReached || capReached === null) return;
 
     mapRef.current = new window.google.maps.Map(containerRef.current, {
       center: DEFAULT_CENTER,
@@ -190,7 +190,7 @@ export default function MapView({ selected, mapRef, selectedSuburbs, selectedCit
       mapRef.current = null;
       markerRef.current = null;
     };
-  }, [ready, mapRef, capReached]);
+  }, [ready, mapRef, capReached, containerRef.current]);
 
   // Sync pins from resolved locations
   useEffect(() => {
