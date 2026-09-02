@@ -5,23 +5,47 @@ interface Result {
   resolved: ResolvedLocation[];
   loading: boolean;
   capReached: boolean;
+  fetchResolvedLocations: () => Promise<void>;
+}
+
+let cache: ResolvedLocation[] | null = null;
+const subscribers = new Set<(locs: ResolvedLocation[]) => void>();
+
+export function addResolvedLocation(location: ResolvedLocation): void {
+  cache = cache ? [location, ...cache] : [location];
+  subscribers.forEach((fn) => fn(cache!));
 }
 
 export function useResolvedLocations(): Result {
-  const [resolved, setResolved] = useState<ResolvedLocation[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [resolved, setResolved] = useState<ResolvedLocation[]>(cache ?? []);
+  const [loading, setLoading] = useState(cache === null);
   const [capReached, setCapReached] = useState(false);
 
+  async function fetchResolvedLocations(): Promise<void> {
+    setLoading(true);
+    try {
+      const res = await fetch('/api/locations');
+      const data: { resolved: ResolvedLocation[]; capReached: boolean } = await res.json();
+      cache = data.resolved ?? [];
+      subscribers.forEach((fn) => fn(cache!));
+      setCapReached(data.capReached ?? false);
+    } catch {
+      // keep existing state on error
+    } finally {
+      setLoading(false);
+    }
+  }
+
   useEffect(() => {
-    fetch('/api/locations')
-      .then((res) => res.json())
-      .then((data: { resolved: ResolvedLocation[]; capReached: boolean }) => {
-        setResolved(data.resolved ?? []);
-        setCapReached(data.capReached ?? false);
-      })
-      .catch(() => {})
-      .finally(() => setLoading(false));
+    subscribers.add(setResolved);
+    if (cache !== null) {
+      setResolved(cache);
+      setLoading(false);
+    } else {
+      fetchResolvedLocations();
+    }
+    return () => { subscribers.delete(setResolved); };
   }, []);
 
-  return { resolved, loading, capReached };
+  return { resolved, loading, capReached, fetchResolvedLocations };
 }

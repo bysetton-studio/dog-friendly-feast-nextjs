@@ -16,25 +16,26 @@ export async function canMakeMapsRequest(apiType: string): Promise<boolean> {
   const date = todayUTC();
 
   try {
+    const existing = await prisma.mapsRateLimit.findUnique({ where: { date } });
+    const currentCount = existing?.count ?? 0;
+
+    if (currentCount >= DAILY_CAP) {
+      console.warn(
+        `[Maps Gate] BLOCKED ${apiType} — daily cap of ${DAILY_CAP} reached. ` +
+          `count=${currentCount} date=${date} ts=${new Date().toISOString()}`
+      );
+      return false;
+    }
+
     const row = await prisma.mapsRateLimit.upsert({
       where: { date },
       update: { count: { increment: 1 } },
       create: { date, count: 1 },
     });
 
-    const count = row.count;
-
-    if (count > DAILY_CAP) {
+    if (row.count === WARN_THRESHOLD) {
       console.warn(
-        `[Maps Gate] BLOCKED ${apiType} — daily cap of ${DAILY_CAP} reached. ` +
-          `count=${count} date=${date} ts=${new Date().toISOString()}`
-      );
-      return false;
-    }
-
-    if (count === WARN_THRESHOLD) {
-      console.warn(
-        `[Maps Gate] WARNING: ${count}/${DAILY_CAP} Maps API requests used today (${date}). ` +
+        `[Maps Gate] WARNING: ${row.count}/${DAILY_CAP} Maps API requests used today (${date}). ` +
           `Approaching daily cap.`
       );
     }

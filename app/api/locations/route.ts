@@ -50,5 +50,20 @@ export async function POST(req: NextRequest) {
     data: { name, address, isFriendly: friendly, isAdminApproved: false, updatedAt: new Date() },
   });
 
+  // Resolve and cache the new location so the next GET doesn't need a Maps API call for it
+  const place = await resolvePlaceDetails(name, address);
+  if (place) {
+    const addressComponents = place.address_components as
+      | { long_name: string; types: string[] }[]
+      | undefined;
+
+    return NextResponse.json({
+      ...location,
+      place,
+      city: getCity(addressComponents),
+      suburb: getSuburb(addressComponents),
+    }, { status: 201 });
+  }
+
   return NextResponse.json(location, { status: 201 });
 }
