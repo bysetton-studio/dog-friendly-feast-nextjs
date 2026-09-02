@@ -1,8 +1,7 @@
 import { prisma } from '@/lib/prisma';
 
-// const DAILY_CAP = 900;
-const DAILY_CAP = 1;
-const WARN_THRESHOLD = 810; // 90% of cap
+const DAILY_CAP = parseInt(process.env.MAPS_DAILY_CAP ?? '900', 10);
+const WARN_THRESHOLD = parseInt(process.env.MAPS_WARN_THRESHOLD ?? String(Math.floor(DAILY_CAP * 0.9)), 10);
 
 function todayUTC(): string {
   return new Date().toISOString().slice(0, 10);
