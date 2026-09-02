@@ -164,7 +164,7 @@ export default function MapView({ selected, mapRef, selectedSuburbs, selectedCit
   const markerRef = useRef<google.maps.marker.AdvancedMarkerElement | null>(null);
   const locationMarkersRef = useRef<MarkerEntry[]>([]);
   const openInfoWindowRef = useRef<google.maps.InfoWindow | null>(null);
-  const ready = useGooglePlaces(API_KEY);
+  const ready = useGooglePlaces(API_KEY, capReached);
 
   // Init map once
   useEffect(() => {
