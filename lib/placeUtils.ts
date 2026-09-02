@@ -8,7 +8,7 @@ const SUBURB_TYPES = ['sublocality_level_1', 'sublocality', 'neighborhood', 'loc
 
 export function getCity(addressComponents: AddressComponent[] | undefined): string {
   for (const type of CITY_TYPES) {
-    const component = addressComponents?.find((c) => c.types.includes(type));
+    const component = addressComponents?.find((c) => c.types?.includes(type));
     if (component) return component.long_name;
   }
   return 'Other';
@@ -16,7 +16,7 @@ export function getCity(addressComponents: AddressComponent[] | undefined): stri
 
 export function getSuburb(addressComponents: AddressComponent[] | undefined): string | null {
   for (const type of SUBURB_TYPES) {
-    const component = addressComponents?.find((c) => c.types.includes(type));
+    const component = addressComponents?.find((c) => c.types?.includes(type));
     if (component) return component.long_name;
   }
   return null;
