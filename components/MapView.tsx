@@ -164,11 +164,12 @@ export default function MapView({ selected, mapRef, selectedSuburbs, selectedCit
   const markerRef = useRef<google.maps.marker.AdvancedMarkerElement | null>(null);
   const locationMarkersRef = useRef<MarkerEntry[]>([]);
   const openInfoWindowRef = useRef<google.maps.InfoWindow | null>(null);
+  console.log(capReached, '--- capReached')
   const ready = useGooglePlaces(API_KEY, capReached);
 
   // Init map once
   useEffect(() => {
-    console.log(ready)
+    console.log(ready, ' --- ready')
     if (!ready || !containerRef.current || capReached) return;
 
     mapRef.current = new window.google.maps.Map(containerRef.current, {
