@@ -190,7 +190,7 @@ export default function MapView({ selected, mapRef, selectedSuburbs, selectedCit
       mapRef.current = null;
       markerRef.current = null;
     };
-  }, [ready, mapRef]);
+  }, [ready, mapRef, capReached]);
 
   // Sync pins from resolved locations
   useEffect(() => {
