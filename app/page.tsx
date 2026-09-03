@@ -57,8 +57,8 @@ export default function HomePage() {
   }, [ipCity, grouped]);
 
   function isGeographic(place: Place): boolean {
-    return GEOGRAPHIC_RESULT_TYPES.has((place as Record<string, unknown>).result_type as string)
-      || !place?.types?.length;
+    if(!place.result_type)return false;
+    return GEOGRAPHIC_RESULT_TYPES.has(place.result_type)
   }
 
   function isInList(place: Place, locs: ResolvedLocation[]): boolean {

@@ -1,11 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getCachedDetails } from '@/lib/mapsServerCache';
+import { canMakeMapsRequest } from '@/lib/mapsRateLimit';
+import { getCachedDetails, setCachedDetails } from '@/lib/mapsServerCache';
+import { geoapifyPropsToPlace } from '@/lib/placeUtils';
 
-/**
- * Returns place details for a given place_id.
- * The place data is pre-populated into cache during the autocomplete call,
- * so no additional Geoapify API request is needed.
- */
+const API_KEY = process.env.GEOAPIFY_API_KEY ?? '';
+
 export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => ({}));
 
@@ -15,10 +14,25 @@ export async function POST(req: NextRequest) {
   }
 
   const cached = await getCachedDetails(placeId);
-  if (cached) {
-    return NextResponse.json(cached);
+  if (cached) return NextResponse.json(cached);
+
+  if (!(await canMakeMapsRequest('places_details'))) {
+    return NextResponse.json({ error: 'cap_reached' }, { status: 429 });
   }
 
-  // Place not in cache — user has a place_id we have not seen via autocomplete in this session.
-  return NextResponse.json({ error: 'not_found' }, { status: 404 });
+  const url = `https://api.geoapify.com/v2/place-details?id=${encodeURIComponent(placeId)}&apiKey=${API_KEY}`;
+  const res = await fetch(url);
+
+  if (!res.ok) {
+    console.error('[Maps] Geoapify place details HTTP error', res.status, await res.text());
+    return NextResponse.json({ error: 'upstream_error' }, { status: res.status });
+  }
+
+  const data = await res.json();
+  const feature = data.features?.[0];
+  if (!feature) return NextResponse.json({ error: 'not_found' }, { status: 404 });
+
+  const place = geoapifyPropsToPlace(feature.properties);
+  await setCachedDetails(placeId, place);
+  return NextResponse.json(place);
 }

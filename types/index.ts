@@ -17,7 +17,7 @@ export interface Place {
     short_name: string;
     types: string[];
   }>;
-  types?: string[];
+  result_type?: string;
   [key: string]: unknown;
 }
 
