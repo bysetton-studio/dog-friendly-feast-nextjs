@@ -68,6 +68,14 @@ function createNormalIcon(isFriendly: boolean, isApproved: boolean, emoji: strin
   return L.divIcon({ html, className: '', iconSize: [size, size], iconAnchor: [size / 2, size / 2] });
 }
 
+function createSearchPinIcon(): L.DivIcon {
+  const html = `
+    <div style="display:flex;flex-direction:column;align-items:center;">
+      <div style="width:20px;height:20px;border-radius:50% 50% 50% 0;background:#1a73e8;border:2px solid #0d47a1;transform:rotate(-45deg);box-shadow:0 2px 6px rgba(0,0,0,0.3);"></div>
+    </div>`;
+  return L.divIcon({ html, className: '', iconSize: [20, 26], iconAnchor: [10, 26] });
+}
+
 function createDimmedIcon(): L.DivIcon {
   const html = `<div style="width:8px;height:8px;border-radius:50%;background:#9aa0a6;border:1.5px solid #6b7175;opacity:0.7;"></div>`;
   return L.divIcon({ html, className: '', iconSize: [8, 8], iconAnchor: [4, 4] });
@@ -255,15 +263,15 @@ export default function MapView({
     selectedMarkerRef.current?.remove();
     selectedMarkerRef.current = null;
 
-    const GEOGRAPHIC_TYPES = new Set([
-      'locality', 'sublocality', 'sublocality_level_1', 'sublocality_level_2',
-      'administrative_area_level_1', 'administrative_area_level_2',
-      'country', 'route', 'neighborhood', 'postal_code', 'political',
+    // Geoapify result_type values for areas/regions — no pin for these
+    const GEOGRAPHIC_RESULT_TYPES = new Set([
+      'country', 'state', 'county', 'city', 'postcode', 'street', 'district', 'suburb',
     ]);
-    const isGeographic = selected.types?.every((t) => GEOGRAPHIC_TYPES.has(t)) ?? false;
+    const isGeographic = GEOGRAPHIC_RESULT_TYPES.has((selected as Record<string, unknown>).result_type as string)
+      || !selected.types?.length;
 
     if (!isGeographic) {
-      selectedMarkerRef.current = L.marker([lat, lng]).addTo(map);
+      selectedMarkerRef.current = L.marker([lat, lng], { icon: createSearchPinIcon() }).addTo(map);
     }
   }, [selected]);
 

@@ -19,10 +19,9 @@ import type { Place, ResolvedLocation } from '@/types';
 
 const MapView = dynamic(() => import('@/components/MapView'), { ssr: false });
 
-const GEOGRAPHIC_TYPES = new Set([
-  'locality', 'sublocality', 'sublocality_level_1', 'sublocality_level_2',
-  'administrative_area_level_1', 'administrative_area_level_2',
-  'country', 'route', 'neighborhood', 'postal_code', 'political',
+// Geoapify result_type values for areas/regions — not specific places
+const GEOGRAPHIC_RESULT_TYPES = new Set([
+  'country', 'state', 'county', 'city', 'postcode', 'street', 'district', 'suburb',
 ]);
 
 export default function HomePage() {
@@ -58,7 +57,8 @@ export default function HomePage() {
   }, [ipCity, grouped]);
 
   function isGeographic(place: Place): boolean {
-    return place?.types?.every((t) => GEOGRAPHIC_TYPES.has(t)) ?? true;
+    return GEOGRAPHIC_RESULT_TYPES.has((place as Record<string, unknown>).result_type as string)
+      || !place?.types?.length;
   }
 
   function isInList(place: Place, locs: ResolvedLocation[]): boolean {

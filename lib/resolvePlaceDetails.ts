@@ -2,7 +2,7 @@ import { canMakeMapsRequest } from '@/lib/mapsRateLimit';
 import { getCachedPlace, setCachedPlace } from '@/lib/mapsServerCache';
 import { geoapifyPropsToPlace } from '@/lib/placeUtils';
 
-const API_KEY = process.env.GEOAPIFY_API_KEY ?? '';
+const API_KEY = process.env.NEXT_PUBLIC_GEOAPIFY_API_KEY ?? '';
 
 export type PlaceData = Record<string, unknown>;
 

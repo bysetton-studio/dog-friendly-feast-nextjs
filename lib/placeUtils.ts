@@ -55,6 +55,7 @@ interface GeoapifyProps {
   country?: string;
   country_code?: string;
   categories?: string[];
+  result_type?: string;
 }
 
 /** Normalizes a Geoapify feature properties object into our internal Place shape. */
@@ -74,5 +75,6 @@ export function geoapifyPropsToPlace(p: GeoapifyProps): Record<string, unknown> 
       : undefined,
     address_components,
     types: normalizeGeoapifyCategories(p.categories),
+    result_type: p.result_type,
   };
 }
