@@ -12,7 +12,6 @@ interface Props {
 }
 
 export default function SubmitBanner({ place, onDismiss, inList }: Props) {
-  const p = place as google.maps.places.PlaceResult;
   const { submit, submitting, submitted } = useSubmitLocation();
   const dismissTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -28,7 +27,7 @@ export default function SubmitBanner({ place, onDismiss, inList }: Props) {
   return (
     <div className="submit-banner">
       <div className="submit-banner__info">
-        <span className="submit-banner__name">{p.name}</span>
+        <span className="submit-banner__name">{place.name as string}</span>
         {!inList && (
           <span className="submit-banner__sub">Not in our list — is it dog friendly?</span>
         )}

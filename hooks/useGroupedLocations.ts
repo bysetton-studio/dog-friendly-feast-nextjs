@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import type { ResolvedLocation } from '@/types';
+import type { Place, ResolvedLocation } from '@/types';
 
 type Grouped = Record<string, Record<string, ResolvedLocation[]>>;
 
@@ -12,7 +12,7 @@ export interface GroupedLocationsResult {
   grouped: Grouped;
   expandedCities: Record<string, boolean>;
   expandedSuburbs: Record<string, boolean>;
-  expandedPlaces: google.maps.places.PlaceResult[];
+  expandedPlaces: Place[];
   toggleCity: (city: string) => void;
   toggleSuburb: (suburb: string) => void;
 }
@@ -50,7 +50,7 @@ export function useGroupedLocations(resolved: ResolvedLocation[], options: Optio
   }, [resolved]);
 
   const expandedPlaces = useMemo(() => {
-    const places: google.maps.places.PlaceResult[] = [];
+    const places: Place[] = [];
     Object.entries(grouped).forEach(([city, suburbs]) => {
       if (!expandedCities[city]) return;
       Object.entries(suburbs).forEach(([suburb, entries]) => {

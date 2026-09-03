@@ -10,7 +10,7 @@ const DEBOUNCE_MS = 800;
 
 interface Props {
   onSelect: (place: Place) => void;
-  mapRef: React.RefObject<google.maps.Map | null>;
+  mapRef: React.RefObject<unknown>;
   onToggleFilters?: () => void;
   filtersOpen?: boolean;
   filtersActive?: boolean;
@@ -18,7 +18,7 @@ interface Props {
   onTypesChange?: (types: Set<string>) => void;
 }
 
-export default function LocationSearch({ onSelect, mapRef, onToggleFilters, filtersOpen = false, filtersActive = false, selectedTypes = new Set(), onTypesChange }: Props) {
+export default function LocationSearch({ onSelect, mapRef: _mapRef, onToggleFilters, filtersOpen = false, filtersActive = false, selectedTypes = new Set(), onTypesChange }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [query, setQuery] = useState('');

@@ -99,6 +99,10 @@
   height: 550px;
 }
 
+.map-row > .map-container > .map {
+  z-index: 0;
+}
+
 .map-row > .location-list--sidebar {
   padding-bottom: 0;
 }

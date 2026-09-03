@@ -8,9 +8,8 @@ export function useSubmitLocation() {
   const [submitted, setSubmitted] = useState<boolean | null>(null);
 
   async function submit(place: Place, value: boolean): Promise<void> {
-    const p = place as google.maps.places.PlaceResult;
-    const name = p.name ?? '';
-    const address = p.formatted_address ?? '';
+    const name = (place.name as string) ?? '';
+    const address = (place.formatted_address as string) ?? '';
 
     setSubmitting(value);
 

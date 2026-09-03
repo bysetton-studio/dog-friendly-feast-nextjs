@@ -1,12 +1,12 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
+import dynamic from 'next/dynamic';
 import Link from 'next/link';
+import type { Map as LeafletMap } from 'leaflet';
 import './home.css';
 
 import LocationSearch from '@/components/LocationSearch';
-import MapView from '@/components/MapView';
-
 import LocationList from '@/components/LocationList';
 import SubmitBanner from '@/components/SubmitBanner';
 import AddSticker from '@/components/AddSticker';
@@ -16,6 +16,8 @@ import { useGroupedLocations } from '@/hooks/useGroupedLocations';
 import { useLocationSelection } from '@/hooks/useLocationSelection';
 import { useIpCity } from '@/hooks/useIpCity';
 import type { Place, ResolvedLocation } from '@/types';
+
+const MapView = dynamic(() => import('@/components/MapView'), { ssr: false });
 
 const GEOGRAPHIC_TYPES = new Set([
   'locality', 'sublocality', 'sublocality_level_1', 'sublocality_level_2',
@@ -33,7 +35,7 @@ export default function HomePage() {
   const [selectedTypes, setSelectedTypes] = useState<Set<string>>(new Set());
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [emailCopied, setEmailCopied] = useState(false);
-  const mapRef = useRef<google.maps.Map | null>(null);
+  const mapRef = useRef<LeafletMap | null>(null);
   const { resolved: allResolved, loading: resolvedLoading, capReached } = useResolvedLocations();
   const resolved = useMemo(
     () => approvedOnly ? allResolved.filter((r) => r.isApproved) : allResolved,
@@ -61,16 +63,9 @@ export default function HomePage() {
 
   function isInList(place: Place, locs: ResolvedLocation[]): boolean {
     if (!place?.formatted_address) return false;
-    const address = place.formatted_address.toLowerCase();
+    const address = (place.formatted_address as string).toLowerCase();
     return locs.some((l) => l.address.toLowerCase() === address);
   }
-
-  useEffect(() => {
-    if (!mapRef.current || !window.google?.maps || expandedPlaces.length === 0) return;
-    const bounds = new window.google.maps.LatLngBounds();
-    expandedPlaces.forEach((p) => bounds.extend(p.geometry!.location!));
-    mapRef.current.fitBounds(bounds);
-  }, [expandedPlaces]);
 
   const showSubmitBanner = selected && !resolvedLoading && !isGeographic(selected) && !isInList(selected, allResolved);
 
@@ -129,6 +124,7 @@ export default function HomePage() {
             onApprovedOnlyToggle={() => setApprovedOnly((v) => !v)}
             selectedTypes={selectedTypes}
             capReached={capReached}
+            expandedPlaces={expandedPlaces}
           />
         </div>
 

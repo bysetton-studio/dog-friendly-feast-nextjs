@@ -22,11 +22,11 @@ interface Props {
   onCityClickCapture?: (city: string, rect: DOMRect) => void;
 }
 
-function matchesTypeFilter(place: google.maps.places.PlaceResult | null, selectedTypes: Set<string>): boolean {
+function matchesTypeFilter(place: Place | null | undefined, selectedTypes: Set<string>): boolean {
   if (selectedTypes.size === 0) return true;
   if (!place?.types) return true;
   return TYPE_FILTERS.some(
-    (f) => selectedTypes.has(f.key) && f.types.some((t) => place.types!.includes(t))
+    (f) => selectedTypes.has(f.key) && f.types.some((t) => (place.types as string[]).includes(t))
   );
 }
 

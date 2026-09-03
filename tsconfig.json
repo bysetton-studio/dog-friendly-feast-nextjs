@@ -28,7 +28,6 @@
       ]
     },
     "types": [
-      "google.maps",
       "node"
     ]
   },

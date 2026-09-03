@@ -6,9 +6,18 @@ export interface Location {
 }
 
 export interface Place {
+  place_id?: string;
+  name?: string;
   formatted_address?: string;
+  geometry?: {
+    location: { lat: number; lng: number };
+  };
+  address_components?: Array<{
+    long_name: string;
+    short_name: string;
+    types: string[];
+  }>;
   types?: string[];
-  geometry?: google.maps.places.PlaceResult['geometry'];
   [key: string]: unknown;
 }
 
@@ -17,7 +26,7 @@ export interface ResolvedLocation {
   address: string;
   isFriendly: boolean;
   isApproved: boolean;
-  place: google.maps.places.PlaceResult;
+  place: Place;
   city: string;
   suburb: string | null;
 }

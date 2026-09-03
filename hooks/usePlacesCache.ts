@@ -1,7 +1,7 @@
 import type { Place } from '@/types';
 
-// No-op: Places calls are now server-side; no client SDK service to initialise
-export function initServices(_map: google.maps.Map | null): void {}
+// No-op: place services are now server-side only; nothing to initialise client-side.
+export function initServices(_map: unknown): void {}
 
 export async function getPredictions(query: string): Promise<{ place_id: string; description: string; structured_formatting: { main_text: string; secondary_text: string } }[]> {
   const res = await fetch('/api/maps/autocomplete', {
@@ -23,8 +23,7 @@ export async function getPlaceDetails(placeId: string): Promise<Place> {
     body: JSON.stringify({ placeId }),
   });
 
-  if (!res.ok) return {}; // cap reached or upstream error — MapView handles empty geometry gracefully
+  if (!res.ok) return {};
 
   return res.json();
 }
-

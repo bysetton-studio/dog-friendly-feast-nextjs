@@ -9,13 +9,13 @@ import './add.css';
 import type { Place } from '@/types';
 
 export default function AddLocationPage() {
-  const mapRef = useRef<google.maps.Map | null>(null);
+  const mapRef = useRef<unknown>(null);
   const [selected, setSelected] = useState<Place | null>(null);
   const { submit, submitting, submitted } = useSubmitLocation();
   const { locations } = useLocations();
 
   const alreadyListed = selected
-    ? locations.some((l) => l.name.toLowerCase() === ((selected as google.maps.places.PlaceResult).name ?? '').toLowerCase())
+    ? locations.some((l) => l.name.toLowerCase() === ((selected.name as string) ?? '').toLowerCase())
     : false;
 
   return (
@@ -35,7 +35,7 @@ export default function AddLocationPage() {
       {selected && (
         <div className="add-page__card">
           <div className="add-page__place">
-            <span className="add-page__place-name">{(selected as google.maps.places.PlaceResult).name}</span>
+            <span className="add-page__place-name">{selected.name}</span>
             <span className="add-page__place-address">{selected.formatted_address}</span>
           </div>
 

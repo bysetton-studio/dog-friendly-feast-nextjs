@@ -1,17 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { canMakeMapsRequest } from '@/lib/mapsRateLimit';
-import { getCachedDetails, setCachedDetails } from '@/lib/mapsServerCache';
+import { getCachedDetails } from '@/lib/mapsServerCache';
 
-const API_KEY = process.env.GOOGLE_MAPS_API_SECRET ?? "";
-
-const FIELD_MASK = 'id,location,displayName,formattedAddress,addressComponents,types';
-
-interface AddressComponent {
-  longText: string;
-  shortText: string;
-  types: string[];
-}
-
+/**
+ * Returns place details for a given place_id.
+ * The place data is pre-populated into cache during the autocomplete call,
+ * so no additional Geoapify API request is needed.
+ */
 export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => ({}));
 
@@ -25,36 +19,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(cached);
   }
 
-  if (!(await canMakeMapsRequest('places_details'))) {
-    return NextResponse.json({ error: 'cap_reached' }, { status: 429 });
-  }
-
-  const res = await fetch(`https://places.googleapis.com/v1/places/${placeId}`, {
-    headers: { 'X-Goog-Api-Key': API_KEY, 'X-Goog-FieldMask': FIELD_MASK },
-  });
-
-  if (!res.ok) {
-    console.error('[Maps] Place Details HTTP error', res.status, await res.text());
-    return NextResponse.json({ error: 'upstream_error' }, { status: res.status });
-  }
-
-  const p = await res.json();
-
-  const place = {
-    place_id: p.id,
-    name: p.displayName?.text,
-    formatted_address: p.formattedAddress,
-    geometry: p.location
-      ? { location: { lat: p.location.latitude, lng: p.location.longitude } }
-      : undefined,
-    address_components: (p.addressComponents ?? []).map((c: AddressComponent) => ({
-      long_name: c.longText,
-      short_name: c.shortText,
-      types: c.types,
-    })),
-    types: p.types,
-  };
-
-  await setCachedDetails(placeId, place);
-  return NextResponse.json(place);
+  // Place not in cache — user has a place_id we have not seen via autocomplete in this session.
+  return NextResponse.json({ error: 'not_found' }, { status: 404 });
 }

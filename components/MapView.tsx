@@ -1,40 +1,33 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { useGooglePlaces } from '@/hooks/useGooglePlaces';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 import { initServices } from '@/hooks/usePlacesCache';
 import { TYPE_FILTERS } from '@/components/TypeFilter';
 import './MapView.css';
 import type { Place, ResolvedLocation } from '@/types';
 
-const API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? '';
-const MAP_ID = process.env.NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID!;
-const DEFAULT_CENTER = { lat: -33.9249, lng: 18.4241 }; // Cape Town
+const GEOAPIFY_KEY = process.env.NEXT_PUBLIC_GEOAPIFY_API_KEY ?? '';
+const TILE_URL = `https://maps.geoapify.com/v1/tile/osm-bright/{z}/{x}/{y}.png?apiKey=${GEOAPIFY_KEY}`;
+const TILE_ATTRIBUTION = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://www.geoapify.com">Geoapify</a>';
+const DEFAULT_CENTER: L.LatLngTuple = [-33.9249, 18.4241]; // Cape Town
 const DEFAULT_ZOOM = 12;
 
-interface SavedStyle {
-  width: string;
-  height: string;
-  background: string;
-  border: string;
-  fontSize: string;
-  opacity: string;
-}
-
 interface MarkerEntry {
-  marker: google.maps.marker.AdvancedMarkerElement;
-  el: HTMLElement;
+  marker: L.Marker;
+  name: string;
   suburb: string | null;
   city: string;
   types: string[];
   isFriendly: boolean;
-  savedStyle: SavedStyle;
-  savedText: string;
+  normalIcon: L.DivIcon;
+  dimmedIcon: L.DivIcon;
 }
 
 interface Props {
   selected: Place | null;
-  mapRef: React.RefObject<google.maps.Map | null>;
+  mapRef: React.RefObject<L.Map | null>;
   selectedSuburbs: string[] | null;
   selectedCity: string | null;
   resolved: ResolvedLocation[];
@@ -44,6 +37,7 @@ interface Props {
   onApprovedOnlyToggle: () => void;
   selectedTypes: Set<string>;
   capReached: boolean | null;
+  expandedPlaces?: Place[];
 }
 
 function matchesTypeFilter(types: string[] | undefined, selectedTypes: Set<string>): boolean {
@@ -60,55 +54,8 @@ function getTypeEmoji(types: string[] | undefined): string {
   return match ? match.emoji : '🦴';
 }
 
-function buildInfoWindowContent(place: google.maps.places.PlaceResult): string {
-  const firstPhoto = place.photos?.[0] as
-    | google.maps.places.PlacePhoto
-    | { photoReference: string }
-    | undefined;
-  const photoUrl =
-    (firstPhoto as { photoReference?: string })?.photoReference != null
-      ? `/api/maps/photo?name=${encodeURIComponent((firstPhoto as { photoReference: string }).photoReference)}&maxWidth=280`
-      : (firstPhoto as google.maps.places.PlacePhoto | undefined)?.getUrl?.({ maxWidth: 280, maxHeight: 140 });
-  const stars = place.rating
-    ? '★'.repeat(Math.round(place.rating)) + '☆'.repeat(5 - Math.round(place.rating))
-    : null;
-  const todayIndex = new Date().getDay();
-  const todayHours = place.opening_hours?.weekday_text?.[todayIndex === 0 ? 6 : todayIndex - 1];
-  const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination_place_id=${place.place_id}`;
-
-  return `
-    <div style="font-family:Arial,sans-serif;width:280px;overflow:hidden;border-radius:4px">
-      ${photoUrl ? `<img src="${photoUrl}" style="width:100%;height:140px;object-fit:cover;display:block;margin-bottom:10px;border-radius:4px 4px 0 0" />` : ''}
-      <div style="padding:4px 2px 8px">
-        <div style="font-size:15px;font-weight:600;color:#202124;margin-bottom:4px">${place.name}</div>
-        <div style="font-size:12px;color:#5f6368;margin-bottom:8px">${place.formatted_address || ''}</div>
-        ${stars ? `
-          <div style="margin-bottom:8px;display:flex;align-items:center;gap:6px">
-            <span style="color:#f5a623;font-size:14px;letter-spacing:1px">${stars}</span>
-            <span style="font-size:12px;color:#5f6368">${place.rating} (${place.user_ratings_total?.toLocaleString() ?? 0} reviews)</span>
-          </div>` : ''}
-        ${todayHours ? `
-          <div style="font-size:12px;color:#5f6368;margin-bottom:6px">🕐 ${todayHours}</div>` : ''}
-        ${place.formatted_phone_number ? `
-          <div style="font-size:12px;margin-bottom:6px">
-            📞 <a href="tel:${place.formatted_phone_number}" style="color:#1a73e8;text-decoration:none">${place.formatted_phone_number}</a>
-          </div>` : ''}
-        ${place.website ? `
-          <div style="font-size:12px;margin-bottom:10px">
-            <a href="${place.website}" target="_blank" rel="noopener noreferrer" style="color:#1a73e8;text-decoration:none">${new URL(place.website).hostname}</a>
-          </div>` : ''}
-        <a href="${directionsUrl}" target="_blank" rel="noopener noreferrer"
-          style="display:inline-block;background:#1a73e8;color:#fff;font-size:12px;padding:6px 14px;border-radius:4px;text-decoration:none;margin-top:2px">
-          Get directions
-        </a>
-      </div>
-    </div>
-  `;
-}
-
-function createMarkerEl(isFriendly: boolean, isApproved: boolean, emoji: string): { el: HTMLElement; savedStyle: SavedStyle; savedText: string } {
-  const el = document.createElement('div');
-  const size = isFriendly ? '32px' : '22px';
+function createNormalIcon(isFriendly: boolean, isApproved: boolean, emoji: string): L.DivIcon {
+  const size = isFriendly ? 32 : 22;
   const bg = isFriendly ? '#1e7e34' : '#c5221f';
   const border = isFriendly
     ? `2px solid ${isApproved ? '#00420a' : '#1e7e34'}`
@@ -117,191 +64,208 @@ function createMarkerEl(isFriendly: boolean, isApproved: boolean, emoji: string)
   const fontSize = isFriendly ? '16px' : '9px';
   const text = isFriendly ? emoji : '✕';
 
-  el.style.cssText = `
-    width: ${size}; height: ${size};
-    border-radius: 50%;
-    background: ${bg};
-    border: ${border};
-    opacity: ${opacity};
-    font-size: ${fontSize};
-    font-weight: ${isFriendly ? 'normal' : '700'};
-    color: #fff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    box-sizing: border-box;
+  const html = `<div style="width:${size}px;height:${size}px;border-radius:50%;background:${bg};border:${border};opacity:${opacity};font-size:${fontSize};font-weight:${isFriendly ? 'normal' : '700'};color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;box-sizing:border-box;">${text}</div>`;
+  return L.divIcon({ html, className: '', iconSize: [size, size], iconAnchor: [size / 2, size / 2] });
+}
+
+function createDimmedIcon(): L.DivIcon {
+  const html = `<div style="width:8px;height:8px;border-radius:50%;background:#9aa0a6;border:1.5px solid #6b7175;opacity:0.7;"></div>`;
+  return L.divIcon({ html, className: '', iconSize: [8, 8], iconAnchor: [4, 4] });
+}
+
+function buildPopupContent(name: string, place: Place): string {
+  const address = (place.formatted_address as string) ?? '';
+  const query = encodeURIComponent(address || name);
+  const directionsUrl = `https://www.google.com/maps/search/?api=1&query=${query}`;
+
+  return `
+    <div style="font-family:Arial,sans-serif;width:240px;padding:4px 2px 8px">
+      <div style="font-size:15px;font-weight:600;color:#202124;margin-bottom:4px">${name}</div>
+      <div style="font-size:12px;color:#5f6368;margin-bottom:10px">${address}</div>
+      <a href="${directionsUrl}" target="_blank" rel="noopener noreferrer"
+        style="display:inline-block;background:#1a73e8;color:#fff;font-size:12px;padding:6px 14px;border-radius:4px;text-decoration:none;">
+        Get directions
+      </a>
+    </div>
   `;
-  el.textContent = text;
-
-  const savedStyle: SavedStyle = { width: size, height: size, background: bg, border, fontSize, opacity };
-  return { el, savedStyle, savedText: text };
 }
 
-function applyDefaultStyle(entry: MarkerEntry): void {
-  const { el, savedStyle, savedText } = entry;
-  el.style.width = savedStyle.width;
-  el.style.height = savedStyle.height;
-  el.style.background = savedStyle.background;
-  el.style.border = savedStyle.border;
-  el.style.fontSize = savedStyle.fontSize;
-  el.style.opacity = savedStyle.opacity;
-  el.textContent = savedText;
-}
-
-function applyDimmedStyle(el: HTMLElement): void {
-  el.style.width = '8px';
-  el.style.height = '8px';
-  el.style.background = '#9aa0a6';
-  el.style.border = '1.5px solid #6b7175';
-  el.style.fontSize = '0px';
-  el.style.opacity = '0.7';
-  el.textContent = '';
-}
-
-export default function MapView({ selected, mapRef, selectedSuburbs, selectedCity, resolved = [], resolvedLoading, locationsLoading, approvedOnly, onApprovedOnlyToggle, selectedTypes = new Set(), capReached }: Props) {
+export default function MapView({
+  selected,
+  mapRef,
+  selectedSuburbs,
+  selectedCity,
+  resolved = [],
+  resolvedLoading,
+  locationsLoading,
+  approvedOnly,
+  onApprovedOnlyToggle,
+  selectedTypes = new Set(),
+  capReached,
+  expandedPlaces,
+}: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const markerRef = useRef<google.maps.marker.AdvancedMarkerElement | null>(null);
+  const selectedMarkerRef = useRef<L.Marker | null>(null);
   const locationMarkersRef = useRef<MarkerEntry[]>([]);
-  const openInfoWindowRef = useRef<google.maps.InfoWindow | null>(null);
-  const ready = useGooglePlaces(API_KEY, capReached);
 
-  // Init map once
+  // Initialize Leaflet map once
   useEffect(() => {
-    if (!ready || !containerRef.current || capReached || capReached === null) return;
+    if (!containerRef.current || capReached || capReached === null) return;
+    if (mapRef.current) return;
 
-    mapRef.current = new window.google.maps.Map(containerRef.current, {
+    const map = L.map(containerRef.current, {
       center: DEFAULT_CENTER,
       zoom: DEFAULT_ZOOM,
-      disableDefaultUI: false,
-      mapTypeControl: false,
-      streetViewControl: false,
-      fullscreenControl: true,
-      mapId: MAP_ID,
     });
 
-    initServices(mapRef.current);
+    L.tileLayer(TILE_URL, {
+      attribution: TILE_ATTRIBUTION,
+      maxZoom: 20,
+    }).addTo(map);
+
+    mapRef.current = map;
+    initServices(map);
 
     return () => {
-      locationMarkersRef.current.forEach(({ marker }) => { marker.map = null; });
+      locationMarkersRef.current.forEach(({ marker }) => marker.remove());
       locationMarkersRef.current = [];
+      selectedMarkerRef.current?.remove();
+      selectedMarkerRef.current = null;
+      map.remove();
       mapRef.current = null;
-      markerRef.current = null;
     };
-  }, [ready, mapRef, capReached, containerRef.current]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [capReached]);
 
-  // Sync pins from resolved locations
+  // Sync map markers from resolved locations
   useEffect(() => {
-    if (!ready || !mapRef.current) return;
+    if (!mapRef.current) return;
+    const map = mapRef.current;
 
     const visibleNames = new Set(resolved.map(({ name }) => name));
 
     // Remove stale markers
     locationMarkersRef.current
-      .filter(({ marker }) => !visibleNames.has(marker.title ?? ''))
-      .forEach(({ marker }) => { marker.map = null; });
-    locationMarkersRef.current = locationMarkersRef.current.filter(
-      ({ marker }) => visibleNames.has(marker.title ?? '')
-    );
+      .filter(({ name }) => !visibleNames.has(name))
+      .forEach(({ marker }) => marker.remove());
+    locationMarkersRef.current = locationMarkersRef.current.filter(({ name }) => visibleNames.has(name));
 
     // Add new markers
-    const existingNames = new Set(locationMarkersRef.current.map(({ marker }) => marker.title));
-    const newEntries = resolved.filter(({ name }) => !existingNames.has(name));
+    const existingNames = new Set(locationMarkersRef.current.map(({ name }) => name));
 
-    newEntries.forEach(({ name, isFriendly, isApproved, place, suburb, city }) => {
-      const emoji = getTypeEmoji(place.types);
-      const { el, savedStyle, savedText } = createMarkerEl(isFriendly, isApproved, emoji);
+    resolved
+      .filter(({ name }) => !existingNames.has(name))
+      .forEach(({ name, isFriendly, isApproved, place, suburb, city }) => {
+        const loc = place.geometry?.location;
+        if (!loc) return;
 
-      const marker = new window.google.maps.marker.AdvancedMarkerElement({
-        position: place.geometry!.location,
-        map: mapRef.current,
-        title: name,
-        zIndex: isFriendly ? 2 : 1,
-        content: el,
+        const types = (place.types as string[] | undefined) ?? [];
+        const emoji = getTypeEmoji(types);
+        const normalIcon = createNormalIcon(isFriendly, isApproved, emoji);
+        const dimmedIcon = createDimmedIcon();
+
+        const marker = L.marker([loc.lat, loc.lng], {
+          icon: normalIcon,
+          zIndexOffset: isFriendly ? 1000 : 0,
+          title: name,
+        });
+
+        marker.bindPopup(buildPopupContent(name, place), { maxWidth: 260 });
+        marker.addTo(map);
+
+        locationMarkersRef.current.push({ marker, name, suburb, city, types, isFriendly, normalIcon, dimmedIcon });
       });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mapRef.current, resolved]);
 
-      const infoWindow = new window.google.maps.InfoWindow({ content: buildInfoWindowContent(place) });
-      marker.addListener('gmp-click', () => {
-        if (openInfoWindowRef.current) openInfoWindowRef.current.close();
-        infoWindow.open(mapRef.current, marker);
-        openInfoWindowRef.current = infoWindow;
-      });
-
-      locationMarkersRef.current.push({ marker, el, suburb, city, types: place.types ?? [], isFriendly, savedStyle, savedText });
-    });
-  }, [ready, mapRef, resolved]);
-
-  // Dim/highlight markers when selectedSuburbs changes
+  // Dim/highlight markers when suburb filter changes
   useEffect(() => {
-    if (!mapRef.current || !window.google?.maps) return;
+    if (!mapRef.current) return;
+    const map = mapRef.current;
 
     locationMarkersRef.current.forEach((entry) => {
-      const { marker, el, suburb, isFriendly } = entry;
+      const { marker, suburb, isFriendly, normalIcon, dimmedIcon } = entry;
       const isFiltering = selectedSuburbs && selectedSuburbs.length > 0;
       const inExpandedSuburb = isFiltering && selectedSuburbs!.includes(suburb ?? '');
 
       if (!isFiltering || inExpandedSuburb) {
-        marker.map = mapRef.current;
-        applyDefaultStyle(entry);
+        marker.setIcon(normalIcon);
+        if (!map.hasLayer(marker)) marker.addTo(map);
       } else if (!isFriendly) {
-        marker.map = null;
+        marker.remove();
       } else {
-        marker.map = mapRef.current;
-        applyDimmedStyle(el);
+        marker.setIcon(dimmedIcon);
+        if (!map.hasLayer(marker)) marker.addTo(map);
       }
     });
   }, [selectedSuburbs]);
 
-  // Show/hide markers when selectedTypes changes
+  // Show/hide markers when type filter changes
   useEffect(() => {
+    if (!mapRef.current) return;
+    const map = mapRef.current;
+
     locationMarkersRef.current.forEach(({ marker, types }) => {
-      marker.map = matchesTypeFilter(types, selectedTypes) ? mapRef.current : null;
+      if (matchesTypeFilter(types, selectedTypes)) {
+        if (!map.hasLayer(marker)) marker.addTo(map);
+      } else {
+        marker.remove();
+      }
     });
   }, [selectedTypes]);
 
-  // Fit map to city when selectedCity changes
+  // Fit map bounds to selected city
   useEffect(() => {
-    if (!mapRef.current || !window.google?.maps || !selectedCity) return;
+    if (!mapRef.current || !selectedCity) return;
+    const map = mapRef.current;
 
-    const bounds = new window.google.maps.LatLngBounds();
-    let matchCount = 0;
+    const cityMarkers = locationMarkersRef.current.filter(({ city }) => city === selectedCity);
+    if (cityMarkers.length === 0) return;
 
-    locationMarkersRef.current.forEach(({ marker, city }) => {
-      if (city === selectedCity) {
-        bounds.extend(marker.position as google.maps.LatLng);
-        matchCount++;
-      }
-    });
-
-    if (matchCount === 1) { mapRef.current.panTo(bounds.getCenter()); mapRef.current.setZoom(14); }
-    else if (matchCount > 1) { mapRef.current.fitBounds(bounds, 80); }
+    if (cityMarkers.length === 1) {
+      map.setView(cityMarkers[0].marker.getLatLng(), 14);
+    } else {
+      const bounds = L.latLngBounds(cityMarkers.map(({ marker }) => marker.getLatLng()));
+      map.fitBounds(bounds, { padding: [40, 40] });
+    }
   }, [selectedCity]);
 
-  // Pan + marker when a location is selected via search
+  // Fit map to expanded suburb places
   useEffect(() => {
-    if (!mapRef.current || !(selected as google.maps.places.PlaceResult)?.geometry?.location) return;
+    if (!mapRef.current || !expandedPlaces || expandedPlaces.length === 0) return;
+    const map = mapRef.current;
 
-    const location = (selected as google.maps.places.PlaceResult).geometry!.location!;
-    mapRef.current.panTo(location);
-    mapRef.current.setZoom(14);
+    const points = expandedPlaces
+      .filter((p) => p.geometry?.location)
+      .map((p) => [p.geometry!.location.lat, p.geometry!.location.lng] as L.LatLngTuple);
 
-    if (markerRef.current) { markerRef.current.map = null; markerRef.current = null; }
+    if (points.length === 0) return;
+    const bounds = L.latLngBounds(points);
+    if (bounds.isValid()) map.fitBounds(bounds, { padding: [40, 40] });
+  }, [expandedPlaces]);
+
+  // Pan and temporary pin when a location is selected via search
+  useEffect(() => {
+    if (!mapRef.current || !selected?.geometry?.location) return;
+    const map = mapRef.current;
+    const { lat, lng } = selected.geometry.location;
+
+    map.setView([lat, lng], 14);
+
+    selectedMarkerRef.current?.remove();
+    selectedMarkerRef.current = null;
 
     const GEOGRAPHIC_TYPES = new Set([
       'locality', 'sublocality', 'sublocality_level_1', 'sublocality_level_2',
       'administrative_area_level_1', 'administrative_area_level_2',
       'country', 'route', 'neighborhood', 'postal_code', 'political',
     ]);
-    const isGeographic = selected?.types?.every((t) => GEOGRAPHIC_TYPES.has(t)) ?? false;
+    const isGeographic = selected.types?.every((t) => GEOGRAPHIC_TYPES.has(t)) ?? false;
 
     if (!isGeographic) {
-      markerRef.current = new window.google.maps.marker.AdvancedMarkerElement({
-        position: location,
-        map: mapRef.current,
-        title: selected?.formatted_address as string,
-      });
+      selectedMarkerRef.current = L.marker([lat, lng]).addTo(map);
     }
-  }, [selected, mapRef]);
+  }, [selected]);
 
   return (
     <div className="map-container">
@@ -320,8 +284,8 @@ export default function MapView({ selected, mapRef, selectedSuburbs, selectedCit
       )}
       {selected && (
         <div className="map-label">
-          <strong>{(selected as google.maps.places.PlaceResult).name || selected.formatted_address}</strong>
-          {(selected as google.maps.places.PlaceResult).name && <span>{selected.formatted_address}</span>}
+          <strong>{(selected.name as string) || selected.formatted_address}</strong>
+          {selected.name && <span>{selected.formatted_address as string}</span>}
         </div>
       )}
     </div>
