@@ -6,7 +6,6 @@ import type { Prediction } from '@/types';
 
 const predictionsCache = new Map<string, Prediction[]>();
 const detailsCache = new Map<string, Record<string, unknown>>();
-const placeCache = new Map<string, Record<string, unknown>>();
 
 export async function getCachedPredictions(query: string): Promise<Prediction[] | null> {
   return predictionsCache.get(query) ?? null;
@@ -22,9 +21,3 @@ export async function setCachedDetails(placeId: string, place: Record<string, un
   detailsCache.set(placeId, place);
 }
 
-export async function getCachedPlace(cacheKey: string): Promise<Record<string, unknown> | null> {
-  return placeCache.get(cacheKey) ?? null;
-}
-export async function setCachedPlace(cacheKey: string, place: Record<string, unknown>): Promise<void> {
-  placeCache.set(cacheKey, place);
-}
