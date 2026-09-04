@@ -7,6 +7,8 @@ import { initServices } from '@/hooks/usePlacesCache';
 import { TYPE_FILTERS } from '@/components/TypeFilter';
 import './MapView.css';
 import type { Place, ResolvedLocation } from '@/types';
+import { useIsMobile } from '@/hooks/useIsMobile';
+import { useTwoFingers } from '@/hooks/useTwoFingers';
 
 const GEOAPIFY_KEY = process.env.NEXT_PUBLIC_GEOAPIFY_API_KEY ?? '';
 const TILE_URL = `https://maps.geoapify.com/v1/tile/klokantech-basic/{z}/{x}/{y}.png?apiKey=${GEOAPIFY_KEY}`;
@@ -116,6 +118,8 @@ export default function MapView({
   const containerRef = useRef<HTMLDivElement>(null);
   const selectedMarkerRef = useRef<L.Marker | null>(null);
   const locationMarkersRef = useRef<MarkerEntry[]>([]);
+  const isMobile = useIsMobile();
+  const { twoFingersUsed, oneFinger } = useTwoFingers(containerRef);
 
   // Initialize Leaflet map once
   useEffect(() => {
@@ -125,6 +129,7 @@ export default function MapView({
     const map = L.map(containerRef.current, {
       center: DEFAULT_CENTER,
       zoom: DEFAULT_ZOOM,
+      dragging: isMobile ? twoFingersUsed : true,
     });
 
     L.tileLayer(TILE_URL, {
@@ -278,6 +283,9 @@ export default function MapView({
   return (
     <div className="map-container">
       <div ref={containerRef} className="map" />
+      {isMobile && oneFinger && (
+        <div className="map-gesture-hint">Use two fingers to move the map</div>
+      )}
       <label className="map-approved-toggle" onClick={onApprovedOnlyToggle}>
         <span>Verified only</span>
         <div className={`toggle-switch${approvedOnly ? ' toggle-switch--on' : ''}`}>
