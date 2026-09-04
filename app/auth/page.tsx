@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { authClient } from '@/lib/auth-client';
+import BackgroundArt from '@/components/BackgroundArt';
 import './auth.css';
 
 export default function AuthPage() {
@@ -41,6 +42,7 @@ export default function AuthPage() {
 
   return (
     <main className="auth">
+      <BackgroundArt />
       <Link href="/" className="auth__back">← Back to map</Link>
 
       <div className="auth__card">

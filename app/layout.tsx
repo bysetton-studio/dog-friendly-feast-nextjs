@@ -1,16 +1,6 @@
 import type { Metadata } from 'next';
 import Script from 'next/script';
-import { backgroundArt } from '@/data/backgroundArt';
 import './globals.css';
-
-const POSITIONS: React.CSSProperties[] = [
-  { top: '2%',    left: '1%'  },
-  { top: '2%',    right: '1%' },
-  { top: '50%',   left: '1%'  },
-  { top: '50%',   right: '1%' },
-  { bottom: '2%', left: '1%'  },
-  { bottom: '2%', right: '1%' },
-];
 
 const BASE_URL = 'https://dogfriendlyfeast.vercel.app';
 const GA_ID = 'G-4KQQMMPGVF';
@@ -66,11 +56,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body>
-        {POSITIONS.map((pos, i) => (
-          <pre key={i} className="bg-art" style={pos} aria-hidden="true">
-            {backgroundArt[i % backgroundArt.length]}
-          </pre>
-        ))}
         {children}
         <Script src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`} strategy="afterInteractive" />
         <Script id="gtag-init" strategy="afterInteractive">

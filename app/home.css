@@ -74,6 +74,11 @@
   z-index: 10;
 }
 
+.top-nav--left {
+  right: unset;
+  left: 24px;
+}
+
 .top-nav__link {
   font-size: 15px;
   color: #9aa0a6;

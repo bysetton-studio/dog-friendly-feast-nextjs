@@ -4,6 +4,8 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import type { Map as LeafletMap } from 'leaflet';
+import { authClient } from '@/lib/auth-client';
+import BackgroundArt from '@/components/BackgroundArt';
 import './home.css';
 
 import LocationSearch from '@/components/LocationSearch';
@@ -25,6 +27,7 @@ const GEOGRAPHIC_RESULT_TYPES = new Set([
 ]);
 
 export default function HomePage() {
+  const { data: session } = authClient.useSession();
   const [selected, setSelected] = useState<Place | null>(null);
   const [cityFlipRect, setCityFlipRect] = useState<DOMRect | null>(null);
   const ipCity = useIpCity();
@@ -71,9 +74,15 @@ export default function HomePage() {
 
   return (
     <main className="home">
-        <nav className="top-nav">
+        <BackgroundArt />
+        <nav className="top-nav top-nav--left">
           <Link href="/about" className="top-nav__link">About</Link>
-          <Link href="/auth" className="top-nav__link">Sign up / Log in</Link>
+        </nav>
+        <nav className="top-nav">
+          {session
+            ? <Link href="/kennel" className="top-nav__link">My Kennel</Link>
+            : <Link href="/auth" className="top-nav__link">Sign up / Log in</Link>
+          }
         </nav>
         <div className="page-container">
         <AddSticker />

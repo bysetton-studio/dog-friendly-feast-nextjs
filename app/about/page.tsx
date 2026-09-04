@@ -1,10 +1,12 @@
 import Link from 'next/link';
 import CopyEmail from '@/components/CopyEmail';
+import BackgroundArt from '@/components/BackgroundArt';
 import './about.css';
 
 export default function AboutPage() {
   return (
     <main className="about">
+      <BackgroundArt />
       <Link href="/" className="about__back">← Back to map</Link>
 
       <h1 className="about__title">About Dog Friendly Feast</h1>

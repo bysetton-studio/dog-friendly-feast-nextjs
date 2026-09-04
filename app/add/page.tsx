@@ -5,6 +5,7 @@ import Link from 'next/link';
 import LocationSearch from '@/components/LocationSearch';
 import { useSubmitLocation } from '@/hooks/useSubmitLocation';
 import { useLocations } from '@/hooks/useLocations';
+import BackgroundArt from '@/components/BackgroundArt';
 import './add.css';
 import type { Place } from '@/types';
 
@@ -20,6 +21,7 @@ export default function AddLocationPage() {
 
   return (
     <main className="add-page">
+      <BackgroundArt />
       <Link href="/" className="add-page__back">← Back to map</Link>
 
       <div className="add-page__header">
