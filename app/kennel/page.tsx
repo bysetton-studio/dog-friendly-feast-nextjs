@@ -4,17 +4,10 @@ import Link from 'next/link';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { kennelArt } from '@/data/kennelArt';
-import { TYPE_FILTERS } from '@/components/TypeFilter';
 import AvatarPicker from '@/components/AvatarPicker';
 import LogoutButton from './LogoutButton';
+import KennelLocationRow from './KennelLocationRow';
 import './kennel.css';
-
-function typeEmoji(types: string[]): string {
-  const match = TYPE_FILTERS.find(
-    (f) => f.types.length > 0 && f.types.some((t) => types.includes(t))
-  );
-  return match ? match.emoji : '🦴'; // fallback to "other"
-}
 
 const POSITIONS: React.CSSProperties[] = [
   { top: '2%',    left: '1%'  },
@@ -71,24 +64,6 @@ export default async function KennelPage() {
             const approved = suggestedLocations.filter((l) => l.isAdminApproved);
             const pending  = suggestedLocations.filter((l) => !l.isAdminApproved);
 
-            const LocationRow = ({ loc }: { loc: typeof suggestedLocations[number] }) => (
-              <li className="kennel__location">
-                <div className="kennel__location-main">
-                  <span>
-                    <span className="kennel__location-type-icon">{typeEmoji(loc.types)}</span>
-                    <span className="kennel__location-icon-gap" />
-                    <span className="kennel__location-name">{loc.name}</span>
-                  </span>
-                  <span className={`kennel__location-badge ${loc.isFriendly ? 'kennel__location-badge--friendly' : 'kennel__location-badge--not'}`}>
-                    {loc.isFriendly ? '🐾 Friendly' : '✕ Not friendly'}
-                  </span>
-                </div>
-                <div className="kennel__location-sub">
-                  <span className="kennel__location-address">{loc.address}</span>
-                </div>
-              </li>
-            );
-
             return (
               <>
                 <div className="kennel__scores">
@@ -107,7 +82,7 @@ export default async function KennelPage() {
                   <div className="kennel__group">
                     <p className="kennel__group-label kennel__group-label--approved">Verified</p>
                     <ul className="kennel__locations">
-                      {approved.map((loc) => <LocationRow key={loc.id} loc={loc} />)}
+                      {approved.map((loc) => <KennelLocationRow key={loc.id} loc={loc} />)}
                     </ul>
                   </div>
                 )}
@@ -116,7 +91,7 @@ export default async function KennelPage() {
                   <div className="kennel__group">
                     <p className="kennel__group-label kennel__group-label--pending">Pending</p>
                     <ul className="kennel__locations">
-                      {pending.map((loc) => <LocationRow key={loc.id} loc={loc} />)}
+                      {pending.map((loc) => <KennelLocationRow key={loc.id} loc={loc} canEdit />)}
                     </ul>
                   </div>
                 )}

@@ -311,6 +311,39 @@
   color: #6fcf97;
 }
 
+.kennel__location-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.kennel__location-edit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: transparent;
+  color: #9aa0a6;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s, background 0.15s, color 0.15s;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.kennel__location--editable:hover .kennel__location-edit {
+  opacity: 1;
+}
+
+.kennel__location-edit:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #e0e0e0;
+}
+
 .kennel__logout {
   border: none;
   cursor: pointer;
