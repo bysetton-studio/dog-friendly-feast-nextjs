@@ -151,6 +151,7 @@ a {
 
 .kennel-dropdown__confirm {
   display: flex;
+  flex-direction: column;
   align-items: center;
   gap: 6px;
   padding: 6px 8px;
