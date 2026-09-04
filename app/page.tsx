@@ -71,7 +71,10 @@ export default function HomePage() {
 
   return (
     <main className="home">
-        <Link href="/about" className="about-link">About</Link>
+        <nav className="top-nav">
+          <Link href="/about" className="top-nav__link">About</Link>
+          <Link href="/auth" className="top-nav__link">Sign up / Log in</Link>
+        </nav>
         <div className="page-container">
         <AddSticker />
         <div className="logo-area">

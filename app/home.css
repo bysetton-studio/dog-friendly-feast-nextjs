@@ -65,22 +65,27 @@
   font-family: Arial, sans-serif;
 }
 
-.about-link {
+.top-nav {
   position: fixed;
   top: 20px;
   right: 24px;
+  display: flex;
+  gap: 8px;
+  z-index: 10;
+}
+
+.top-nav__link {
   font-size: 15px;
   color: #9aa0a6;
   text-decoration: underline;
   font-family: Arial, sans-serif;
   letter-spacing: 0.3px;
-  z-index: 10;
   background: rgba(30, 30, 30, 0.85);
   padding: 8px 14px;
   border-radius: 999px;
 }
 
-.about-link:hover {
+.top-nav__link:hover {
   color: #e0e0e0;
 }
 

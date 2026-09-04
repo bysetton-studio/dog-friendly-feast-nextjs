@@ -1,0 +1,120 @@
+.auth {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  font-family: Arial, sans-serif;
+}
+
+.auth__back {
+  position: fixed;
+  top: 20px;
+  left: 24px;
+  font-size: 14px;
+  color: #9aa0a6;
+  text-decoration: none;
+}
+
+.auth__back:hover {
+  color: #e0e0e0;
+}
+
+.auth__card {
+  width: 100%;
+  max-width: 380px;
+  background: rgba(30, 30, 30, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 32px;
+}
+
+.auth__tabs {
+  display: flex;
+  gap: 4px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 4px;
+  margin-bottom: 28px;
+}
+
+.auth__tab {
+  flex: 1;
+  padding: 8px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: #9aa0a6;
+  font-size: 14px;
+  font-family: Arial, sans-serif;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.auth__tab--active {
+  background: rgba(255, 255, 255, 0.1);
+  color: #e0e0e0;
+}
+
+.auth__form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.auth__label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  color: #9aa0a6;
+}
+
+.auth__input {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 15px;
+  color: #e0e0e0;
+  font-family: Arial, sans-serif;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.auth__input::placeholder {
+  color: #555;
+}
+
+.auth__input:focus {
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+.auth__error {
+  font-size: 13px;
+  color: #f28b82;
+  margin: 0;
+}
+
+.auth__submit {
+  margin-top: 4px;
+  padding: 11px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  color: #e0e0e0;
+  font-size: 15px;
+  font-family: Arial, sans-serif;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.auth__submit:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.auth__submit:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
