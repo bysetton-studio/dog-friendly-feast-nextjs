@@ -12,6 +12,7 @@ model Location {
   address         String
   isFriendly      Boolean
   isAdminApproved Boolean           @default(false)
+  types           String[]
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt
   resolved        ResolvedLocation?

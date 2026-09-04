@@ -1,9 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
-import { resolvePlaceDetails } from '@/lib/resolvePlaceDetails';
-import { getCity, getSuburb } from '@/lib/placeUtils';
 import { isMapsCapReached } from '@/lib/mapsRateLimit';
-import { PlaceData } from '@/lib/resolvePlaceDetails';
+import { getCity, getSuburb } from '@/lib/placeUtils';
+import { prisma } from '@/lib/prisma';
+import { PlaceData, resolvePlaceDetails } from '@/lib/resolvePlaceDetails';
+import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET() {
   const [locations, capReached] = await Promise.all([
@@ -23,11 +22,21 @@ export async function GET() {
       } else {
         place = await resolvePlaceDetails(l.name, l.address);
         if (place) {
-          await prisma.resolvedLocation.upsert({
-            where: { locationId: l.id },
-            update: { placeData: place as object },
-            create: { locationId: l.id, placeData: place as object },
-          });
+          const types = (place.types as string[] | undefined) ?? [];
+          await Promise.all([
+            prisma.location.update({
+              where: { id: l.id },
+              data: { 
+                types, 
+                resolved: { 
+                  upsert: {
+                    update: { placeData: place as object },
+                    create: { placeData: place as object },
+                  } 
+                } 
+              },
+            }),
+          ]);
         }
       }
 
@@ -70,9 +79,23 @@ export async function POST(req: NextRequest) {
 
   const place = await resolvePlaceDetails(name, address);
   if (place) {
-    await prisma.resolvedLocation.create({
-      data: { locationId: location.id, placeData: place as object },
-    });
+    const types = (place.types as string[] | undefined) ?? [];
+    await Promise.all([
+      prisma.resolvedLocation.create({
+        data: { locationId: location.id, placeData: place as object },
+      }),
+      prisma.location.update({
+        where: { id: location.id },
+        data: { 
+          types, resolved: { 
+            connect: { 
+              locationId: location.id,  
+              placeData: place as object 
+            } 
+          } 
+        },
+      }),
+    ]);
 
     const addressComponents = place.address_components as
       | { long_name: string; types: string[] }[]
