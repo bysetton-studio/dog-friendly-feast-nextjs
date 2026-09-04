@@ -53,21 +53,10 @@ export default async function KennelPage() {
       </nav>
 
       <div className="kennel__stack">
-        <div className="kennel__card">
-          <div className="kennel__avatar">🐶</div>
-          <h1 className="kennel__title">Your Kennel</h1>
-
-          <dl className="kennel__details">
-            <div className="kennel__row">
-              <dt>Name</dt>
-              <dd>{session.user.name}</dd>
-            </div>
-            <div className="kennel__row">
-              <dt>Email</dt>
-              <dd>{session.user.email}</dd>
-            </div>
-          </dl>
-        </div>
+          <div className="kennel__title_container">
+            <div className="kennel__avatar">🐶</div>
+            <h1 className="kennel__title">{session.user.name}&apos;s Kennel</h1>
+          </div>
 
         <div className="kennel__card kennel__card--locations">
           <h2 className="kennel__section-title">Your Submissions</h2>
