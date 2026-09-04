@@ -6,6 +6,7 @@ import Link from 'next/link';
 import type { Map as LeafletMap } from 'leaflet';
 import { authClient } from '@/lib/auth-client';
 import BackgroundArt from '@/components/BackgroundArt';
+import KennelDropdown from '@/components/KennelDropdown';
 import './home.css';
 
 import LocationSearch from '@/components/LocationSearch';
@@ -80,7 +81,7 @@ export default function HomePage() {
         </nav>
         <nav className="top-nav">
           {session
-            ? <Link href="/kennel" className="top-nav__link">My Kennel</Link>
+            ? <KennelDropdown />
             : <Link href="/auth" className="top-nav__link">Sign up / Log in</Link>
           }
         </nav>

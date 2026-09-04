@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { auth } from '@/lib/auth';
 import { kennelArt } from '@/data/kennelArt';
+import LogoutButton from './LogoutButton';
 import './kennel.css';
 
 const POSITIONS: React.CSSProperties[] = [
@@ -34,6 +35,7 @@ export default async function KennelPage() {
       </nav>
       <nav className="top-nav">
         <Link href="/" className="top-nav__link">Map</Link>
+        <LogoutButton />
       </nav>
 
       <div className="kennel__card">
