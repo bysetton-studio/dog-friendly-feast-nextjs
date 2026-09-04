@@ -9,7 +9,7 @@ import './MapView.css';
 import type { Place, ResolvedLocation } from '@/types';
 
 const GEOAPIFY_KEY = process.env.NEXT_PUBLIC_GEOAPIFY_API_KEY ?? '';
-const TILE_URL = `https://maps.geoapify.com/v1/tile/osm-bright/{z}/{x}/{y}.png?apiKey=${GEOAPIFY_KEY}`;
+const TILE_URL = `https://maps.geoapify.com/v1/tile/klokantech-basic/{z}/{x}/{y}.png?apiKey=${GEOAPIFY_KEY}`;
 const TILE_ATTRIBUTION = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://www.geoapify.com">Geoapify</a>';
 const DEFAULT_CENTER: L.LatLngTuple = [-33.9249, 18.4241]; // Cape Town
 const DEFAULT_ZOOM = 12;
