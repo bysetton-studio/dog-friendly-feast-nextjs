@@ -3,9 +3,11 @@ import { canMakeMapsRequest } from '@/lib/mapsRateLimit';
 import { getCachedPredictions, setCachedPredictions, setCachedDetails } from '@/lib/mapsServerCache';
 import { geoapifyPropsToPlace } from '@/lib/placeUtils';
 
-const API_KEY = process.env.GEOAPIFY_API_KEY ?? '';
+const API_KEY = process.env.GEOAPIFY_API_SECRET ?? '';
 
 export async function POST(req: NextRequest) {
+
+  console.log(API_KEY, '----------------------- API_KEY');
   const body = await req.json().catch(() => ({}));
 
   const input: unknown = body.input;

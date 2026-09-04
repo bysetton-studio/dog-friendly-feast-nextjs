@@ -3,7 +3,7 @@ import { canMakeMapsRequest } from '@/lib/mapsRateLimit';
 import { getCachedDetails, setCachedDetails } from '@/lib/mapsServerCache';
 import { geoapifyPropsToPlace } from '@/lib/placeUtils';
 
-const API_KEY = process.env.GEOAPIFY_API_KEY ?? '';
+const API_KEY = process.env.GEOAPIFY_API_SECRET ?? '';
 
 export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => ({}));

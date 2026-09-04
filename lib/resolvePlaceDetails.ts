@@ -1,7 +1,7 @@
 import { canMakeMapsRequest } from '@/lib/mapsRateLimit';
 import { geoapifyPropsToPlace } from '@/lib/placeUtils';
 
-const API_KEY = process.env.GEOAPIFY_API_KEY ?? '';
+const API_KEY = process.env.GEOAPIFY_API_SECRET ?? '';
 
 export type PlaceData = Record<string, unknown>;
 

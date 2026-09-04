@@ -56,13 +56,13 @@ function getTypeEmoji(types: string[] | undefined): string {
 }
 
 function createNormalIcon(isFriendly: boolean, isApproved: boolean, emoji: string): L.DivIcon {
-  const size = isFriendly ? 32 : 22;
+  const size = isFriendly ? 22 : 12;
   const bg = isFriendly ? '#1e7e34' : '#c5221f';
   const border = isFriendly
     ? `2px solid ${isApproved ? '#00420a' : '#1e7e34'}`
     : `1.5px solid ${isApproved ? '#530000' : '#c5221f'}`;
   const opacity = isApproved ? '1' : '0.5';
-  const fontSize = isFriendly ? '16px' : '9px';
+  const fontSize = isFriendly ? '14px' : '7px';
   const text = isFriendly ? emoji : '✕';
 
   const html = `<div style="width:${size}px;height:${size}px;border-radius:50%;background:${bg};border:${border};opacity:${opacity};font-size:${fontSize};font-weight:${isFriendly ? 'normal' : '700'};color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;box-sizing:border-box;">${text}</div>`;
