@@ -453,6 +453,11 @@
   display: none;
   align-items: center;
   justify-content: center;
+  text-align: center;
+  font-size: 10px;
+  font-family: Arial, sans-serif;
+  line-height: 1.2;
+  padding: 8px;
   cursor: pointer;
   transition: left 0.3s ease, top 0.3s ease, border-color 0.15s, color 0.15s, background 0.15s, opacity 0.15s, display 0.15s allow-discrete;
   opacity: 0;

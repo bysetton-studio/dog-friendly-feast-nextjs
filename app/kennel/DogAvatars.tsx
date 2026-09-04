@@ -2,7 +2,7 @@
 
 import { useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Camera, X, Plus } from 'lucide-react';
+import { Camera, X } from 'lucide-react';
 import { resizeToSquare } from '@/lib/resizeToSquare';
 
 interface Dog {
@@ -136,7 +136,7 @@ export default function DogAvatars({ initial }: Props) {
           onClick={handleAdd}
           aria-label="Add dog"
         >
-          <Plus size={18} strokeWidth={2.5} />
+          add your pup
         </button>
       )}
 
