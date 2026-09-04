@@ -13,6 +13,8 @@ model Location {
   isFriendly      Boolean
   isAdminApproved Boolean           @default(false)
   types           String[]
+  suggestedById   String?
+  suggestedBy     User?             @relation(fields: [suggestedById], references: [id], onDelete: SetNull)
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt
   resolved        ResolvedLocation?
@@ -39,15 +41,16 @@ model MapsRateLimit {
 
 // BetterAuth models
 model User {
-  id            String    @id
+  id            String    @id @default(uuid())
   name          String
   email         String    @unique
   emailVerified Boolean
   image         String?
   createdAt     DateTime
   updatedAt     DateTime
-  sessions      Session[]
-  accounts      Account[]
+  sessions           Session[]
+  accounts           Account[]
+  suggestedLocations Location[]
 
   @@map("user")
 }

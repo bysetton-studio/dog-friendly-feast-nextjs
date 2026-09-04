@@ -2,6 +2,7 @@ import { isMapsCapReached } from '@/lib/mapsRateLimit';
 import { getCity, getSuburb } from '@/lib/placeUtils';
 import { prisma } from '@/lib/prisma';
 import { PlaceData, resolvePlaceDetails } from '@/lib/resolvePlaceDetails';
+import { auth } from '@/lib/auth';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET() {
@@ -73,23 +74,29 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Invalid payload' }, { status: 400 });
   }
 
+  const session = await auth.api.getSession({ headers: req.headers });
+
   const location = await prisma.location.create({
-    data: { name, address, isFriendly: friendly, isAdminApproved: false, updatedAt: new Date() },
+    data: {
+      name,
+      address,
+      isFriendly: friendly,
+      isAdminApproved: false,
+      updatedAt: new Date(),
+      ...(session ? { suggestedById: session.user.id } : {}),
+    },
   });
 
   const place = await resolvePlaceDetails(name, address);
   if (place) {
     const types = (place.types as string[] | undefined) ?? [];
     await Promise.all([
-      prisma.resolvedLocation.create({
-        data: { locationId: location.id, placeData: place as object },
-      }),
       prisma.location.update({
         where: { id: location.id },
         data: { 
-          types, resolved: { 
-            connect: { 
-              locationId: location.id,  
+          types, 
+          resolved: { 
+            create: { 
               placeData: place as object 
             } 
           } 
