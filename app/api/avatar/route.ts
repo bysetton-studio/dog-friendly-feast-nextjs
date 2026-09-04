@@ -23,6 +23,7 @@ export async function POST(req: NextRequest) {
     if (!IS_LOCAL) {
       const { put } = await import('@vercel/blob');
       const blob = await put(`avatars/${session.user.id}.jpg`, file, {
+        allowOverwrite: true,
         access: 'public',
         contentType: 'image/jpeg',
       });
