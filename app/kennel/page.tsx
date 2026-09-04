@@ -5,6 +5,7 @@ import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { kennelArt } from '@/data/kennelArt';
 import { TYPE_FILTERS } from '@/components/TypeFilter';
+import AvatarPicker from '@/components/AvatarPicker';
 import LogoutButton from './LogoutButton';
 import './kennel.css';
 
@@ -54,7 +55,7 @@ export default async function KennelPage() {
 
       <div className="kennel__stack">
           <div className="kennel__title_container">
-            <div className="kennel__avatar">🐶</div>
+            <AvatarPicker image={session.user.image ?? null} />
             <h1 className="kennel__title">{session.user.name}&apos;s Kennel</h1>
           </div>
 
