@@ -51,8 +51,19 @@ model User {
   sessions           Session[]
   accounts           Account[]
   suggestedLocations Location[]
+  dogs               UserDog[]
 
   @@map("user")
+}
+
+model UserDog {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  image     String?
+  createdAt DateTime @default(now())
+
+  @@map("user_dog")
 }
 
 model Session {

@@ -5,6 +5,7 @@ import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { kennelArt } from '@/data/kennelArt';
 import AvatarPicker from '@/components/AvatarPicker';
+import DogAvatars from './DogAvatars';
 import LogoutButton from './LogoutButton';
 import KennelLocationRow from './KennelLocationRow';
 import './kennel.css';
@@ -25,10 +26,16 @@ export default async function KennelPage() {
     redirect('/auth');
   }
 
-  const suggestedLocations = await prisma.location.findMany({
-    where: { suggestedById: session.user.id },
-    orderBy: { createdAt: 'desc' },
-  });
+  const [suggestedLocations, dogs] = await Promise.all([
+    prisma.location.findMany({
+      where: { suggestedById: session.user.id },
+      orderBy: { createdAt: 'desc' },
+    }),
+    prisma.userDog.findMany({
+      where: { userId: session.user.id },
+      orderBy: { createdAt: 'asc' },
+    }),
+  ]);
 
   return (
     <main className="kennel">
@@ -48,7 +55,10 @@ export default async function KennelPage() {
 
       <div className="kennel__stack">
           <div className="kennel__title_container">
-            <AvatarPicker image={session.user.image ?? null} />
+            <div className="kennel__avatar-area">
+              <AvatarPicker image={session.user.image ?? null} />
+              <DogAvatars initial={dogs.map((d) => ({ id: d.id, image: d.image }))} />
+            </div>
             <h1 className="kennel__title">{session.user.name}&apos;s Kennel</h1>
           </div>
 
