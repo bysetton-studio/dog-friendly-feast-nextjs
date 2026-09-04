@@ -64,10 +64,11 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
-  const { name, address, isFriendly: friendly } = body as {
+  const { name, address, isFriendly: friendly, types: userTypes } = body as {
     name: string;
     address: string;
     isFriendly: boolean;
+    types?: string[];
   };
 
   if (!name || !address || typeof friendly !== 'boolean') {
@@ -83,6 +84,7 @@ export async function POST(req: NextRequest) {
       isFriendly: friendly,
       isAdminApproved: false,
       updatedAt: new Date(),
+      ...(userTypes ? { types: userTypes } : {}),
       ...(session ? { suggestedById: session.user.id } : {}),
     },
   });

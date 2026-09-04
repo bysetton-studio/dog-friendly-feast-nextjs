@@ -1,0 +1,112 @@
+.friendly-modal__backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: 16px;
+}
+
+.friendly-modal {
+  background: rgba(28, 28, 28, 0.98);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 28px 24px 24px;
+  width: 100%;
+  max-width: 360px;
+  font-family: Arial, sans-serif;
+}
+
+.friendly-modal__title {
+  font-size: 17px;
+  font-weight: 600;
+  color: #e0e0e0;
+  margin: 0 0 6px;
+}
+
+.friendly-modal__place {
+  font-size: 13px;
+  color: #9aa0a6;
+  margin: 0 0 20px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.friendly-modal__options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.friendly-modal__option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
+  color: #c0c0c0;
+  font-size: 14px;
+  font-family: Arial, sans-serif;
+  cursor: pointer;
+  transition: background 0.12s, border-color 0.12s, color 0.12s;
+  text-align: left;
+}
+
+.friendly-modal__option:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #e0e0e0;
+}
+
+.friendly-modal__option--selected {
+  border-color: rgba(30, 126, 52, 0.6);
+  background: rgba(30, 126, 52, 0.15);
+  color: #6fcf97;
+}
+
+.friendly-modal__option-emoji {
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.friendly-modal__actions {
+  display: flex;
+  gap: 10px;
+}
+
+.friendly-modal__cancel,
+.friendly-modal__confirm {
+  flex: 1;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: Arial, sans-serif;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+
+.friendly-modal__cancel {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #9aa0a6;
+}
+
+.friendly-modal__cancel:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #e0e0e0;
+}
+
+.friendly-modal__confirm {
+  background: rgba(30, 126, 52, 0.2);
+  border: 1px solid rgba(30, 126, 52, 0.4);
+  color: #6fcf97;
+}
+
+.friendly-modal__confirm:hover {
+  background: rgba(30, 126, 52, 0.3);
+}

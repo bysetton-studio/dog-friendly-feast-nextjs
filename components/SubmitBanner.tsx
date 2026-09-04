@@ -1,7 +1,8 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useSubmitLocation } from '@/hooks/useSubmitLocation';
+import FriendlyTypeModal from './FriendlyTypeModal';
 import './SubmitBanner.css';
 import type { Place } from '@/types';
 
@@ -14,6 +15,7 @@ interface Props {
 export default function SubmitBanner({ place, onDismiss, inList }: Props) {
   const { submit, submitting, submitted } = useSubmitLocation();
   const dismissTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [showTypeModal, setShowTypeModal] = useState(false);
 
   useEffect(() => {
     if (submitted !== null) {
@@ -25,6 +27,14 @@ export default function SubmitBanner({ place, onDismiss, inList }: Props) {
   if (!place) return null;
 
   return (
+    <>
+    {showTypeModal && (
+      <FriendlyTypeModal
+        placeName={place.name as string}
+        onConfirm={(types) => { setShowTypeModal(false); submit(place, true, types); }}
+        onCancel={() => setShowTypeModal(false)}
+      />
+    )}
     <div className="submit-banner">
       <div className="submit-banner__info">
         <span className="submit-banner__name">{place.name as string}</span>
@@ -41,7 +51,7 @@ export default function SubmitBanner({ place, onDismiss, inList }: Props) {
         <div className="submit-banner__actions">
           <button
             className="submit-banner__btn submit-banner__btn--friendly"
-            onClick={() => submit(place, true)}
+            onClick={() => setShowTypeModal(true)}
             disabled={submitting !== null}
           >
             {submitting === true ? <span className="submit-banner__spinner" /> : '🐾 Friendly'}
@@ -56,5 +66,6 @@ export default function SubmitBanner({ place, onDismiss, inList }: Props) {
         </div>
       )}
     </div>
+    </>
   );
 }

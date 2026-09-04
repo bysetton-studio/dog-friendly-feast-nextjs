@@ -7,7 +7,7 @@ export function useSubmitLocation() {
   const [submitting, setSubmitting] = useState<boolean | null>(null);
   const [submitted, setSubmitted] = useState<boolean | null>(null);
 
-  async function submit(place: Place, value: boolean): Promise<void> {
+  async function submit(place: Place, value: boolean, types?: string[]): Promise<void> {
     const name = (place.name as string) ?? '';
     const address = (place.formatted_address as string) ?? '';
 
@@ -16,7 +16,7 @@ export function useSubmitLocation() {
     const res = await fetch('/api/locations', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, address, isFriendly: value }),
+      body: JSON.stringify({ name, address, isFriendly: value, ...(types ? { types } : {}) }),
     });
 
     addLocationToCache({ name, address, friendly: value, adminApproved: false });
