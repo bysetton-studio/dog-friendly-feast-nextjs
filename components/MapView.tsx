@@ -42,15 +42,16 @@ interface Props {
 
 function matchesTypeFilter(types: string[] | undefined, selectedTypes: Set<string>): boolean {
   if (selectedTypes.size === 0) return true;
-  if (!types) return true;
+  if (!types || types.length === 0) return selectedTypes.has('other');
+  if (selectedTypes.has('other') && types.length === 0) return true;
   return TYPE_FILTERS.some(
-    (f) => selectedTypes.has(f.key) && f.types.some((t) => types.includes(t))
+    (f) => f.key !== 'other' && selectedTypes.has(f.key) && f.types.some((t) => types.includes(t))
   );
 }
 
 function getTypeEmoji(types: string[] | undefined): string {
-  if (!types) return '🦴';
-  const match = TYPE_FILTERS.find((f) => f.types.some((t) => types.includes(t)));
+  if (!types || types.length === 0) return '🦴';
+  const match = TYPE_FILTERS.find((f) => f.key !== 'other' && f.types.some((t) => types.includes(t)));
   return match ? match.emoji : '🦴';
 }
 
@@ -267,8 +268,7 @@ export default function MapView({
     const GEOGRAPHIC_RESULT_TYPES = new Set([
       'country', 'state', 'county', 'city', 'postcode', 'street', 'district', 'suburb',
     ]);
-    const isGeographic = GEOGRAPHIC_RESULT_TYPES.has((selected as Record<string, unknown>).result_type as string)
-      || !selected.types?.length;
+    const isGeographic = GEOGRAPHIC_RESULT_TYPES.has(selected.result_type as string)
 
     if (!isGeographic) {
       selectedMarkerRef.current = L.marker([lat, lng], { icon: createSearchPinIcon() }).addTo(map);

@@ -9,12 +9,12 @@ export interface TypeFilterOption {
 
 export const TYPE_FILTERS: TypeFilterOption[] = [
   { key: 'restaurant', label: 'Restaurant', emoji: '🍔', types: ['restaurant'] },
-  { key: 'cafe',       label: 'Cafe',       emoji: '☕', types: ['cafe', 'bakery'] },
-  { key: 'bar',        label: 'Bar',        emoji: '🍺', types: ['bar', 'night_club'] },
-  { key: 'shop',       label: 'Shop',       emoji: '🛍️', types: ['store', 'shopping_mall', 'supermarket', 'convenience_store'] },
+  { key: 'cafe',       label: 'Cafe',       emoji: '☕', types: ['cafe'] },
+  { key: 'bar',        label: 'Bar',        emoji: '🍺', types: ['bar'] },
+  { key: 'shop',       label: 'Shop',       emoji: '🛍️', types: ['shopping_mall', 'supermarket', 'convenience_store'] },
   { key: 'park',       label: 'Park',       emoji: '🌳', types: ['park'] },
+  { key: 'other',      label: 'Other',      emoji: '🦴', types: [] },
 ];
-
 interface Props {
   selected: Set<string>;
   onChange: (types: Set<string>) => void;
@@ -29,6 +29,12 @@ export default function TypeFilter({ selected, onChange }: Props) {
 
   return (
     <div className="type-filter">
+      <button
+        className={`type-filter__chip${selected.size === 0 ? ' type-filter__chip--on' : ''}`}
+        onClick={() => onChange(new Set())}
+      >
+        <span className="type-filter__label">All</span>
+      </button>
       {TYPE_FILTERS.map(({ key, label, emoji }) => {
         const checked = selected.has(key);
         return (

@@ -23,21 +23,30 @@ export function getSuburb(addressComponents: AddressComponent[] | undefined): st
 }
 
 /**
- * Maps Geoapify category strings (e.g. "catering.restaurant") to the Google-style
- * place type strings used by TYPE_FILTERS (e.g. "restaurant").
+ * Maps Geoapify category strings to the simplified type keys used by TYPE_FILTERS.
+ * Uses startsWith so subcategories (e.g. catering.restaurant.italian) are caught by their parent.
  */
 export function normalizeGeoapifyCategories(categories: string[] | undefined): string[] {
   if (!categories) return [];
   const mapped: string[] = [];
   for (const cat of categories) {
-    if (cat.includes('restaurant') || cat.includes('fast_food')) mapped.push('restaurant');
-    else if (cat.includes('cafe') || cat.includes('coffee') || cat.includes('bakery')) mapped.push('cafe');
-    else if (cat.includes('bar') || cat.includes('pub')) mapped.push('bar');
-    else if (cat.includes('park') || cat.startsWith('natural.')) mapped.push('park');
-    else if (cat.includes('shopping_mall') || cat.includes('mall')) mapped.push('shopping_mall');
-    else if (cat.includes('supermarket')) mapped.push('supermarket');
-    else if (cat.includes('convenience')) mapped.push('convenience_store');
+    if (cat.startsWith('catering.restaurant') || cat.startsWith('catering.fast_food') || cat === 'catering.food_court') {
+      mapped.push('restaurant');
+    } else if (cat.startsWith('catering.cafe') || cat === 'catering.ice_cream') {
+      mapped.push('cafe');
+    } else if (cat === 'catering.bar' || cat === 'catering.pub' || cat === 'catering.biergarten' || cat === 'catering.taproom') {
+      mapped.push('bar');
+    } else if (cat === 'commercial.shopping_mall' || cat === 'commercial.department_store' || cat === 'commercial.marketplace') {
+      mapped.push('shopping_mall');
+    } else if (cat === 'commercial.supermarket') {
+      mapped.push('supermarket');
+    } else if (cat === 'commercial.convenience') {
+      mapped.push('convenience_store');
+    } else if (cat.startsWith('leisure.park') || cat.startsWith('natural.')) {
+      mapped.push('park');
+    }
   }
+
   return [...new Set(mapped)];
 }
 

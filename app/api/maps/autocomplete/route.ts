@@ -3,7 +3,7 @@ import { canMakeMapsRequest } from '@/lib/mapsRateLimit';
 import { getCachedPredictions, setCachedPredictions, setCachedDetails } from '@/lib/mapsServerCache';
 import { geoapifyPropsToPlace } from '@/lib/placeUtils';
 
-const API_KEY = process.env.NEXT_PUBLIC_GEOAPIFY_API_KEY ?? '';
+const API_KEY = process.env.GEOAPIFY_API_KEY ?? '';
 
 export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => ({}));
@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
   }
 
   const query = encodeURIComponent(input);
-  const url = `https://api.geoapify.com/v1/geocode/autocomplete?text=${query}&filter=countrycode:za&limit=5&apiKey=${API_KEY}`;
+  const url = `https://api.geoapify.com/v1/geocode/autocomplete?text=${query}&filter=countrycode:za&limit=5&format=json&apiKey=${API_KEY}`;
   const res = await fetch(url);
 
   if (!res.ok) {
@@ -33,26 +33,26 @@ export async function POST(req: NextRequest) {
   }
 
   const data = await res.json();
-  const features: { properties: Record<string, unknown> }[] = data.features ?? [];
+  const results: Record<string, unknown>[] = data.results ?? [];
 
-  const predictions = features
-    .filter((f) => f.properties.place_id)
+  const predictions = results
+    .filter((f) => f.place_id)
     .map((f) => {
-      const p = f.properties;
-      const place = geoapifyPropsToPlace(p);
+      const place = geoapifyPropsToPlace(f);
 
       // Cache full place data by place_id so the details endpoint can return it without a second API call
-      if (p.place_id) {
-        setCachedDetails(p.place_id as string, place);
+      if (f.place_id) {
+        setCachedDetails(f.place_id as string, place);
       }
 
       return {
-        place_id: p.place_id as string,
-        description: (p.formatted as string) ?? '',
+        place_id: f.place_id as string,
+        description: (f.formatted as string) ?? '',
         structured_formatting: {
-          main_text: ((p.name || p.address_line1) as string) ?? '',
-          secondary_text: ((p.address_line2 || p.city || '') as string),
+          main_text: ((f.name || f.address_line1) as string) ?? '',
+          secondary_text: ((f.address_line2 || f.city || '') as string),
         },
+        category: (f.categories as string[]) ?? [],
       };
     });
 

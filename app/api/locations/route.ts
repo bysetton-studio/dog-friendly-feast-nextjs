@@ -23,8 +23,10 @@ export async function GET() {
       } else {
         place = await resolvePlaceDetails(l.name, l.address);
         if (place) {
-          await prisma.resolvedLocation.create({
-            data: { locationId: l.id, placeData: place as object },
+          await prisma.resolvedLocation.upsert({
+            where: { locationId: l.id },
+            update: { placeData: place as object },
+            create: { locationId: l.id, placeData: place as object },
           });
         }
       }
