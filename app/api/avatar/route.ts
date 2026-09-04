@@ -3,10 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 
-const USE_BLOB = Boolean(
-  process.env.BLOB_READ_WRITE_TOKEN &&
-  process.env.BLOB_READ_WRITE_TOKEN !== 'your_token_here'
-);
+const IS_LOCAL = process.env.NODE_ENV === 'development';
 
 export async function POST(req: NextRequest) {
   const session = await auth.api.getSession({ headers: await headers() });
@@ -23,7 +20,7 @@ export async function POST(req: NextRequest) {
   try {
     let imageUrl: string;
 
-    if (USE_BLOB) {
+    if (!IS_LOCAL) {
       const { put } = await import('@vercel/blob');
       const blob = await put(`avatars/${session.user.id}.jpg`, file, {
         access: 'public',
