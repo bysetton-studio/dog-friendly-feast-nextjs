@@ -14,15 +14,20 @@ interface Props {
   initial: Dog[];
 }
 
-const MAX_DOGS = 5;
+const MAX_DOGS  = 5;
 const DOG_SIZE  = 64;
-const CENTER_X  = 150;  // half of the 300px area width
-const CENTER_Y  = 60;   // center of the 120px main avatar from area top
-const ARC_R     = 85;   // px from main-avatar center to dog center
+const CENTER_X  = 140;  // horizontal center of the 280px area
+const CENTER_Y  = 145;  // center of the main avatar (padding-top 90 + avatar radius 60)
+const ARC_R     = 80;  // distance from main avatar center to dog center
+const GAP       = -10;   // fixed pixel gap between adjacent dog circles
+// Angle between adjacent dogs so their edges are always GAP apart
+const STEP_DEG  = (2 * Math.asin((DOG_SIZE + GAP) / (2 * ARC_R))) * (180 / Math.PI);
 
-function arcPosition(index: number, total: number): React.CSSProperties {
-  // spread from 210° to 330° (standard math: 0=right, 90=up, CCW)
-  const deg = total === 1 ? 270 : 25 + (index / (total - 1)) * (28*total);
+const ADD_BUTTON_OFFSET = 25; // extra degrees away from the last dog
+
+// index 0 = leftmost, arc centered at 90° (top)
+function arcPosition(index: number, total: number, extraOffset = 0): React.CSSProperties {
+  const deg = 90 + ((total - 1) / 2 - index) * STEP_DEG - extraOffset;
   const rad = (deg * Math.PI) / 180;
   return {
     left: CENTER_X + ARC_R * Math.cos(rad) - DOG_SIZE / 2,
@@ -39,7 +44,6 @@ export default function DogAvatars({ initial }: Props) {
   const pendingDogId = useRef<string | null>(null);
 
   const canAdd = dogs.length < MAX_DOGS;
-  const totalSlots = dogs.length + (canAdd ? 1 : 0);
 
   async function handleAdd() {
     if (!canAdd) return;
@@ -99,7 +103,7 @@ export default function DogAvatars({ initial }: Props) {
         <div
           key={dog.id}
           className="dog-avatar"
-          style={arcPosition(i, totalSlots)}
+          style={{ ...arcPosition(i, dogs.length), zIndex: dogs.length - i }}
         >
           <div className="dog-avatar__circle">
             {dog.image
@@ -132,11 +136,11 @@ export default function DogAvatars({ initial }: Props) {
       {canAdd && (
         <button
           className="dog-avatar__add"
-          style={arcPosition(dogs.length, totalSlots)}
+          style={arcPosition(dogs.length, dogs.length + 1, ADD_BUTTON_OFFSET)}
           onClick={handleAdd}
           aria-label="Add dog"
         >
-          add your pup
+          {dogs.length === 0 ? 'add your pup' : 'add another pup'}
         </button>
       )}
 

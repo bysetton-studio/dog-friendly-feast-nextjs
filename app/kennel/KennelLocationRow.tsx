@@ -113,9 +113,6 @@ export default function KennelLocationRow({ loc, canEdit = false }: Props) {
             <span className="kennel__location-name">{loc.name}</span>
           </span>
           <span className="kennel__location-actions">
-            <span className={`kennel__location-badge ${loc.isFriendly ? 'kennel__location-badge--friendly' : 'kennel__location-badge--not'}`}>
-              {loc.isFriendly ? '🐾 Friendly' : '✕ Not friendly'}
-            </span>
             {canEdit && (
               <button
                 className="kennel__location-edit"
@@ -125,6 +122,9 @@ export default function KennelLocationRow({ loc, canEdit = false }: Props) {
                 <Pencil size={12} strokeWidth={2.5} />
               </button>
             )}
+            <span className={`kennel__location-badge ${loc.isFriendly ? 'kennel__location-badge--friendly' : 'kennel__location-badge--not'}`}>
+              {loc.isFriendly ? '🐾 Friendly' : '✕ Not friendly'}
+            </span>
           </span>
         </div>
         <div className="kennel__location-sub">
