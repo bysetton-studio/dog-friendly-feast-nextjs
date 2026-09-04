@@ -97,6 +97,12 @@
   pointer-events: none;
   z-index: 10;
   border-radius: 16px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.map-gesture-hint--visible {
+  opacity: 1;
 }
 
 .map-label strong {
