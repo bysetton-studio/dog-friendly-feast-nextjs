@@ -6,22 +6,22 @@ const BASE_URL = 'https://dogfriendlyfeast.vercel.app';
 const GA_ID = 'G-4KQQMMPGVF';
 
 export const metadata: Metadata = {
-  title: 'Dog Friendly Feast | Find Dog-Friendly Restaurants in South Africa',
+  title: 'Dog World | Find Dog-Friendly Restaurants in South Africa',
   description: 'Discover restaurants across South Africa where you can bring your dog. Find verified dog-friendly spots in Cape Town, Johannesburg, Durban and more.',
   robots: { index: true, follow: true },
   alternates: { canonical: BASE_URL },
   openGraph: {
-    title: "Dog Friendly Feast | SA's Dog-Friendly Restaurant Finder",
+    title: "Dog World | SA's Dog-Friendly Restaurant Finder",
     description: 'Discover restaurants across South Africa where you can bring your dog. Find verified dog-friendly spots in Cape Town, Johannesburg, Durban and more.',
     url: BASE_URL,
-    siteName: 'Dog Friendly Feast',
+    siteName: 'Dog World',
     images: [{ url: `${BASE_URL}/hero.png` }],
     locale: 'en_ZA',
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: "Dog Friendly Feast | SA's Dog-Friendly Restaurant Finder",
+    title: "Dog World | SA's Dog-Friendly Restaurant Finder",
     description: 'Discover restaurants across South Africa where you can bring your dog.',
     images: [`${BASE_URL}/hero.png`],
   },
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'WebSite',
-  name: 'Dog Friendly Feast',
+  name: 'Dog World',
   url: BASE_URL,
   description: 'Discover restaurants across South Africa where you can bring your dog. Find verified dog-friendly spots in Cape Town, Johannesburg, Durban and more.',
   inLanguage: 'en-ZA',

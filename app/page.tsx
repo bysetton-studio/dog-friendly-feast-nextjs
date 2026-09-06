@@ -88,7 +88,7 @@ export default function HomePage() {
         <div className="page-container">
         <AddSticker />
         <div className="logo-area">
-          <h1 className="logo">Dog Friendly Feast</h1>
+          <h1 className="logo">Dog World</h1>
           <p className="tagline">Find dog-friendly restaurants near you</p>
         </div>
 

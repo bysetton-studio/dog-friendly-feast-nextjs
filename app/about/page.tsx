@@ -9,7 +9,7 @@ export default function AboutPage() {
       <BackgroundArt />
       <Link href="/" className="about__back">← Back to map</Link>
 
-      <h1 className="about__title">About Dog Friendly Feast</h1>
+      <h1 className="about__title">About Dog World</h1>
 
       <section className="about__section">
         <h2>South Africa&apos;s dog-friendly restaurant directory</h2>
@@ -17,7 +17,7 @@ export default function AboutPage() {
           Finding restaurants that allow our furry friends can be a real pain – we&apos;re here to help take the guesswork out of it!
         </p>
         <p>
-          Dog Friendly Feast is a community-driven map of spots across South Africa where you can bring your dog and feel welcomed.
+          Dog World is a community-driven map of spots across South Africa where you can bring your dog and feel welcomed.
         </p>
       </section>
 
