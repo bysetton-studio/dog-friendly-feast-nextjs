@@ -86,104 +86,104 @@ export default function HomePage() {
             : <Link href="/auth" className="top-nav__link">Sign up / Log in</Link>
           }
         </nav>
-        <div className="page-container">
-        <AddSticker />
         <SupportSticker />
-        <div className="logo-area">
-          <h1 className="logo">Dog World</h1>
-          <p className="tagline">Find dog-friendly restaurants near you</p>
-        </div>
+        <div className="page-container">
+          <AddSticker />
+          <div className="logo-area">
+            <h1 className="logo">Dog World</h1>
+            <p className="tagline">Find dog-friendly restaurants near you</p>
+          </div>
 
-        <LocationSearch
-          onSelect={setSelected}
-          mapRef={mapRef}
-          onToggleFilters={() => setFiltersOpen((v) => !v)}
-          filtersOpen={filtersOpen}
-          filtersActive={selectedTypes.size > 0}
-          selectedTypes={selectedTypes}
-          onTypesChange={setSelectedTypes}
-        />
-
-        {showSubmitBanner && (
-          <SubmitBanner
-            place={selected}
-            onDismiss={() => setSelected(null)}
-            inList={isInList(selected, allResolved)}
+          <LocationSearch
+            onSelect={setSelected}
+            mapRef={mapRef}
+            onToggleFilters={() => setFiltersOpen((v) => !v)}
+            filtersOpen={filtersOpen}
+            filtersActive={selectedTypes.size > 0}
+            selectedTypes={selectedTypes}
+            onTypesChange={setSelectedTypes}
           />
-        )}
 
-        <div className="map-row">
-          {expandedCity && (
-            <LocationList
-              onSelect={setSelected}
-              grouped={grouped}
-              expandedCities={expandedCities}
-              expandedSuburbs={expandedSuburbs}
-              toggleCity={toggleCity}
-              toggleSuburb={toggleSuburb}
-              loading={resolvedLoading}
-              selectedTypes={selectedTypes}
-              onlyCity={expandedCity}
-              flipFromRect={cityFlipRect}
+          {showSubmitBanner && (
+            <SubmitBanner
+              place={selected}
+              onDismiss={() => setSelected(null)}
+              inList={isInList(selected, allResolved)}
             />
           )}
-          <MapView
-            selected={selected}
-            mapRef={mapRef}
-            selectedSuburbs={selectedSuburbs}
-            selectedCity={selectedCity}
-            resolved={resolved}
-            resolvedLoading={resolvedLoading}
-            locationsLoading={resolvedLoading}
-            approvedOnly={approvedOnly}
-            onApprovedOnlyToggle={() => setApprovedOnly((v) => !v)}
-            selectedTypes={selectedTypes}
-            capReached={capReached}
-            expandedPlaces={expandedPlaces}
-          />
-        </div>
 
-        {capReached && (
-          <div className="page-cap-backdrop">
-            <img src="/run_out_of_money.svg" className="page-cap-svg" aria-hidden="true" />
-            <div className="page-cap-content">
-              <span className="cap-main-text">
-                <p><b>Daily map limit reached ! ! ! :(</b> <br/>Consider supporting us to keep the lights on.</p>
-              </span>
-              <span className="cap-contact-group">
-                <span className="cap-contact-label">contact us to support</span>
-                <button
-                  className="cap-copy-email"
-                  onClick={() => {
-                    navigator.clipboard.writeText('bysetton+dogworldweb@gmail.com');
-                    setEmailCopied(true);
-                    setTimeout(() => setEmailCopied(false), 2000);
-                  }}
-                >
-                  {emailCopied ? 'Copied!' : 'bysetton+dogworldweb@gmail.com'}
-                </button>
-                <Link href="/about" className="cap-about-link">Find out what we do →</Link>
-              </span>
-            </div>
+          <div className="map-row">
+            {expandedCity && (
+              <LocationList
+                onSelect={setSelected}
+                grouped={grouped}
+                expandedCities={expandedCities}
+                expandedSuburbs={expandedSuburbs}
+                toggleCity={toggleCity}
+                toggleSuburb={toggleSuburb}
+                loading={resolvedLoading}
+                selectedTypes={selectedTypes}
+                onlyCity={expandedCity}
+                flipFromRect={cityFlipRect}
+              />
+            )}
+            <MapView
+              selected={selected}
+              mapRef={mapRef}
+              selectedSuburbs={selectedSuburbs}
+              selectedCity={selectedCity}
+              resolved={resolved}
+              resolvedLoading={resolvedLoading}
+              locationsLoading={resolvedLoading}
+              approvedOnly={approvedOnly}
+              onApprovedOnlyToggle={() => setApprovedOnly((v) => !v)}
+              selectedTypes={selectedTypes}
+              capReached={capReached}
+              expandedPlaces={expandedPlaces}
+            />
           </div>
-        )}
 
-        <Link href="/add" className="add-location-link">
-          Don&apos;t see your spot? Add a restaurant →
-        </Link>
+          {capReached && (
+            <div className="page-cap-backdrop">
+              <img src="/run_out_of_money.svg" className="page-cap-svg" aria-hidden="true" />
+              <div className="page-cap-content">
+                <span className="cap-main-text">
+                  <p><b>Daily map limit reached ! ! ! :(</b> <br/>Consider supporting us to keep the lights on.</p>
+                </span>
+                <span className="cap-contact-group">
+                  <span className="cap-contact-label">contact us to support</span>
+                  <button
+                    className="cap-copy-email"
+                    onClick={() => {
+                      navigator.clipboard.writeText('bysetton+dogworldweb@gmail.com');
+                      setEmailCopied(true);
+                      setTimeout(() => setEmailCopied(false), 2000);
+                    }}
+                  >
+                    {emailCopied ? 'Copied!' : 'bysetton+dogworldweb@gmail.com'}
+                  </button>
+                  <Link href="/about" className="cap-about-link">Find out what we do →</Link>
+                </span>
+              </div>
+            </div>
+          )}
 
-        <LocationList
-          onSelect={setSelected}
-          grouped={grouped}
-          expandedCities={expandedCities}
-          expandedSuburbs={expandedSuburbs}
-          toggleCity={toggleCity}
-          toggleSuburb={toggleSuburb}
-          loading={resolvedLoading}
-          selectedTypes={selectedTypes}
-          excludeCity={expandedCity ?? undefined}
-          onCityClickCapture={(_, rect) => setCityFlipRect(rect)}
-        />
+          <Link href="/add" className="add-location-link">
+            Don&apos;t see your spot? Add a restaurant →
+          </Link>
+
+          <LocationList
+            onSelect={setSelected}
+            grouped={grouped}
+            expandedCities={expandedCities}
+            expandedSuburbs={expandedSuburbs}
+            toggleCity={toggleCity}
+            toggleSuburb={toggleSuburb}
+            loading={resolvedLoading}
+            selectedTypes={selectedTypes}
+            excludeCity={expandedCity ?? undefined}
+            onCityClickCapture={(_, rect) => setCityFlipRect(rect)}
+          />
         </div>
     </main>
   );
