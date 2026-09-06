@@ -26,11 +26,11 @@
 }
 
 .location-group {
-  background: #fff;
+  background: rgb(30, 30, 30);
   max-height: 550px;
   overflow: auto;
   border-radius: 16px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
   position: relative;
   z-index: 1;
 }
@@ -38,7 +38,7 @@
 .city-heading {
   font-size: 13px;
   font-weight: 600;
-  color: #202124;
+  color: #e0e0e0;
   margin: 0;
   padding: 14px 16px;
   cursor: pointer;
@@ -52,7 +52,7 @@
 .city-heading__name {
   font-size: 14px;
   font-weight: 600;
-  color: #202124;
+  color: #e0e0e0;
 }
 
 .city-heading__meta {
@@ -64,8 +64,8 @@
 .city-heading__count {
   font-size: 11px;
   font-weight: 600;
-  background: #e8eaed;
-  color: #5f6368;
+  background: rgba(255, 255, 255, 0.1);
+  color: #9aa0a6;
   border-radius: 20px;
   padding: 2px 8px;
 }
@@ -91,8 +91,8 @@
 .suburb-heading {
   font-size: 12px;
   font-weight: 600;
-  color: #5f6368;
-  background: #f4f4f4;
+  color: #9aa0a6;
+  background: rgba(255, 255, 255, 0.04);
   margin: 0;
   padding: 8px 12px;
   cursor: pointer;
@@ -104,13 +104,13 @@
 }
 
 .suburb-heading:hover {
-  background: #e8eaed;
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .suburb-heading__name {
   font-size: 12px;
   font-weight: 600;
-  color: #5f6368;
+  color: #9aa0a6;
 }
 
 .suburb-heading__meta {
@@ -139,29 +139,29 @@
 }
 
 .place-item:hover {
-  background: #f5f5f5;
+  background: rgba(255, 255, 255, 0.06);
 }
 
 .place-item:hover .place-name {
-  color: #1a73e8;
+  color: #ffffff;
 }
 
 .place-item--unfriendly .place-name {
-  color: #c5221f;
+  color: #f28b82;
 }
 
 .place-item--unfriendly .place-icon {
-  background: #fce8e6;
-  color: #c5221f;
+  background: rgba(255, 80, 80, 0.12);
+  color: #f28b82;
   font-size: 13px;
 }
 
 .place-item--unfriendly:hover {
-  background: #fef7f7;
+  background: rgba(255, 80, 80, 0.08);
 }
 
 .place-item--unfriendly:hover .place-name {
-  color: #a50e0e;
+  color: #ff9a94;
 }
 
 .place-icon {
@@ -169,7 +169,7 @@
   flex-shrink: 0;
   width: 34px;
   height: 34px;
-  background: #f5f5f5;
+  background: rgba(255, 255, 255, 0.07);
   border-radius: 8px;
   display: flex;
   align-items: center;
@@ -185,7 +185,7 @@
 .place-name {
   font-size: 13px;
   font-weight: 600;
-  color: #202124;
+  color: #e0e0e0;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
