@@ -26,14 +26,14 @@ export default function AuthPage() {
       if (err) {
         setError(err.message ?? 'Sign up failed.');
       } else {
-        router.push('/');
+        router.push('/kennel');
       }
     } else {
       const { error: err } = await authClient.signIn.email({ email, password });
       if (err) {
         setError(err.message ?? 'Log in failed.');
       } else {
-        router.push('/');
+        router.push('/kennel');
       }
     }
 

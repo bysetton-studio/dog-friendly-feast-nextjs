@@ -15,10 +15,10 @@ interface Props {
 }
 
 const MAX_DOGS  = 5;
-const DOG_SIZE  = 64;
+const DOG_SIZE  = 84;
 const CENTER_X  = 140;  // horizontal center of the 280px area
 const CENTER_Y  = 145;  // center of the main avatar (padding-top 90 + avatar radius 60)
-const ARC_R     = 80;  // distance from main avatar center to dog center
+const ARC_R     = 110;  // distance from main avatar center to dog center
 const GAP       = -10;   // fixed pixel gap between adjacent dog circles
 // Angle between adjacent dogs so their edges are always GAP apart
 const STEP_DEG  = (2 * Math.asin((DOG_SIZE + GAP) / (2 * ARC_R))) * (180 / Math.PI);
@@ -29,9 +29,11 @@ const ADD_BUTTON_OFFSET = 25; // extra degrees away from the last dog
 function arcPosition(index: number, total: number, extraOffset = 0): React.CSSProperties {
   const deg = 90 + ((total - 1) / 2 - index) * STEP_DEG - extraOffset;
   const rad = (deg * Math.PI) / 180;
+  // Round to 2 decimal places so SSR-serialized HTML and client values agree.
+  const r = (n: number) => Math.round(n * 100) / 100;
   return {
-    left: CENTER_X + ARC_R * Math.cos(rad) - DOG_SIZE / 2,
-    top:  CENTER_Y - ARC_R * Math.sin(rad) - DOG_SIZE / 2,
+    left: r(CENTER_X + ARC_R * Math.cos(rad) - DOG_SIZE / 2),
+    top:  r(CENTER_Y - ARC_R * Math.sin(rad) - DOG_SIZE / 2),
   };
 }
 
@@ -40,6 +42,8 @@ export default function DogAvatars({ initial }: Props) {
   const router = useRouter();
   const [dogs, setDogs] = useState<Dog[]>(initial);
   const [uploading, setUploading] = useState<string | null>(null);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const pendingDogId = useRef<string | null>(null);
 
@@ -91,10 +95,14 @@ export default function DogAvatars({ initial }: Props) {
     }
   }
 
-  async function handleRemove(dogId: string) {
-    await fetch(`/api/dogs/${dogId}`, { method: 'DELETE' });
-    setDogs((prev) => prev.filter((d) => d.id !== dogId));
+  async function handleConfirmRemove() {
+    if (!confirmDeleteId) return;
+    setDeleting(true);
+    await fetch(`/api/dogs/${confirmDeleteId}`, { method: 'DELETE' });
+    setDogs((prev) => prev.filter((d) => d.id !== confirmDeleteId));
     router.refresh();
+    setConfirmDeleteId(null);
+    setDeleting(false);
   }
 
   return (
@@ -124,7 +132,7 @@ export default function DogAvatars({ initial }: Props) {
 
           <button
             className="dog-avatar__btn dog-avatar__btn--remove"
-            onClick={() => handleRemove(dog.id)}
+            onClick={() => setConfirmDeleteId(dog.id)}
             disabled={uploading !== null}
             aria-label="Remove dog"
           >
@@ -151,6 +159,22 @@ export default function DogAvatars({ initial }: Props) {
         style={{ display: 'none' }}
         onChange={handleFile}
       />
+
+      {confirmDeleteId && (
+        <div className="kennel__modal-backdrop" onClick={() => setConfirmDeleteId(null)}>
+          <div className="kennel__modal" onClick={(e) => e.stopPropagation()}>
+            <p className="kennel__modal-text">Remove this pup?</p>
+            <div className="kennel__modal-actions">
+              <button className="kennel__modal-cancel" onClick={() => setConfirmDeleteId(null)}>
+                Cancel
+              </button>
+              <button className="kennel__modal-confirm" onClick={handleConfirmRemove} disabled={deleting}>
+                {deleting ? 'Removing…' : 'Remove'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

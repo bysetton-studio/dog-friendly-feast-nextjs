@@ -153,12 +153,12 @@ export default function HomePage() {
                 <button
                   className="cap-copy-email"
                   onClick={() => {
-                    navigator.clipboard.writeText('bysetton+dogfriendlyfeast@gmail.com');
+                    navigator.clipboard.writeText('bysetton+dogworldweb@gmail.com');
                     setEmailCopied(true);
                     setTimeout(() => setEmailCopied(false), 2000);
                   }}
                 >
-                  {emailCopied ? 'Copied!' : 'bysetton+dogfriendlyfeast@gmail.com'}
+                  {emailCopied ? 'Copied!' : 'bysetton+dogworldweb@gmail.com'}
                 </button>
                 <Link href="/about" className="cap-about-link">Find out what we do →</Link>
               </span>

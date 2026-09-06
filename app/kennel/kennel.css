@@ -48,7 +48,7 @@
   display: flex;
   justify-content: center;
   /* push main avatar below the dog row */
-  padding-top: 90px;
+  padding-top: 60px;
   box-sizing: border-box;
 }
 
@@ -76,8 +76,8 @@
   border-radius: 1000px;
   border: rgb(30, 30, 30) 1px solid;
   background: rgb(30, 30, 30);
-  width: 120px;
-  height: 120px;
+  width: 165px;
+  height: 165px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -368,8 +368,8 @@
 }
 
 .dog-avatar__circle {
-  width: 64px;
-  height: 64px;
+  width: 84px;
+  height: 84px;
   border-radius: 50%;
   background: rgb(30, 30, 30);
   border: 3px solid rgb(0, 0, 0);
@@ -496,6 +496,7 @@
   align-items: center;
   justify-content: center;
   z-index: 100;
+  pointer-events: auto;
 }
 
 .kennel__modal {

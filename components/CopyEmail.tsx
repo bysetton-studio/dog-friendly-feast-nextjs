@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 
-const EMAIL = 'bysetton+dogfriendlyfeasts@gmail.com';
+const EMAIL = 'bysetton+dogworldweb@gmail.com';
 
 export default function CopyEmail() {
   const [copied, setCopied] = useState(false);

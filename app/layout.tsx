@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import Script from 'next/script';
 import './globals.css';
 
-const BASE_URL = 'https://dogfriendlyfeast.vercel.app';
+const BASE_URL = 'https://dogworldweb.vercel.app';
 const GA_ID = 'G-4KQQMMPGVF';
 
 export const metadata: Metadata = {
