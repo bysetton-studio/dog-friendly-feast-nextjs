@@ -35,11 +35,33 @@
   text-overflow: ellipsis;
 }
 
+.friendly-modal__section-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  color: #9aa0a6;
+  margin: 0 0 8px;
+  font-family: Arial, sans-serif;
+}
+
 .friendly-modal__options {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 8px;
   margin-bottom: 20px;
+}
+
+.friendly-modal__friendly-toggle {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.friendly-modal__option--not {
+  border-color: rgba(255, 80, 80, 0.5);
+  background: rgba(255, 80, 80, 0.12);
+  color: #f28b82;
 }
 
 .friendly-modal__option {

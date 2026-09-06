@@ -35,9 +35,10 @@ function EditTypeModal({
 }: {
   location: Location;
   onClose: () => void;
-  onSaved: (types: string[]) => void;
+  onSaved: (types: string[], isFriendly: boolean) => void;
 }) {
   const [selected, setSelected] = useState(currentKey(location.types));
+  const [friendly, setFriendly] = useState(location.isFriendly);
   const [saving, setSaving] = useState(false);
 
   async function handleSave() {
@@ -45,15 +46,24 @@ function EditTypeModal({
     const filter = TYPE_FILTERS.find((f) => f.key === selected)!;
     const types = filter.types.length > 0 ? filter.types : [selected];
 
-    const res = await fetch(`/api/locations/${location.id}/types`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ types }),
-    });
+    const [typesRes, friendlyRes] = await Promise.all([
+      fetch(`/api/locations/${location.id}/types`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ types }),
+      }),
+      friendly !== location.isFriendly
+        ? fetch(`/api/locations/${location.id}/friendly`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ isFriendly: friendly }),
+          })
+        : Promise.resolve({ ok: true } as Response),
+    ]);
 
     setSaving(false);
-    if (res.ok) {
-      onSaved(types);
+    if (typesRes.ok && friendlyRes.ok) {
+      onSaved(types, friendly);
       onClose();
     }
   }
@@ -61,9 +71,10 @@ function EditTypeModal({
   return (
     <div className="friendly-modal__backdrop" onClick={onClose}>
       <div className="friendly-modal" onClick={(e) => e.stopPropagation()}>
-        <h2 className="friendly-modal__title">Edit place type</h2>
+        <h2 className="friendly-modal__title">Edit place</h2>
         <p className="friendly-modal__place">{location.name}</p>
 
+        <p className="friendly-modal__section-label">Place type</p>
         <div className="friendly-modal__options">
           {TYPE_FILTERS.map(({ key, label, emoji }) => (
             <button
@@ -75,6 +86,24 @@ function EditTypeModal({
               {label}
             </button>
           ))}
+        </div>
+
+        <p className="friendly-modal__section-label">Dog friendly?</p>
+        <div className="friendly-modal__friendly-toggle">
+          <button
+            className={`friendly-modal__option${friendly ? ' friendly-modal__option--selected' : ''}`}
+            onClick={() => setFriendly(true)}
+          >
+            <span className="friendly-modal__option-emoji">🐾</span>
+            Friendly
+          </button>
+          <button
+            className={`friendly-modal__option${!friendly ? ' friendly-modal__option--selected friendly-modal__option--not' : ''}`}
+            onClick={() => setFriendly(false)}
+          >
+            <span className="friendly-modal__option-emoji">✕</span>
+            Not friendly
+          </button>
         </div>
 
         <div className="friendly-modal__actions">
@@ -97,9 +126,11 @@ export default function KennelLocationRow({ loc, canEdit = false }: Props) {
   const router = useRouter();
   const [editing, setEditing] = useState(false);
   const [types, setTypes] = useState(loc.types);
+  const [isFriendly, setIsFriendly] = useState(loc.isFriendly);
 
-  function handleSaved(newTypes: string[]) {
+  function handleSaved(newTypes: string[], newFriendly: boolean) {
     setTypes(newTypes);
+    setIsFriendly(newFriendly);
     router.refresh();
   }
 
@@ -122,8 +153,8 @@ export default function KennelLocationRow({ loc, canEdit = false }: Props) {
                 <Pencil size={12} strokeWidth={2.5} />
               </button>
             )}
-            <span className={`kennel__location-badge ${loc.isFriendly ? 'kennel__location-badge--friendly' : 'kennel__location-badge--not'}`}>
-              {loc.isFriendly ? '🐾 Friendly' : '✕ Not friendly'}
+            <span className={`kennel__location-badge ${isFriendly ? 'kennel__location-badge--friendly' : 'kennel__location-badge--not'}`}>
+              {isFriendly ? '🐾 Friendly' : '✕ Not friendly'}
             </span>
           </span>
         </div>
@@ -134,7 +165,7 @@ export default function KennelLocationRow({ loc, canEdit = false }: Props) {
 
       {editing && (
         <EditTypeModal
-          location={{ ...loc, types }}
+          location={{ ...loc, types, isFriendly }}
           onClose={() => setEditing(false)}
           onSaved={handleSaved}
         />
