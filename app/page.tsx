@@ -13,6 +13,7 @@ import LocationSearch from '@/components/LocationSearch';
 import LocationList from '@/components/LocationList';
 import SubmitBanner from '@/components/SubmitBanner';
 import AddSticker from '@/components/AddSticker';
+import SupportSticker from '@/components/SupportSticker';
 
 import { useResolvedLocations } from '@/hooks/useResolvedLocations';
 import { useGroupedLocations } from '@/hooks/useGroupedLocations';
@@ -87,6 +88,7 @@ export default function HomePage() {
         </nav>
         <div className="page-container">
         <AddSticker />
+        <SupportSticker />
         <div className="logo-area">
           <h1 className="logo">Dog World</h1>
           <p className="tagline">Find dog-friendly restaurants near you</p>
