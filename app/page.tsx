@@ -36,6 +36,7 @@ export default function HomePage() {
   const hasAutoExpanded = useRef(false);
   const { selectedCity, selectedSuburbs, onCitySelect, onSuburbSelect } = useLocationSelection();
   const [approvedOnly, setApprovedOnly] = useState(false);
+  const [boneOpen, setBoneOpen] = useState(false);
   const [selectedTypes, setSelectedTypes] = useState<Set<string>>(new Set());
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [emailCopied, setEmailCopied] = useState(false);
@@ -79,6 +80,10 @@ export default function HomePage() {
         <BackgroundArt />
         <nav className="top-nav top-nav--left">
           <Link href="/about" className="top-nav__link">About</Link>
+          <div style={{ position: 'relative' }}>
+            <button className="top-nav__btn" onClick={() => setBoneOpen((v) => !v)}>🦴</button>
+            <SupportSticker open={boneOpen} onClose={() => setBoneOpen(false)} />
+          </div>
         </nav>
         <nav className="top-nav">
           {session
@@ -86,7 +91,6 @@ export default function HomePage() {
             : <Link href="/auth" className="top-nav__link">Sign up / Log in</Link>
           }
         </nav>
-        <SupportSticker />
         <div className="page-container">
           <AddSticker />
           <div className="logo-area">

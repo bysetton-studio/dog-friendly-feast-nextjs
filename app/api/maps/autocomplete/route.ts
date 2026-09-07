@@ -7,7 +7,6 @@ const API_KEY = process.env.GEOAPIFY_API_SECRET ?? '';
 
 export async function POST(req: NextRequest) {
 
-  console.log(API_KEY, '----------------------- API_KEY');
   const body = await req.json().catch(() => ({}));
 
   const input: unknown = body.input;
@@ -36,6 +35,8 @@ export async function POST(req: NextRequest) {
 
   const data = await res.json();
   const results: Record<string, unknown>[] = data.results ?? [];
+
+  console.log(results);
 
   const predictions = results
     .filter((f) => f.place_id)

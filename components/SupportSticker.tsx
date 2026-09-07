@@ -1,12 +1,36 @@
+'use client';
+
+import { useEffect, useRef } from 'react';
+
 const OPTIONS = [
   { label: 'R50',   href: 'https://express.stitch.money/barak/50/dog-world' },
   { label: 'R100',  href: 'https://express.stitch.money/barak/100/dog-world' },
   { label: 'other', href: 'https://express.stitch.money/barak' },
 ];
 
-export default function SupportSticker() {
+interface Props {
+  open: boolean;
+  onClose: () => void;
+}
+
+export default function SupportSticker({ open, onClose }: Props) {
+  const groupRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    function handleMouseDown(e: MouseEvent) {
+      if (groupRef.current && !groupRef.current.contains(e.target as Node)) {
+        onClose();
+      }
+    }
+    document.addEventListener('mousedown', handleMouseDown);
+    return () => document.removeEventListener('mousedown', handleMouseDown);
+  }, [open, onClose]);
+
+  if (!open) return null;
+
   return (
-    <div className="support_sticker_group">
+    <div className="support_sticker_group" ref={groupRef}>
       <a
         className="support_sticker"
         href="https://express.stitch.money/barak"

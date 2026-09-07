@@ -47,7 +47,16 @@ export function useResolvedLocations(): Result {
     } else {
       fetchResolvedLocations();
     }
-    return () => { subscribers.delete(setResolved); };
+
+    function handleVisibilityChange() {
+      if (!document.hidden) fetchResolvedLocations();
+    }
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      subscribers.delete(setResolved);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
   }, []);
 
   return { resolved, loading, capReached, fetchResolvedLocations };

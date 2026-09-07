@@ -227,7 +227,7 @@
 .add_sticker {
   position: absolute;
   top: 0;
-  left: 0;
+  right: 0;
   z-index: 100;
   width: 130px;
   height: 130px;
@@ -286,8 +286,8 @@
 
 .support_sticker_group {
   position: absolute;
-  top: 158px;
-  right: 40px;
+  top: calc(100% + 8px);
+  left: 0;
   z-index: 100;
   display: flex;
   flex-direction: column;
@@ -388,11 +388,8 @@
 
 @media (max-width: 768px) {
   .support_sticker_group {
-    top: 40px;
-    left: 12px;
-    flex-direction: row;
+    flex-direction: column;
     align-items: center;
-    right: unset;
   }
 
   .support_sticker {

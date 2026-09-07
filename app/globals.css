@@ -1,13 +1,7 @@
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --background: #0a0a0a;
+  --foreground: #ededed;
+  color-scheme: dark;
 }
 
 html {
@@ -86,6 +80,23 @@ a {
 }
 
 .top-nav__link:hover {
+  color: #e0e0e0;
+}
+
+.top-nav__btn {
+  font-size: 15px;
+  color: #9aa0a6;
+  font-family: Arial, sans-serif;
+  letter-spacing: 0.3px;
+  background: rgba(30, 30, 30, 0.85);
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.top-nav__btn:hover {
   color: #e0e0e0;
 }
 
@@ -202,8 +213,3 @@ a {
   color: #e0e0e0;
 }
 
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
-  }
-}

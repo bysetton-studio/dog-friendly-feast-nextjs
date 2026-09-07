@@ -23,6 +23,8 @@ interface MarkerEntry {
   city: string;
   types: string[];
   isFriendly: boolean;
+  isApproved: boolean;
+  emoji: string;
   normalIcon: L.DivIcon;
   dimmedIcon: L.DivIcon;
 }
@@ -164,6 +166,17 @@ export default function MapView({
       .forEach(({ marker }) => marker.remove());
     locationMarkersRef.current = locationMarkersRef.current.filter(({ name }) => visibleNames.has(name));
 
+    // Update existing markers if isApproved changed
+    const resolvedByName = new Map(resolved.map((r) => [r.name, r]));
+    locationMarkersRef.current.forEach((entry) => {
+      const current = resolvedByName.get(entry.name);
+      if (!current || current.isApproved === entry.isApproved) return;
+      entry.isApproved = current.isApproved;
+      const newNormalIcon = createNormalIcon(entry.isFriendly, current.isApproved, entry.emoji);
+      entry.normalIcon = newNormalIcon;
+      entry.marker.setIcon(newNormalIcon);
+    });
+
     // Add new markers
     const existingNames = new Set(locationMarkersRef.current.map(({ name }) => name));
 
@@ -187,7 +200,7 @@ export default function MapView({
         marker.bindPopup(buildPopupContent(name, place), { maxWidth: 260 });
         marker.addTo(map);
 
-        locationMarkersRef.current.push({ marker, name, suburb, city, types, isFriendly, normalIcon, dimmedIcon });
+        locationMarkersRef.current.push({ marker, name, suburb, city, types, isFriendly, isApproved, emoji, normalIcon, dimmedIcon });
       });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mapRef.current, resolved]);
