@@ -21,7 +21,7 @@ export async function GET() {
       if (l.resolved) {
         place = l.resolved.placeData as PlaceData;
       } else {
-        place = await resolvePlaceDetails(l.name, l.address);
+        place = l.placeId ? await resolvePlaceDetails(l.placeId) : null;
         if (place) {
           const resolvedTypes = (place.types as string[] | undefined) ?? [];
           const mergedTypes = [...new Set([...(l.types ?? []), ...resolvedTypes])];
@@ -65,9 +65,10 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
-  const { name, address, isFriendly: friendly, types: userTypes } = body as {
+  const { name, address, placeId, isFriendly: friendly, types: userTypes } = body as {
     name: string;
     address: string;
+    placeId?: string;
     isFriendly: boolean;
     types?: string[];
   };
@@ -85,12 +86,13 @@ export async function POST(req: NextRequest) {
       isFriendly: friendly,
       isAdminApproved: false,
       updatedAt: new Date(),
+      ...(placeId ? { placeId } : {}),
       ...(userTypes ? { types: userTypes } : {}),
       ...(session ? { suggestedById: session.user.id } : {}),
     },
   });
 
-  const place = await resolvePlaceDetails(name, address);
+  const place = placeId ? await resolvePlaceDetails(placeId) : null;
   if (place) {
     const resolvedTypes = (place.types as string[] | undefined) ?? [];
     const mergedTypes = [...new Set([...(userTypes ?? []), ...resolvedTypes])];

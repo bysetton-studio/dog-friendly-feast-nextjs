@@ -3,12 +3,12 @@ import { resolvePlaceDetails } from '@/lib/resolvePlaceDetails';
 
 export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => ({}));
-  const { name, address } = body as { name?: string; address?: string };
-  if (!name || !address) {
-    return NextResponse.json({ error: 'name and address required' }, { status: 400 });
+  const { placeId } = body as { placeId?: string };
+  if (!placeId) {
+    return NextResponse.json({ error: 'placeId required' }, { status: 400 });
   }
 
-  const place = await resolvePlaceDetails(name, address);
+  const place = await resolvePlaceDetails(placeId);
   if (!place) {
     return NextResponse.json({ error: 'not_found' }, { status: 404 });
   }

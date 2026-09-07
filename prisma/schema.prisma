@@ -10,6 +10,7 @@ model Location {
   id              String            @id @default(uuid())
   name            String
   address         String
+  placeId         String?
   isFriendly      Boolean
   isAdminApproved Boolean           @default(false)
   types           String[]

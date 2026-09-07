@@ -10,13 +10,14 @@ export function useSubmitLocation() {
   async function submit(place: Place, value: boolean, types?: string[]): Promise<void> {
     const name = (place.name as string) ?? '';
     const address = (place.formatted_address as string) ?? '';
+    const placeId = (place.place_id as string | undefined) ?? undefined;
 
     setSubmitting(value);
 
     const res = await fetch('/api/locations', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, address, isFriendly: value, ...(types ? { types } : {}) }),
+      body: JSON.stringify({ name, address, isFriendly: value, ...(placeId ? { placeId } : {}), ...(types ? { types } : {}) }),
     });
 
     addLocationToCache({ name, address, friendly: value, adminApproved: false });
