@@ -37,15 +37,15 @@ export default function SubmitBanner({ place, onDismiss, inList }: Props) {
     )}
     <div className="submit-banner">
       <div className="submit-banner__info">
-        <span className="submit-banner__name">{place.name as string}</span>
         {!inList && (
-          <span className="submit-banner__sub">Not in our list — is it dog friendly?</span>
+          <span className="submit-banner__name">Not in our list, is it dog friendly?</span>
         )}
+        <span className="submit-banner__sub">{place.name as string}</span>
       </div>
 
       {submitted !== null ? (
         <div className={`submit-banner__result submit-banner__result--${submitted ? 'friendly' : 'not'}`}>
-          {submitted ? '🐾 Marked as friendly' : '✕ Marked as not friendly'}
+          🐾 Marked as friendly
         </div>
       ) : (
         <div className="submit-banner__actions">
@@ -54,14 +54,7 @@ export default function SubmitBanner({ place, onDismiss, inList }: Props) {
             onClick={() => setShowTypeModal(true)}
             disabled={submitting !== null}
           >
-            {submitting === true ? <span className="submit-banner__spinner" /> : '🐾 Friendly'}
-          </button>
-          <button
-            className="submit-banner__btn submit-banner__btn--not"
-            onClick={() => submit(place, false)}
-            disabled={submitting !== null}
-          >
-            {submitting === false ? <span className="submit-banner__spinner" /> : '✕ Not Friendly'}
+            {submitting === true ? <span className="submit-banner__spinner" /> : 'Add'}
           </button>
         </div>
       )}

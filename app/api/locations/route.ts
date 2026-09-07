@@ -23,18 +23,19 @@ export async function GET() {
       } else {
         place = await resolvePlaceDetails(l.name, l.address);
         if (place) {
-          const types = (place.types as string[] | undefined) ?? [];
+          const resolvedTypes = (place.types as string[] | undefined) ?? [];
+          const mergedTypes = [...new Set([...(l.types ?? []), ...resolvedTypes])];
           await Promise.all([
             prisma.location.update({
               where: { id: l.id },
-              data: { 
-                types, 
-                resolved: { 
+              data: {
+                ...(mergedTypes.length > 0 ? { types: mergedTypes } : {}),
+                resolved: {
                   upsert: {
                     update: { placeData: place as object },
                     create: { placeData: place as object },
-                  } 
-                } 
+                  }
+                }
               },
             }),
           ]);
@@ -91,17 +92,18 @@ export async function POST(req: NextRequest) {
 
   const place = await resolvePlaceDetails(name, address);
   if (place) {
-    const types = (place.types as string[] | undefined) ?? [];
+    const resolvedTypes = (place.types as string[] | undefined) ?? [];
+    const mergedTypes = [...new Set([...(userTypes ?? []), ...resolvedTypes])];
     await Promise.all([
       prisma.location.update({
         where: { id: location.id },
-        data: { 
-          types, 
-          resolved: { 
-            create: { 
-              placeData: place as object 
-            } 
-          } 
+        data: {
+          ...(mergedTypes.length > 0 ? { types: mergedTypes } : {}),
+          resolved: {
+            create: {
+              placeData: place as object
+            }
+          }
         },
       }),
     ]);

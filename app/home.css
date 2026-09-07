@@ -392,6 +392,7 @@
     left: 12px;
     flex-direction: row;
     align-items: center;
+    right: unset;
   }
 
   .support_sticker {
