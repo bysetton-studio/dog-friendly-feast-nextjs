@@ -42,6 +42,7 @@ interface Props {
   selectedTypes: Set<string>;
   capReached: boolean | null;
   expandedPlaces?: Place[];
+  onMapClick?: (place: Place) => void;
 }
 
 function matchesTypeFilter(types: string[] | undefined, selectedTypes: Set<string>): boolean {
@@ -116,12 +117,16 @@ export default function MapView({
   selectedTypes = new Set(),
   capReached,
   expandedPlaces,
+  onMapClick,
 }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const selectedMarkerRef = useRef<L.Marker | null>(null);
   const locationMarkersRef = useRef<MarkerEntry[]>([]);
   const isMobile = useIsMobile();
   const { twoFingersUsed, oneFinger } = useTwoFingers(containerRef);
+  const isClickResultRef = useRef(false);
+  const onMapClickRef = useRef(onMapClick);
+  useEffect(() => { onMapClickRef.current = onMapClick; }, [onMapClick]);
 
   // Initialize Leaflet map once
   useEffect(() => {
@@ -141,6 +146,30 @@ export default function MapView({
 
     mapRef.current = map;
     initServices(map);
+
+    map.on('click', async (e: L.LeafletMouseEvent) => {
+      const handler = onMapClickRef.current;
+      if (!handler) return;
+      const { lat, lng } = e.latlng;
+
+      // Drop a pin immediately at the clicked location
+      selectedMarkerRef.current?.remove();
+      selectedMarkerRef.current = L.marker([lat, lng], { icon: createSearchPinIcon() }).addTo(map);
+
+      try {
+        const res = await fetch(`/api/maps/reverse-geocode?lat=${lat}&lng=${lng}`);
+        if (!res.ok) return;
+        const place = await res.json();
+        // Ensure geocoded coords use the exact click point so the pin doesn't jump
+        if (place?.geometry?.location) {
+          place.geometry.location = { lat, lng };
+        }
+        isClickResultRef.current = true;
+        handler(place);
+      } catch {
+        // ignore — pin stays, just no address info
+      }
+    });
 
     return () => {
       locationMarkersRef.current.forEach(({ marker }) => marker.remove());
@@ -274,6 +303,14 @@ export default function MapView({
   // Pan and temporary pin when a location is selected via search
   useEffect(() => {
     if (!mapRef.current || !selected?.geometry?.location) return;
+
+    // Skip re-panning and re-pinning when selection came from a map click —
+    // the click handler already placed the pin at the exact click coordinates.
+    if (isClickResultRef.current) {
+      isClickResultRef.current = false;
+      return;
+    }
+
     const map = mapRef.current;
     const { lat, lng } = selected.geometry.location;
 
@@ -294,7 +331,7 @@ export default function MapView({
   }, [selected]);
 
   return (
-    <div className="map-container">
+    <div className={`map-container${onMapClick ? ' map-container--clickable' : ''}`}>
       <div ref={containerRef} className="map" />
       <div className={`map-gesture-hint${isMobile && oneFinger ? ' map-gesture-hint--visible' : ''}`}>
         Use two fingers to move the map
@@ -316,6 +353,9 @@ export default function MapView({
           <strong>{(selected.name as string) || selected.formatted_address}</strong>
           {selected.name && <span>{selected.formatted_address as string}</span>}
         </div>
+      )}
+      {onMapClick && !selected && (
+        <div className="map-click-hint">Click anywhere to get the address</div>
       )}
     </div>
   );

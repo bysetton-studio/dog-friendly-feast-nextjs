@@ -144,6 +144,7 @@ export default function HomePage() {
               selectedTypes={selectedTypes}
               capReached={capReached}
               expandedPlaces={expandedPlaces}
+              onMapClick={setSelected}
             />
           </div>
 
