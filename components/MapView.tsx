@@ -87,8 +87,7 @@ function createDimmedIcon(): L.DivIcon {
   return L.divIcon({ html, className: '', iconSize: [8, 8], iconAnchor: [4, 4] });
 }
 
-function buildPopupContent(name: string, place: Place): string {
-  const address = (place.formatted_address as string) ?? '';
+function buildPopupContent(name: string, address: string): string {
   const query = encodeURIComponent(address || name);
   const directionsUrl = `https://www.google.com/maps/search/?api=1&query=${query}`;
 
@@ -211,7 +210,7 @@ export default function MapView({
 
     resolved
       .filter(({ name }) => !existingNames.has(name))
-      .forEach(({ name, isFriendly, isApproved, place, suburb, city }) => {
+      .forEach(({ name, address, isFriendly, isApproved, place, suburb, city }) => {
         const loc = place.geometry?.location;
         if (!loc) return;
 
@@ -226,7 +225,7 @@ export default function MapView({
           title: name,
         });
 
-        marker.bindPopup(buildPopupContent(name, place), { maxWidth: 260 });
+        marker.bindPopup(buildPopupContent(name, address), { maxWidth: 260 });
         marker.addTo(map);
 
         locationMarkersRef.current.push({ marker, name, suburb, city, types, isFriendly, isApproved, emoji, normalIcon, dimmedIcon });
