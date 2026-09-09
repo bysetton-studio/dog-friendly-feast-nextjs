@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     description: 'Discover restaurants across South Africa where you can bring your dog. Find verified dog-friendly spots in Cape Town, Johannesburg, Durban and more.',
     url: BASE_URL,
     siteName: 'Dog World',
-    images: [{ url: `${BASE_URL}/hero.png` }],
+    images: [{ url: `${BASE_URL}/dog_world_pin.png` }],
     locale: 'en_ZA',
     type: 'website',
   },
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: "Dog World | SA's Dog-Friendly Restaurant Finder",
     description: 'Discover restaurants across South Africa where you can bring your dog.',
-    images: [`${BASE_URL}/hero.png`],
+    images: [`${BASE_URL}/dog_world_pin.png`],
   },
 };
 

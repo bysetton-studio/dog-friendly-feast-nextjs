@@ -388,7 +388,7 @@
 
 @media (max-width: 768px) {
   .support_sticker_group {
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
   }
 
