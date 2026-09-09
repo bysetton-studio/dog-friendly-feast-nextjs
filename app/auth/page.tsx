@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { authClient } from '@/lib/auth-client';
 import BackgroundArt from '@/components/BackgroundArt';
-import './auth.css';
 
 export default function AuthPage() {
   const router = useRouter();
@@ -41,32 +40,32 @@ export default function AuthPage() {
   }
 
   return (
-    <main className="auth">
+    <main className="min-h-screen flex flex-col items-center justify-center p-6 font-sans">
       <BackgroundArt />
-      <Link href="/" className="auth__back">← Back to map</Link>
+      <Link href="/" className="fixed top-5 left-6 text-sm text-[#9aa0a6] no-underline hover:text-[#e0e0e0]">← Back to map</Link>
 
-      <div className="auth__card">
-        <div className="auth__tabs">
+      <div className="w-full max-w-95 bg-[rgba(30,30,30,0.9)] border border-white/8 rounded-2xl p-8 z-1">
+        <div className="flex gap-1 bg-white/5 rounded-lg p-1 mb-7">
           <button
-            className={`auth__tab${mode === 'signup' ? ' auth__tab--active' : ''}`}
+            className={`flex-1 py-2 border-none rounded-md text-sm font-sans cursor-pointer transition-colors duration-150 ${mode === 'signup' ? 'bg-white/10 text-[#e0e0e0]' : 'bg-transparent text-[#9aa0a6]'}`}
             onClick={() => { setMode('signup'); setError(''); }}
           >
             Sign up
           </button>
           <button
-            className={`auth__tab${mode === 'login' ? ' auth__tab--active' : ''}`}
+            className={`flex-1 py-2 border-none rounded-md text-sm font-sans cursor-pointer transition-colors duration-150 ${mode === 'login' ? 'bg-white/10 text-[#e0e0e0]' : 'bg-transparent text-[#9aa0a6]'}`}
             onClick={() => { setMode('login'); setError(''); }}
           >
             Log in
           </button>
         </div>
 
-        <form className="auth__form" onSubmit={handleSubmit}>
+        <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
           {mode === 'signup' && (
-            <label className="auth__label">
+            <label className="flex flex-col gap-1.5 text-[13px] text-[#9aa0a6]">
               Name
               <input
-                className="auth__input"
+                className="bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-[15px] text-[#e0e0e0] font-sans outline-none transition-colors duration-150 placeholder:text-[#555] focus:border-white/25"
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
@@ -77,10 +76,10 @@ export default function AuthPage() {
             </label>
           )}
 
-          <label className="auth__label">
+          <label className="flex flex-col gap-1.5 text-[13px] text-[#9aa0a6]">
             Email
             <input
-              className="auth__input"
+              className="bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-[15px] text-[#e0e0e0] font-sans outline-none transition-colors duration-150 placeholder:text-[#555] focus:border-white/25"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -90,10 +89,10 @@ export default function AuthPage() {
             />
           </label>
 
-          <label className="auth__label">
+          <label className="flex flex-col gap-1.5 text-[13px] text-[#9aa0a6]">
             Password
             <input
-              className="auth__input"
+              className="bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-[15px] text-[#e0e0e0] font-sans outline-none transition-colors duration-150 placeholder:text-[#555] focus:border-white/25"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -104,9 +103,9 @@ export default function AuthPage() {
             />
           </label>
 
-          {error && <p className="auth__error">{error}</p>}
+          {error && <p className="text-[13px] text-[#f28b82] m-0">{error}</p>}
 
-          <button className="auth__submit" type="submit" disabled={loading}>
+          <button className="mt-1 py-2.75 bg-white/12 border border-white/15 rounded-lg text-[#e0e0e0] text-[15px] font-sans cursor-pointer transition-colors duration-150 hover:bg-white/18 disabled:opacity-50 disabled:cursor-default" type="submit" disabled={loading}>
             {loading ? '...' : mode === 'signup' ? 'Create account' : 'Log in'}
           </button>
         </form>

@@ -15,9 +15,12 @@ export default function CopyEmail() {
   }
 
   return (
-    <button className="copy-email" onClick={handleClick}>
+    <button
+      className="inline-flex items-center gap-2.5 bg-white/6 border border-white/12 rounded-lg px-3.5 py-2 text-sm text-[#c0c0c0] cursor-pointer transition-[background,color] duration-150 hover:bg-white/10 hover:text-[#e0e0e0]"
+      onClick={handleClick}
+    >
       {EMAIL}
-      <span className="copy-email__label">{copied ? 'Copied!' : 'Copy'}</span>
+      <span className="text-[11px] font-semibold text-[#9aa0a6] bg-white/8 rounded px-1.75 py-0.5 shrink-0">{copied ? 'Copied!' : 'Copy'}</span>
     </button>
   );
 }

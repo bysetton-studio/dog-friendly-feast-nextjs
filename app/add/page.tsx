@@ -6,7 +6,6 @@ import LocationSearch from '@/components/LocationSearch';
 import { useSubmitLocation } from '@/hooks/useSubmitLocation';
 import { useLocations } from '@/hooks/useLocations';
 import BackgroundArt from '@/components/BackgroundArt';
-import './add.css';
 import type { Place } from '@/types';
 
 export default function AddLocationPage() {
@@ -20,13 +19,13 @@ export default function AddLocationPage() {
     : false;
 
   return (
-    <main className="add-page">
+    <main className="max-w-155 mx-auto px-6 pt-15 pb-20 font-sans flex flex-col items-center gap-6">
       <BackgroundArt />
-      <Link href="/" className="add-page__back">← Back to map</Link>
+      <Link href="/" className="self-start text-sm text-[#9aa0a6] no-underline hover:text-[#e0e0e0]">← Back to map</Link>
 
-      <div className="add-page__header">
-        <h1 className="add-page__title">Add a dog-friendly restaurant</h1>
-        <p className="add-page__subtitle">
+      <div className="text-center">
+        <h1 className="text-[32px] font-normal text-[#e0e0e0] m-0 mb-3">Add a dog-friendly restaurant</h1>
+        <p className="text-[15px] text-[#9aa0a6] leading-[1.6] m-0">
           Search for a restaurant below, then tell us whether dogs are welcome.
           Submissions are reviewed before going live.
         </p>
@@ -35,39 +34,39 @@ export default function AddLocationPage() {
       <LocationSearch onSelect={setSelected} mapRef={mapRef} />
 
       {selected && (
-        <div className="add-page__card">
-          <div className="add-page__place">
-            <span className="add-page__place-name">{selected.name}</span>
-            <span className="add-page__place-address">{selected.formatted_address}</span>
+        <div className="w-full bg-white rounded-2xl px-6 py-5 shadow-[0_2px_12px_rgba(0,0,0,0.12)] flex flex-col gap-5">
+          <div className="flex flex-col gap-1 border-b border-[#f1f3f4] pb-4">
+            <span className="text-[20px] font-semibold text-[#202124]">{selected.name}</span>
+            <span className="text-[13px] text-[#5f6368]">{selected.formatted_address}</span>
           </div>
 
           {alreadyListed ? (
-            <div className="add-page__already-listed">
+            <div className="text-sm text-[#1e7e34] bg-[#e6f4ea] rounded-lg px-4 py-3 [&_a]:text-[#1a73e8] [&_a]:underline">
               ✓ This location is already in our directory.{' '}
               <Link href="/">View it on the map →</Link>
             </div>
           ) : submitted !== null ? (
-            <div className={`add-page__confirm add-page__confirm--${submitted ? 'yes' : 'no'}`}>
+            <div className={`text-[15px] font-medium flex items-center justify-between gap-3 flex-wrap ${submitted ? 'text-[#1e7e34]' : 'text-[#c5221f]'}`}>
               {submitted
                 ? '🐾 Submitted as dog-friendly — thanks!'
                 : '✕ Submitted as not dog-friendly — thanks!'}
-              <button className="add-page__change" onClick={() => { setSelected(null); }}>
+              <button className="bg-transparent border border-[#dadce0] rounded-md px-2.5 py-0.5 text-xs text-[#5f6368] cursor-pointer ml-auto hover:bg-[#f5f5f5]" onClick={() => { setSelected(null); }}>
                 Add another
               </button>
             </div>
           ) : (
-            <div className="add-page__question">
-              <p className="add-page__question-label">Is this restaurant dog-friendly?</p>
-              <div className="add-page__actions">
+            <div>
+              <p className="text-[15px] font-medium text-[#202124] m-0 mb-3.5">Is this restaurant dog-friendly?</p>
+              <div className="flex flex-col gap-2.5">
                 <button
-                  className="add-page__btn add-page__btn--yes"
+                  className="w-full border-none rounded-[10px] px-5 py-3.5 text-[15px] font-medium cursor-pointer text-center bg-[#e6f4ea] text-[#1e7e34] transition-opacity hover:opacity-85 disabled:opacity-50"
                   onClick={() => submit(selected, true)}
                   disabled={submitting !== null}
                 >
                   {submitting === true ? '...' : '🐾 Yes, dogs are welcome'}
                 </button>
                 <button
-                  className="add-page__btn add-page__btn--no"
+                  className="w-full border-none rounded-[10px] px-5 py-3.5 text-[15px] font-medium cursor-pointer text-center bg-[#fce8e6] text-[#c5221f] transition-opacity hover:opacity-85 disabled:opacity-50"
                   onClick={() => submit(selected, false)}
                   disabled={submitting !== null}
                 >
@@ -80,7 +79,7 @@ export default function AddLocationPage() {
       )}
 
       {!selected && (
-        <p className="add-page__hint">
+        <p className="text-sm text-[#9aa0a6] text-center m-0">
           Know a spot that allows dogs? Search for it above and let us know.
         </p>
       )}
