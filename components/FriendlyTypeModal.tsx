@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { TYPE_FILTERS } from './TypeFilter';
-import './FriendlyTypeModal.css';
 
 interface Props {
   placeName: string;
@@ -19,29 +18,39 @@ export default function FriendlyTypeModal({ placeName, onConfirm, onCancel }: Pr
   }
 
   return (
-    <div className="friendly-modal__backdrop" onClick={onCancel}>
-      <div className="friendly-modal" onClick={(e) => e.stopPropagation()}>
-        <h2 className="friendly-modal__title">What kind of place is this?</h2>
-        <p className="friendly-modal__place">{placeName}</p>
+    <div className="fixed inset-0 bg-black/55 flex items-center justify-center z-200 p-4" onClick={onCancel}>
+      <div className="bg-[rgba(28,28,28,0.98)] border border-white/10 rounded-2xl pt-7 px-6 pb-6 w-full max-w-90 font-[Arial,sans-serif]" onClick={(e) => e.stopPropagation()}>
+        <h2 className="text-[17px] font-semibold text-[#e0e0e0] mt-0 mb-1.5">What kind of place is this?</h2>
+        <p className="text-[13px] text-[#9aa0a6] mt-0 mb-5 whitespace-nowrap overflow-hidden text-ellipsis">{placeName}</p>
 
-        <div className="friendly-modal__options">
+        <div className="grid grid-cols-2 gap-2 mb-5">
           {TYPE_FILTERS.map(({ key, label, emoji }) => (
             <button
               key={key}
-              className={`friendly-modal__option${selected === key ? ' friendly-modal__option--selected' : ''}`}
+              className={`flex items-center gap-2 px-3 py-2.5 rounded-[10px] border text-[14px] font-[Arial,sans-serif] cursor-pointer transition-[background,border-color,color] duration-[0.12s] text-left ${
+                selected === key
+                  ? 'border-[rgba(30,126,52,0.6)] bg-[rgba(30,126,52,0.15)] text-[#6fcf97]'
+                  : 'border-white/8 bg-white/4 text-[#c0c0c0] hover:bg-white/8 hover:text-[#e0e0e0]'
+              }`}
               onClick={() => setSelected(key)}
             >
-              <span className="friendly-modal__option-emoji">{emoji}</span>
+              <span className="text-[16px] shrink-0">{emoji}</span>
               {label}
             </button>
           ))}
         </div>
 
-        <div className="friendly-modal__actions">
-          <button className="friendly-modal__cancel" onClick={onCancel}>
+        <div className="flex gap-2.5">
+          <button
+            className="flex-1 py-2.5 rounded-lg text-[14px] font-[Arial,sans-serif] cursor-pointer transition-[background] duration-[0.12s] bg-transparent border border-white/10 text-[#9aa0a6] hover:border-white/20 hover:text-[#e0e0e0]"
+            onClick={onCancel}
+          >
             Cancel
           </button>
-          <button className="friendly-modal__confirm" onClick={handleConfirm}>
+          <button
+            className="flex-1 py-2.5 rounded-lg text-[14px] font-[Arial,sans-serif] cursor-pointer transition-[background] duration-[0.12s] bg-[rgba(30,126,52,0.2)] border border-[rgba(30,126,52,0.4)] text-[#6fcf97] hover:bg-[rgba(30,126,52,0.3)]"
+            onClick={handleConfirm}
+          >
             🐾 Mark as Friendly
           </button>
         </div>

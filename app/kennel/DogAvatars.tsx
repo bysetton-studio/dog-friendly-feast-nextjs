@@ -106,23 +106,23 @@ export default function DogAvatars({ initial }: Props) {
   }
 
   return (
-    <div className="dog-avatars">
+    <div className="absolute inset-0 pointer-events-none">
       {dogs.map((dog, i) => (
         <div
           key={dog.id}
-          className="dog-avatar"
+          className="absolute pointer-events-auto group/dog"
           style={{ ...arcPosition(i, dogs.length), zIndex: dogs.length - i }}
         >
-          <div className="dog-avatar__circle">
+          <div className="w-21 h-21 rounded-full bg-[rgb(30,30,30)] border-3 border-black flex items-center justify-center overflow-hidden relative">
             {dog.image
-              ? <img src={dog.image} alt="dog" className="dog-avatar__img" />
-              : <span className="dog-avatar__placeholder">🐶</span>
+              ? <img src={dog.image} alt="dog" className="w-full h-full object-cover" />
+              : <span className="text-[28px]">🐶</span>
             }
-            {uploading === dog.id && <div className="dog-avatar__spinner" />}
+            {uploading === dog.id && <div className="absolute inset-0 bg-black/45 rounded-full" />}
           </div>
 
           <button
-            className="dog-avatar__btn dog-avatar__btn--camera"
+            className="absolute bottom-0.5 right-0.5 w-5 h-5 rounded-full border border-white/12 bg-[rgba(30,30,30,0.92)] text-[#9aa0a6] flex items-center justify-center cursor-pointer p-0 opacity-0 group-hover/dog:opacity-100 transition-[opacity,background,color] duration-150 hover:enabled:bg-[rgba(50,50,50,0.95)] hover:enabled:text-[#e0e0e0] disabled:opacity-30 disabled:cursor-default"
             onClick={() => handleChangeImage(dog.id)}
             disabled={uploading !== null}
             aria-label="Change dog photo"
@@ -131,7 +131,7 @@ export default function DogAvatars({ initial }: Props) {
           </button>
 
           <button
-            className="dog-avatar__btn dog-avatar__btn--remove"
+            className="absolute top-0.5 right-0.5 w-5 h-5 rounded-full border border-white/12 bg-[rgba(30,30,30,0.92)] text-[#9aa0a6] flex items-center justify-center cursor-pointer p-0 opacity-0 group-hover/dog:opacity-100 transition-[opacity,background,color] duration-150 hover:enabled:bg-[rgba(255,125,125,0.9)] hover:enabled:text-[#7d0a00] hover:enabled:border-[rgba(255,80,80,0.3)] disabled:opacity-30 disabled:cursor-default"
             onClick={() => setConfirmDeleteId(dog.id)}
             disabled={uploading !== null}
             aria-label="Remove dog"
@@ -143,7 +143,7 @@ export default function DogAvatars({ initial }: Props) {
 
       {canAdd && (
         <button
-          className="dog-avatar__add"
+          className="absolute pointer-events-auto w-16 h-16 rounded-full border-2 border-dashed bg-no-repeat bg-transparent text-[#9aa0a6] hidden group-hover/avatar-area:flex items-center justify-center text-center text-[10px] font-[Arial,sans-serif] leading-[1.2] p-2 cursor-pointer transition-[left,top,color,background,opacity] duration-150 opacity-0 group-hover/avatar-area:opacity-100 hover:bg-white/4 hover:text-[#e0e0e0]"
           style={arcPosition(dogs.length, dogs.length + 1, ADD_BUTTON_OFFSET)}
           onClick={handleAdd}
           aria-label="Add dog"
@@ -161,14 +161,14 @@ export default function DogAvatars({ initial }: Props) {
       />
 
       {confirmDeleteId && (
-        <div className="kennel__modal-backdrop" onClick={() => setConfirmDeleteId(null)}>
-          <div className="kennel__modal" onClick={(e) => e.stopPropagation()}>
-            <p className="kennel__modal-text">Remove this pup?</p>
-            <div className="kennel__modal-actions">
-              <button className="kennel__modal-cancel" onClick={() => setConfirmDeleteId(null)}>
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-100 pointer-events-auto" onClick={() => setConfirmDeleteId(null)}>
+          <div className="bg-[rgba(30,30,30,0.98)] border border-white/10 rounded-[14px] pt-7 px-6 pb-6 w-full max-w-80 font-[Arial,sans-serif]" onClick={(e) => e.stopPropagation()}>
+            <p className="text-[15px] text-[#e0e0e0] mt-0 mb-6 text-center">Remove this pup?</p>
+            <div className="flex gap-2.5">
+              <button className="flex-1 py-2.5 rounded-lg text-[14px] font-[Arial,sans-serif] cursor-pointer transition-[background] duration-150 bg-transparent border border-white/10 text-[#9aa0a6] hover:text-[#e0e0e0] hover:border-white/25" onClick={() => setConfirmDeleteId(null)}>
                 Cancel
               </button>
-              <button className="kennel__modal-confirm" onClick={handleConfirmRemove} disabled={deleting}>
+              <button className="flex-1 py-2.5 rounded-lg text-[14px] font-[Arial,sans-serif] cursor-pointer transition-[background] duration-150 bg-[rgba(255,80,80,0.15)] border border-[rgba(255,80,80,0.3)] text-[#f28b82] hover:enabled:bg-[rgba(255,80,80,0.25)] disabled:opacity-50 disabled:cursor-default" onClick={handleConfirmRemove} disabled={deleting}>
                 {deleting ? 'Removing…' : 'Remove'}
               </button>
             </div>

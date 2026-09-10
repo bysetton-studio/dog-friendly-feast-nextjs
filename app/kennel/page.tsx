@@ -8,7 +8,6 @@ import AvatarPicker from '@/components/AvatarPicker';
 import DogAvatars from './DogAvatars';
 import LogoutButton from './LogoutButton';
 import KennelLocationRow from './KennelLocationRow';
-import './kennel.css';
 
 const POSITIONS: React.CSSProperties[] = [
   { top: '2%',    left: '1%'  },
@@ -38,7 +37,7 @@ export default async function KennelPage() {
   ]);
 
   return (
-    <main className="kennel">
+    <main className="min-h-screen flex flex-col items-center justify-center pt-20 px-6 pb-12 font-[Arial,sans-serif]">
       {POSITIONS.map((pos, i) => (
         <pre key={i} className="bg-art" style={pos} aria-hidden="true">
           {kennelArt[i % kennelArt.length]}
@@ -53,22 +52,22 @@ export default async function KennelPage() {
         <LogoutButton />
       </nav>
 
-      <div className="kennel__stack">
-          <div className="kennel__title_container">
-            <div className="kennel__avatar-area">
+      <div className="w-full max-w-205 flex flex-col gap-4">
+          <div className="flex flex-col items-center justify-center mb-7 gap-3">
+            <div className="group/avatar-area relative w-70 h-57.5 flex justify-center pt-15 box-border">
               <AvatarPicker image={session.user.image ?? null} />
               <DogAvatars initial={dogs.map((d) => ({ id: d.id, image: d.image }))} />
             </div>
-            <h1 className="kennel__title">{session.user.name}&apos;s Kennel</h1>
+            <h1 className="text-[32px] font-semibold text-[#e0e0e0] m-0 font-[Arial,sans-serif]">{session.user.name}&apos;s Kennel</h1>
           </div>
 
-        <div className="kennel__card kennel__card--locations">
-          <h2 className="kennel__section-title">Your Submissions</h2>
+        <div className="w-full bg-[rgb(30,30,30)] rounded-2xl relative z-1 text-left p-6">
+          <h2 className="text-[15px] font-semibold text-[#e0e0e0] mt-0 mb-4">Your Submissions</h2>
 
           {suggestedLocations.length === 0 ? (
-            <div className="kennel__empty">
-              <p className="kennel__empty-text">No submissions yet, go find somewhere dog-friendly! 🐾</p>
-              <Link href="/" className="kennel__empty-btn">Find a spot →</Link>
+            <div className="flex flex-col items-start gap-4">
+              <p className="text-[14px] text-[#9aa0a6] m-0">No submissions yet, go find somewhere dog-friendly! 🐾</p>
+              <Link href="/" className="text-[14px] font-[Arial,sans-serif] text-[#e0e0e0] bg-white/8 border border-white/12 rounded-lg py-2.25 px-4 no-underline transition-[background] duration-150 hover:bg-white/13">Find a spot →</Link>
             </div>
           ) : (() => {
             const approved = suggestedLocations.filter((l) => l.isAdminApproved);
@@ -76,31 +75,31 @@ export default async function KennelPage() {
 
             return (
               <>
-                <div className="kennel__scores">
-                  <div className="kennel__score kennel__score--approved">
-                    <span className="kennel__score-number">{approved.length}</span>
-                    <span className="kennel__score-label">Verified</span>
+                <div className="flex items-center justify-center mb-7">
+                  <div className="flex-1 flex flex-col items-center gap-1">
+                    <span className="text-[64px] font-bold leading-none font-[Arial,sans-serif] text-[#6fcf97]">{approved.length}</span>
+                    <span className="text-[11px] uppercase tracking-[0.8px] text-[#9aa0a6] font-[Arial,sans-serif]">Verified</span>
                   </div>
-                  <div className="kennel__score-divider" />
-                  <div className="kennel__score kennel__score--pending">
-                    <span className="kennel__score-number">{pending.length}</span>
-                    <span className="kennel__score-label">Pending</span>
+                  <div className="w-px h-15 bg-white/8 shrink-0 mx-4" />
+                  <div className="flex-1 flex flex-col items-center gap-1">
+                    <span className="text-[64px] font-bold leading-none font-[Arial,sans-serif] text-[#9aa0a6]">{pending.length}</span>
+                    <span className="text-[11px] uppercase tracking-[0.8px] text-[#9aa0a6] font-[Arial,sans-serif]">Pending</span>
                   </div>
                 </div>
 
                 {approved.length > 0 && (
-                  <div className="kennel__group">
-                    <p className="kennel__group-label kennel__group-label--approved">Verified</p>
-                    <ul className="kennel__locations">
+                  <div className="mb-8 last:mb-0">
+                    <p className="text-[11px] uppercase tracking-[0.8px] mt-0 mb-2 font-[Arial,sans-serif] text-[#6fcf97]">Verified</p>
+                    <ul className="list-none m-0 p-0 flex flex-col gap-px">
                       {approved.map((loc) => <KennelLocationRow key={loc.id} loc={loc} />)}
                     </ul>
                   </div>
                 )}
 
                 {pending.length > 0 && (
-                  <div className="kennel__group">
-                    <p className="kennel__group-label kennel__group-label--pending">Pending</p>
-                    <ul className="kennel__locations">
+                  <div className={`mb-8 last:mb-0${approved.length > 0 ? ' pt-6 border-t border-white/6' : ''}`}>
+                    <p className="text-[11px] uppercase tracking-[0.8px] mt-0 mb-2 font-[Arial,sans-serif] text-[#9aa0a6]">Pending</p>
+                    <ul className="list-none m-0 p-0 flex flex-col gap-px">
                       {pending.map((loc) => <KennelLocationRow key={loc.id} loc={loc} canEdit />)}
                     </ul>
                   </div>

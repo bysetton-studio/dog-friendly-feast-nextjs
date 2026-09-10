@@ -46,18 +46,18 @@ export default function AvatarPicker({ image }: Props) {
   }
 
   return (
-    <div className="kennel__avatar-outer">
-      <div className="kennel__avatar-wrapper">
-        <div className="kennel__avatar">
+    <div className="flex flex-col items-center gap-2">
+      <div className="relative inline-flex">
+        <div className="text-[48px] rounded-full border border-[rgb(30,30,30)] bg-[rgb(30,30,30)] w-42 h-42 flex items-center justify-center overflow-hidden">
           {preview ? (
-            <img src={preview} alt="avatar" className="kennel__avatar-img" />
+            <img src={preview} alt="avatar" className="w-full h-full object-cover rounded-full" />
           ) : (
             '🐶'
           )}
         </div>
 
         <button
-          className="kennel__avatar-camera"
+          className="absolute bottom-1 right-1 w-7 h-7 rounded-full bg-[rgba(30,30,30,0.9)] border border-white/15 text-[#9aa0a6] flex items-center justify-center cursor-pointer transition-[background,color] duration-150 p-0 hover:enabled:bg-[rgba(50,50,50,0.95)] hover:enabled:text-[#e0e0e0] disabled:opacity-50 disabled:cursor-default"
           onClick={() => inputRef.current?.click()}
           disabled={uploading}
           aria-label="Change avatar"
@@ -75,7 +75,7 @@ export default function AvatarPicker({ image }: Props) {
       </div>
 
       {error && (
-        <p className="kennel__avatar-error">Image unable to load, please try again later</p>
+        <p className="text-[12px] text-[#f28b82] font-[Arial,sans-serif] text-center">Image unable to load, please try again later</p>
       )}
     </div>
   );
