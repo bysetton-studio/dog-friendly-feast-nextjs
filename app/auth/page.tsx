@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { authClient } from '@/lib/auth-client';
+import NavButton from '@/components/NavButton';
 
 export default function AuthPage() {
   const router = useRouter();
@@ -40,7 +41,7 @@ export default function AuthPage() {
 
   return (
     <main className="min-h-screen flex flex-col items-center justify-center p-6 font-sans">
-      <Link href="/" className="fixed top-5 left-6 text-sm text-fg-muted no-underline hover:text-fg">← Back to map</Link>
+      <NavButton href="/" className="fixed top-5 left-6 text-sm text-fg-muted no-underline hover:text-fg">← Back to map</NavButton>
 
       <div className="card w-full max-w-95 p-8 z-1">
         <div className="flex gap-1 bg-black/6 rounded-lg p-1 mb-7">

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import NavButton from '@/components/NavButton';
@@ -12,16 +12,18 @@ export default function KennelDropdown() {
   const [confirmLogout, setConfirmLogout] = useState(false);
   const [loading, setLoading] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  useEffect(() => {
-    function handleClick(e: MouseEvent) {
-      if (ref.current && !ref.current.contains(e.target as Node)) {
-        setOpen(false);
-        setConfirmLogout(false);
-      }
-    }
-    document.addEventListener('mousedown', handleClick);
-    return () => document.removeEventListener('mousedown', handleClick);
+  const handleMouseEnter = useCallback(() => {
+    if (closeTimer.current) clearTimeout(closeTimer.current);
+    setOpen(true);
+  }, []);
+
+  const handleMouseLeave = useCallback(() => {
+    closeTimer.current = setTimeout(() => {
+      setOpen(false);
+      setConfirmLogout(false);
+    }, 120);
   }, []);
 
   async function handleLogout() {
@@ -31,8 +33,8 @@ export default function KennelDropdown() {
   }
 
   return (
-    <div className="kennel-dropdown" ref={ref}>
-      <NavButton onClick={() => setOpen((v) => !v)}>My Kennel</NavButton>
+    <div className="kennel-dropdown" ref={ref} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+      <NavButton>My Kennel</NavButton>
 
       {open && (
         <div className="kennel-dropdown__menu">
