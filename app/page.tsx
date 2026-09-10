@@ -7,7 +7,6 @@ import type { Map as LeafletMap } from 'leaflet';
 import { authClient } from '@/lib/auth-client';
 import BackgroundArt from '@/components/BackgroundArt';
 import KennelDropdown from '@/components/KennelDropdown';
-import './home.css';
 
 import LocationSearch from '@/components/LocationSearch';
 import LocationList from '@/components/LocationList';
@@ -76,7 +75,7 @@ export default function HomePage() {
   const showSubmitBanner = selected && !resolvedLoading && !isGeographic(selected) && !isInList(selected, allResolved);
 
   return (
-    <main className="home">
+    <main className="flex-1 flex flex-col items-center justify-start gap-8 pt-15 px-5 pb-10">
         <BackgroundArt />
         <nav className="top-nav top-nav--left">
           <Link href="/about" className="top-nav__link">About</Link>
@@ -91,11 +90,11 @@ export default function HomePage() {
             : <Link href="/auth" className="top-nav__link">Sign up / Log in</Link>
           }
         </nav>
-        <div className="page-container">
+        <div className="relative w-full max-w-6xl flex flex-col items-center gap-8">
           <AddSticker />
-          <div className="logo-area">
-            <h1 className="logo">Dog World</h1>
-            <p className="tagline">Find dog-friendly restaurants near you</p>
+          <div className="text-center">
+            <h1 className="text-[98px] font-bold text-[#e0e0e0] mb-2 font-['Comic_Neue','Comic_Sans_MS','Comic_Sans',cursive]">Dog World</h1>
+            <p className="text-base text-[#e0e0e0]font-[Arial,sans-serif]">Find dog-friendly restaurants near you</p>
           </div>
 
           <LocationSearch
@@ -116,7 +115,7 @@ export default function HomePage() {
             />
           )}
 
-          <div className="map-row">
+          <div className="flex flex-row items-start gap-4 w-full max-w-6xl max-sm:flex-col max-sm:items-stretch">
             {expandedCity && (
               <LocationList
                 onSelect={setSelected}
@@ -149,16 +148,16 @@ export default function HomePage() {
           </div>
 
           {capReached && (
-            <div className="page-cap-backdrop">
-              <img src="/run_out_of_money.svg" className="page-cap-svg" aria-hidden="true" />
-              <div className="page-cap-content">
-                <span className="cap-main-text">
-                  <p><b>Daily map limit reached ! ! ! :(</b> <br/>Consider supporting us to keep the lights on.</p>
+            <div className="fixed inset-0 bg-black/75 z-200 flex items-center justify-center h-[min(100vh,1050px)]">
+              <img src="/run_out_of_money.svg" className="absolute w-[min(120vh,1050px)] h-[min(120vh,1050px)] animate-cap-spin" aria-hidden="true" />
+              <div className="relative flex flex-col items-center justify-center p-[15%] box-border">
+                <span className="max-w-120">
+                  <p className="text-center text-[34px] text-white leading-normal font-[Arial,sans-serif] m-0"><b>Daily map limit reached ! ! ! :(</b> <br/>Consider supporting us to keep the lights on.</p>
                 </span>
-                <span className="cap-contact-group">
-                  <span className="cap-contact-label">contact us to support</span>
+                <span className="inline-flex flex-col items-center gap-2 mt-4.5">
+                  <span className="text-[1em] font-normal text-white/70 tracking-[0.5px]">contact us to support</span>
                   <button
-                    className="cap-copy-email"
+                    className="inline-block bg-white/20 text-white border-2 border-white/60 rounded-full py-2.5 px-6 text-[1em] font-semibold font-[Arial,sans-serif] cursor-pointer transition-[background,border-color] duration-150 hover:bg-white/30 hover:border-white"
                     onClick={() => {
                       navigator.clipboard.writeText('bysetton+dogworldweb@gmail.com');
                       setEmailCopied(true);
@@ -167,13 +166,13 @@ export default function HomePage() {
                   >
                     {emailCopied ? 'Copied!' : 'bysetton+dogworldweb@gmail.com'}
                   </button>
-                  <Link href="/about" className="cap-about-link">Find out what we do →</Link>
+                  <Link href="/about" className="text-[0.75em] text-white/70 no-underline tracking-[0.3px] mt-4.5 hover:text-white hover:underline">Find out what we do →</Link>
                 </span>
               </div>
             </div>
           )}
 
-          <Link href="/add" className="add-location-link">
+          <Link href="/add" className="text-[13px] text-[#9aa0a6] underline font-[Arial,sans-serif] -mt-3 hover:text-[#e0e0e0]">
             Don&apos;t see your spot? Add a restaurant →
           </Link>
 

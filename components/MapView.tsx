@@ -5,7 +5,6 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { initServices } from '@/hooks/usePlacesCache';
 import { TYPE_FILTERS } from '@/components/TypeFilter';
-import './MapView.css';
 import type { Place, ResolvedLocation } from '@/types';
 import { useIsMobile } from '@/hooks/useIsMobile';
 import { useTwoFingers } from '@/hooks/useTwoFingers';
@@ -330,31 +329,31 @@ export default function MapView({
   }, [selected]);
 
   return (
-    <div className={`map-container${onMapClick ? ' map-container--clickable' : ''}`}>
-      <div ref={containerRef} className="map" />
-      <div className={`map-gesture-hint${isMobile && oneFinger ? ' map-gesture-hint--visible' : ''}`}>
+    <div className={`w-full max-w-6xl rounded-2xl overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.12)] relative h-[550px]${onMapClick ? ' map-container--clickable' : ''}`}>
+      <div ref={containerRef} className="w-full h-full" />
+      <div className={`absolute inset-0 flex items-center justify-center bg-black/80 text-white text-center text-[32px] font-[Arial,sans-serif] pointer-events-none z-10 rounded-2xl transition-opacity duration-300${isMobile && oneFinger ? ' opacity-100' : ' opacity-0'}`}>
         Use two fingers to move the map
       </div>
-      <label className="map-approved-toggle" onClick={onApprovedOnlyToggle}>
+      <label className="absolute top-3 right-3 z-10 flex items-center gap-2.5 text-[13px] font-medium text-[#202124] bg-white border border-[#e8eaed] rounded-full px-3.5 py-2 shadow-[0_2px_8px_rgba(0,0,0,0.12)] cursor-pointer select-none whitespace-nowrap" onClick={onApprovedOnlyToggle}>
         <span>Verified only</span>
         <div className={`toggle-switch${approvedOnly ? ' toggle-switch--on' : ''}`}>
           <div className="toggle-switch__thumb" />
         </div>
       </label>
       {(locationsLoading || resolvedLoading) && (
-        <div className="map-loading">
+        <div className="absolute inset-0 bg-white/75 flex flex-col items-center justify-center gap-3 z-10 backdrop-blur-sm">
           <div className="map-loading__spinner" />
-          <span className="map-loading__text">Loading locations...</span>
+          <span className="text-[13px] text-[#5f6368]">Loading locations...</span>
         </div>
       )}
       {selected && (
-        <div className="map-label">
-          <strong>{(selected.name as string) || selected.formatted_address}</strong>
-          {selected.name && <span>{selected.formatted_address as string}</span>}
+        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-white rounded-lg px-4 py-2.5 shadow-[0_2px_10px_rgba(0,0,0,0.2)] flex flex-col gap-0.5 whitespace-nowrap max-w-[calc(100%-32px)] overflow-hidden text-ellipsis">
+          <strong className="text-sm text-[#202124]">{(selected.name as string) || selected.formatted_address}</strong>
+          {selected.name && <span className="text-xs text-[#5f6368]">{selected.formatted_address as string}</span>}
         </div>
       )}
       {onMapClick && !selected && (
-        <div className="map-click-hint">Click anywhere to get the address</div>
+        <div className="absolute bottom-3 right-3 z-10 bg-white/92 border border-[#e8eaed] rounded-lg px-3 py-1.5 text-xs text-[#5f6368] pointer-events-none whitespace-nowrap">Click anywhere to get the address</div>
       )}
     </div>
   );

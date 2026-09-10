@@ -30,30 +30,33 @@ export default function SupportSticker({ open, onClose }: Props) {
   if (!open) return null;
 
   return (
-    <div className="support_sticker_group" ref={groupRef}>
+    <div
+      className="support_sticker_group absolute top-[calc(100%+8px)] left-0 z-100 flex flex-col items-center max-md:flex-row max-md:items-center"
+      ref={groupRef}
+    >
       <a
-        className="support_sticker"
+        className="support_sticker w-25 h-25 flex items-center justify-center transition-transform duration-250 ease-in-out cursor-pointer no-underline max-md:w-22 max-md:h-22"
         href="https://express.stitch.money/barak"
         target="_blank"
         rel="noopener noreferrer"
       >
-        <img src="/support.svg" className="support_sticker__img" alt="" />
-        <span className="support_sticker__text">
+        <img src="/support.svg" className="absolute w-25 h-25 animate-sticker-spin-20 max-md:w-22 max-md:h-22" alt="" />
+        <span className="relative text-center font-['Comic_Neue','Comic_Sans_MS','Comic_Sans',cursive] text-[12px] font-bold [-webkit-text-stroke:0.5px_#fff] text-white leading-[1.3] p-5 max-md:text-[11px] max-md:p-3">
           Throw me<br />a bone
         </span>
       </a>
 
-      <div className="support_sticker_options">
+      <div className="support_sticker_options flex flex-row gap-2 opacity-0 pointer-events-none mt-1 transition-opacity duration-250 ease-in-out max-md:flex-col max-md:mt-0 max-md:ml-1">
         {OPTIONS.map(({ label, href }) => (
           <a
             key={label}
-            className="support_sticker_option"
+            className="support_sticker_option relative w-12 h-12 flex items-center justify-center no-underline transition-transform duration-350 [cubic-bezier(0.34,1.56,0.64,1)]"
             href={href}
             target="_blank"
             rel="noopener noreferrer"
           >
-            <img src="/support.svg" className="support_sticker_option__img" alt="" />
-            <span className="support_sticker_option__text">{label}</span>
+            <img src="/support.svg" className="absolute inset-0 w-full h-full animate-sticker-spin-14" alt="" />
+            <span className="relative text-center font-['Comic_Neue','Comic_Sans_MS','Comic_Sans',cursive] text-[10px] font-bold [-webkit-text-stroke:0.4px_#fff] text-white leading-[1.2]">{label}</span>
           </a>
         ))}
       </div>
