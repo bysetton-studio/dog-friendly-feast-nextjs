@@ -19,7 +19,7 @@ export default function FriendlyTypeModal({ placeName, onConfirm, onCancel }: Pr
 
   return (
     <div className="fixed inset-0 bg-black/55 flex items-center justify-center z-200 p-4" onClick={onCancel}>
-      <div className="bg-overlay/98 border border-white/10 rounded-2xl pt-7 px-6 pb-6 w-full max-w-90 font-[Arial,sans-serif]" onClick={(e) => e.stopPropagation()}>
+      <div className="dialog pt-7 px-6 pb-6 w-full max-w-90 font-[Arial,sans-serif]" onClick={(e) => e.stopPropagation()}>
         <h2 className="text-[17px] font-semibold text-fg mt-0 mb-1.5">What kind of place is this?</h2>
         <p className="text-[13px] text-fg-muted mt-0 mb-5 whitespace-nowrap overflow-hidden text-ellipsis">{placeName}</p>
 

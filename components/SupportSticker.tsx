@@ -31,18 +31,18 @@ export default function SupportSticker({ open, onClose }: Props) {
 
   return (
     <div
-      className="support_sticker_group absolute top-[calc(100%+8px)] left-0 z-100 flex flex-col items-center max-md:flex-row max-md:items-center"
+      className="support_sticker_group absolute top-[calc(100%+8px)] left-0 z-200 flex flex-col items-center max-md:flex-row max-md:items-center"
       ref={groupRef}
     >
       <a
-        className="support_sticker w-25 h-25 flex items-center justify-center transition-transform duration-250 ease-in-out cursor-pointer no-underline max-md:w-22 max-md:h-22"
+        className="support_sticker w-30 h-30 flex items-center justify-center transition-transform duration-250 ease-in-out cursor-pointer no-underline max-md:w-26 max-md:h-26"
         href="https://express.stitch.money/barak"
         target="_blank"
         rel="noopener noreferrer"
       >
-        <img src="/support.svg" className="absolute w-25 h-25 animate-sticker-spin-20 max-md:w-22 max-md:h-22" alt="" />
-        <span className="relative text-center font-['Comic_Neue','Comic_Sans_MS','Comic_Sans',cursive] text-[12px] font-bold [-webkit-text-stroke:0.5px_#fff] text-white leading-[1.3] p-5 max-md:text-[11px] max-md:p-3">
-          Throw me<br />a bone
+        <img src="/support.svg" className="absolute w-30 h-30 animate-sticker-spin-20 max-md:w-26 max-md:h-26" alt="" />
+        <span className="relative text-center font-['Comic_Neue','Comic_Sans_MS','Comic_Sans',cursive] text-[13px] font-bold [-webkit-text-stroke:0.5px_#fff] text-white leading-[1.3] p-5 max-md:text-[12px] max-md:p-4">
+          Like what you see?<br/>Throw me<br />a bone
         </span>
       </a>
 
@@ -50,7 +50,7 @@ export default function SupportSticker({ open, onClose }: Props) {
         {OPTIONS.map(({ label, href }) => (
           <a
             key={label}
-            className="support_sticker_option relative w-12 h-12 flex items-center justify-center no-underline transition-transform duration-350 [cubic-bezier(0.34,1.56,0.64,1)]"
+            className="support_sticker_option relative w-14 h-14 flex items-center justify-center no-underline transition-transform duration-350 [cubic-bezier(0.34,1.56,0.64,1)]"
             href={href}
             target="_blank"
             rel="noopener noreferrer"

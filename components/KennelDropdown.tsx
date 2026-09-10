@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import NavButton from '@/components/NavButton';
 import { authClient } from '@/lib/auth-client';
 
 export default function KennelDropdown() {
@@ -31,9 +32,7 @@ export default function KennelDropdown() {
 
   return (
     <div className="kennel-dropdown" ref={ref}>
-      <button className="top-nav__link kennel-dropdown__trigger" onClick={() => setOpen((v) => !v)}>
-        My Kennel
-      </button>
+      <NavButton onClick={() => setOpen((v) => !v)}>My Kennel</NavButton>
 
       {open && (
         <div className="kennel-dropdown__menu">

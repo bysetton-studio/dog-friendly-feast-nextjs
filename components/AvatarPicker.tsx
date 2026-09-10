@@ -48,7 +48,7 @@ export default function AvatarPicker({ image }: Props) {
   return (
     <div className="flex flex-col items-center gap-2">
       <div className="relative inline-flex">
-        <div className="text-[48px] rounded-full border border-[rgb(30,30,30)] bg-[rgb(30,30,30)] w-42 h-42 flex items-center justify-center overflow-hidden">
+        <div className="text-[48px] rounded-full border border-card bg-card w-42 h-42 flex items-center justify-center overflow-hidden">
           {preview ? (
             <img src={preview} alt="avatar" className="w-full h-full object-cover rounded-full" />
           ) : (

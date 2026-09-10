@@ -5,7 +5,6 @@ import Link from 'next/link';
 import LocationSearch from '@/components/LocationSearch';
 import { useSubmitLocation } from '@/hooks/useSubmitLocation';
 import { useLocations } from '@/hooks/useLocations';
-import BackgroundArt from '@/components/BackgroundArt';
 import type { Place } from '@/types';
 
 export default function AddLocationPage() {
@@ -20,7 +19,6 @@ export default function AddLocationPage() {
 
   return (
     <main className="max-w-155 mx-auto px-6 pt-15 pb-20 font-sans flex flex-col items-center gap-6">
-      <BackgroundArt />
       <Link href="/" className="self-start text-sm text-fg-muted no-underline hover:text-fg">← Back to map</Link>
 
       <div className="text-center">

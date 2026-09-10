@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import NavButton from '@/components/NavButton';
 import { useRouter } from 'next/navigation';
 import { authClient } from '@/lib/auth-client';
 
@@ -17,13 +18,11 @@ export default function LogoutButton() {
 
   return (
     <>
-      <button className="top-nav__link border-none cursor-pointer text-unfriendly!" onClick={() => setOpen(true)}>
-        Log out
-      </button>
+      <NavButton variant="danger" onClick={() => setOpen(true)}>Log out</NavButton>
 
       {open && (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-100 pointer-events-auto" onClick={() => setOpen(false)}>
-          <div className="bg-surface/98 border border-white/10 rounded-[14px] pt-7 px-6 pb-6 w-full max-w-80 font-[Arial,sans-serif]" onClick={(e) => e.stopPropagation()}>
+          <div className="dialog pt-7 px-6 pb-6 w-full max-w-80 font-[Arial,sans-serif]" onClick={(e) => e.stopPropagation()}>
             <p className="text-[15px] text-fg mt-0 mb-6 text-center">Are you sure you want to log out?</p>
             <div className="flex gap-2.5">
               <button className="flex-1 py-2.5 rounded-lg text-[14px] font-[Arial,sans-serif] cursor-pointer transition-[background] duration-150 bg-transparent border border-white/10 text-fg-muted hover:text-fg hover:border-white/25" onClick={() => setOpen(false)}>

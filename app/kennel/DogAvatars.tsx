@@ -113,7 +113,7 @@ export default function DogAvatars({ initial }: Props) {
           className="absolute pointer-events-auto group/dog"
           style={{ ...arcPosition(i, dogs.length), zIndex: dogs.length - i }}
         >
-          <div className="w-21 h-21 rounded-full bg-[rgb(30,30,30)] border-3 border-black flex items-center justify-center overflow-hidden relative">
+          <div className="w-21 h-21 rounded-full bg-card border-3 border-black flex items-center justify-center overflow-hidden relative">
             {dog.image
               ? <img src={dog.image} alt="dog" className="w-full h-full object-cover" />
               : <span className="text-[28px]">🐶</span>
@@ -162,7 +162,7 @@ export default function DogAvatars({ initial }: Props) {
 
       {confirmDeleteId && (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-100 pointer-events-auto" onClick={() => setConfirmDeleteId(null)}>
-          <div className="bg-surface/98 border border-white/10 rounded-[14px] pt-7 px-6 pb-6 w-full max-w-80 font-[Arial,sans-serif]" onClick={(e) => e.stopPropagation()}>
+          <div className="dialog pt-7 px-6 pb-6 w-full max-w-80 font-[Arial,sans-serif]" onClick={(e) => e.stopPropagation()}>
             <p className="text-[15px] text-fg mt-0 mb-6 text-center">Remove this pup?</p>
             <div className="flex gap-2.5">
               <button className="flex-1 py-2.5 rounded-lg text-[14px] font-[Arial,sans-serif] cursor-pointer transition-[background] duration-150 bg-transparent border border-white/10 text-fg-muted hover:text-fg hover:border-white/25" onClick={() => setConfirmDeleteId(null)}>

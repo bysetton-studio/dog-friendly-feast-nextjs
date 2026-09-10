@@ -65,7 +65,7 @@ export default function LocationList({ onSelect, grouped, expandedCities, expand
     <div
       className={
         onlyCity
-          ? 'w-55 min-w-55 max-w-55 flex flex-col gap-2 items-stretch'
+          ? 'w-55 min-w-55 max-w-55 max-sm:w-full max-sm:min-w-0 max-sm:max-w-full flex flex-col gap-2 items-stretch'
           : 'w-full max-w-287.5 grid grid-cols-3 max-sm:grid-cols-1 gap-3 pb-15 items-start'
       }
     >
@@ -80,11 +80,11 @@ export default function LocationList({ onSelect, grouped, expandedCities, expand
           <div
             key={city}
             data-location-group
-            className="bg-[rgb(30,30,30)] max-h-137.5 overflow-auto rounded-2xl shadow-[0_2px_12px_rgba(0,0,0,0.3)] relative z-1"
+            className="card max-h-137.5 overflow-auto relative z-1"
             ref={onlyCity ? groupRef : undefined}
           >
             <h2
-              className="text-[13px] font-semibold text-fg m-0 px-4 py-3.5 cursor-pointer flex justify-between items-center transition-[background] duration-150 select-none"
+              className="text-[13px] font-semibold text-card-fg m-0 px-4 py-3.5 cursor-pointer flex justify-between items-center transition-[background] duration-150 select-none"
               onClick={(e) => {
                 if (!isCityOpen && onCityClickCapture) {
                   const groupEl = (e.currentTarget as HTMLElement).closest('[data-location-group]');
@@ -93,10 +93,10 @@ export default function LocationList({ onSelect, grouped, expandedCities, expand
                 toggleCity(city);
               }}
             >
-              <span className="text-sm font-semibold text-fg">{city}</span>
+              <span className="text-sm font-semibold text-card-fg">{city}</span>
               <span className="flex items-center gap-2.5">
-                <span className="text-[11px] font-semibold bg-white/10 text-fg-muted rounded-[20px] py-0.5 px-2">{totalCount}</span>
-                <span className="text-[10px] text-fg-muted">{isCityOpen ? '▲' : '▼'}</span>
+                <span className="text-[11px] font-semibold bg-black/8 text-card-fg-muted rounded-[20px] py-0.5 px-2">{totalCount}</span>
+                <span className="text-[10px] text-card-fg-muted">{isCityOpen ? '▲' : '▼'}</span>
               </span>
             </h2>
 
@@ -111,13 +111,13 @@ export default function LocationList({ onSelect, grouped, expandedCities, expand
                     return (
                       <div key={suburb} className="rounded-[10px] overflow-hidden">
                         <h3
-                          className="text-xs font-semibold text-fg-muted bg-white/4 m-0 px-3 py-2 cursor-pointer flex justify-between items-center transition-[background] duration-150 select-none hover:bg-white/8"
+                          className="text-xs font-semibold text-card-fg-muted bg-black/4 m-0 px-3 py-2 cursor-pointer flex justify-between items-center transition-[background] duration-150 select-none hover:bg-black/8"
                           onClick={() => toggleSuburb(suburb)}
                         >
-                          <span className="text-xs font-semibold text-fg-muted">{suburb}</span>
+                          <span className="text-xs font-semibold text-card-fg-muted">{suburb}</span>
                           <span className="flex items-center gap-2">
-                            <span className="text-[11px] font-semibold bg-white/10 text-fg-muted rounded-[20px] py-0.5 px-2">{suburbCount}</span>
-                            <span className="text-[10px] text-fg-muted">{isSuburbOpen ? '▲' : '▼'}</span>
+                            <span className="text-[11px] font-semibold bg-black/8 text-card-fg-muted rounded-[20px] py-0.5 px-2">{suburbCount}</span>
+                            <span className="text-[10px] text-card-fg-muted">{isSuburbOpen ? '▲' : '▼'}</span>
                           </span>
                         </h3>
 
@@ -131,8 +131,8 @@ export default function LocationList({ onSelect, grouped, expandedCities, expand
                                   key={name}
                                   className={
                                     isFriendly
-                                      ? 'group flex items-center gap-3 px-3 py-2.5 rounded-[10px] cursor-pointer transition-[background] duration-150 hover:bg-white/6'
-                                      : 'group flex items-center gap-3 px-3 py-2.5 rounded-[10px] cursor-pointer transition-[background] duration-150 hover:bg-[rgba(255,80,80,0.08)]'
+                                      ? 'group flex items-center gap-3 px-3 py-2.5 rounded-[10px] cursor-pointer transition-[background] duration-150 hover:bg-black/5'
+                                      : 'group flex items-center gap-3 px-3 py-2.5 rounded-[10px] cursor-pointer transition-[background] duration-150 hover:bg-unfriendly-vivid/8'
                                   }
                                   onClick={() => onSelect((place ?? { name, formatted_address: address }) as Place)}
                                 >
@@ -140,13 +140,13 @@ export default function LocationList({ onSelect, grouped, expandedCities, expand
                                     <span
                                       className={
                                         isFriendly
-                                          ? 'text-[13px] font-semibold text-fg whitespace-nowrap overflow-hidden text-ellipsis transition-colors duration-150 group-hover:text-white'
-                                          : 'text-[13px] font-semibold text-unfriendly whitespace-nowrap overflow-hidden text-ellipsis transition-colors duration-150 group-hover:text-unfriendly-soft'
+                                          ? 'text-[13px] font-semibold text-card-fg whitespace-nowrap overflow-hidden text-ellipsis transition-colors duration-150 group-hover:text-card-fg'
+                                          : 'text-[13px] font-semibold text-unfriendly-dark whitespace-nowrap overflow-hidden text-ellipsis transition-colors duration-150 group-hover:text-unfriendly-dark'
                                       }
                                     >
                                       {name}
                                     </span>
-                                    <span className="text-[11px] text-fg-muted mt-0.5 whitespace-nowrap overflow-hidden text-ellipsis">{address}</span>
+                                    <span className="text-[11px] text-card-fg-muted mt-0.5 whitespace-nowrap overflow-hidden text-ellipsis">{address}</span>
                                     {!isApproved && (
                                       <span className="text-[10px] font-medium text-community bg-community-light rounded px-1.5 mt-0.75 inline-block w-fit">Community suggested</span>
                                     )}

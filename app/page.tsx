@@ -2,11 +2,12 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
-import Link from 'next/link';
+import NavButton from '@/components/NavButton';
 import type { Map as LeafletMap } from 'leaflet';
 import { authClient } from '@/lib/auth-client';
-import BackgroundArt from '@/components/BackgroundArt';
 import KennelDropdown from '@/components/KennelDropdown';
+import Link from 'next/link';
+
 
 import LocationSearch from '@/components/LocationSearch';
 import LocationList from '@/components/LocationList';
@@ -76,18 +77,17 @@ export default function HomePage() {
 
   return (
     <main className="flex-1 flex flex-col items-center justify-start gap-8 pt-15 px-5 pb-10">
-        <BackgroundArt />
-        <nav className="top-nav top-nav--left">
-          <Link href="/about" className="top-nav__link">About</Link>
-          <div style={{ position: 'relative' }}>
-            <button className="top-nav__btn" onClick={() => setBoneOpen((v) => !v)}>🦴</button>
+        <nav className="fixed top-5 left-6 flex gap-2 z-200">
+          <NavButton href="/about">About</NavButton>
+          <div className="relative">
+            <NavButton onClick={() => setBoneOpen((v) => !v)}>🦴</NavButton>
             <SupportSticker open={boneOpen} onClose={() => setBoneOpen(false)} />
           </div>
         </nav>
-        <nav className="top-nav">
+        <nav className="fixed top-5 right-6 flex gap-2 z-300">
           {session
             ? <KennelDropdown />
-            : <Link href="/auth" className="top-nav__link">Sign up / Log in</Link>
+            : <NavButton href="/auth">Sign up / Log in</NavButton>
           }
         </nav>
         <div className="relative w-full max-w-6xl flex flex-col items-center gap-8">
@@ -115,7 +115,7 @@ export default function HomePage() {
             />
           )}
 
-          <div className="flex flex-row items-start gap-4 w-full max-w-6xl max-sm:flex-col max-sm:items-stretch z-100">
+          <div className="flex flex-row items-start gap-4 w-full max-w-6xl max-sm:flex-col-reverse max-sm:items-stretch z-100">
             {expandedCity && (
               <LocationList
                 onSelect={setSelected}
