@@ -25,8 +25,8 @@ export default function TypeFilter({ selected, onChange }: Props) {
     onChange(next);
   }
 
-  const chipBase = 'flex items-center gap-[6px] px-[14px] py-[6px] rounded-full bg-[rgba(30,30,30,0.7)] border border-white/10 text-[#9aa0a6] text-[13px] font-[Arial,sans-serif] cursor-pointer select-none transition-[background,color,border-color] duration-150 hover:bg-[rgba(50,50,50,0.85)] hover:text-[#e0e0e0]';
-  const chipOn = 'bg-[#1a73e8] border-[#1a73e8] text-white font-semibold';
+  const chipBase = 'flex items-center gap-[6px] px-[14px] py-[6px] rounded-full bg-surface/70 border border-white/10 text-fg-muted text-[13px] font-[Arial,sans-serif] cursor-pointer select-none transition-[background,color,border-color] duration-150 hover:bg-surface-hover/85 hover:text-fg';
+  const chipOn = 'bg-accent border-accent text-white font-semibold';
 
   return (
     <div className="flex flex-wrap gap-2 justify-center w-full max-w-145.5">

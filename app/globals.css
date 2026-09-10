@@ -1,5 +1,45 @@
 @import "tailwindcss";
 
+@theme {
+  /* ── Dark text ── */
+  --color-fg:       #e0e0e0;   /* primary text on dark bg   → text-fg        */
+  --color-fg-soft:  #c0c0c0;   /* secondary text            → text-fg-soft   */
+  --color-fg-muted:       #9aa0a6;   /* muted text                → text-fg-muted        */
+  --color-fg-placeholder: #555555;   /* input placeholder on dark → text-fg-placeholder  */
+
+  /* ── Dark surfaces ── */
+  /* Use slash modifier for opacity: bg-surface/90, bg-overlay/98, etc. */
+  --color-surface:       rgb(30 30 30);   /* cards / panels       → bg-surface        */
+  --color-surface-hover: rgb(50 50 50);   /* hover on dark cards  → bg-surface-hover  */
+  --color-overlay:       rgb(28 28 28);   /* modals               → bg-overlay        */
+
+  /* ── Light text (search box, map label — on white bg) ── */
+  --color-ink:        #202124;   /* primary dark text  → text-ink        */
+  --color-ink-soft:   #5f6368;   /* secondary          → text-ink-soft   */
+  --color-ink-border: #e8eaed;   /* border on white    → border-ink-border */
+  --color-ink-dim:    #f1f3f4;   /* subtle divider     → bg-ink-dim      */
+
+  /* ── Accent (blue) ── */
+  --color-accent:        #1a73e8;   /* toggle, active filter  → text-accent        */
+  --color-accent-subtle: #e8f0fe;   /* filter button bg       → bg-accent-subtle   */
+
+  /* ── Friendly (green) ── */
+  --color-friendly:       #6fcf97;   /* badge / option text on dark  → text-friendly       */
+  --color-friendly-dark:  #1e7e34;   /* submitted text on white      → text-friendly-dark  */
+  --color-friendly-light: #e6f4ea;   /* yes-button bg on white       → bg-friendly-light   */
+
+  /* ── Unfriendly (red) ── */
+  --color-unfriendly:       #f28b82;   /* badge / option text on dark  → text-unfriendly        */
+  --color-unfriendly-soft:  #ff9a94;   /* hover text on unfriendly row → text-unfriendly-soft   */
+  --color-unfriendly-vivid: #ff5050;   /* rgba(255,80,80) backgrounds  → bg-unfriendly-vivid/12 */
+  --color-unfriendly-dark:  #c5221f;   /* submitted text on white      → text-unfriendly-dark   */
+  --color-unfriendly-light: #fce8e6;   /* no-button bg on white        → bg-unfriendly-light    */
+
+  /* ── Community suggestion (amber) ── */
+  --color-community:       #b06000;   /* tag text  → text-community       */
+  --color-community-light: #fff3e0;   /* tag bg    → bg-community-light   */
+}
+
 :root {
   --background: #0a0a0a;
   --foreground: #ededed;

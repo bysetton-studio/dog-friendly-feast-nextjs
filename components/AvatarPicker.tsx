@@ -57,7 +57,7 @@ export default function AvatarPicker({ image }: Props) {
         </div>
 
         <button
-          className="absolute bottom-1 right-1 w-7 h-7 rounded-full bg-[rgba(30,30,30,0.9)] border border-white/15 text-[#9aa0a6] flex items-center justify-center cursor-pointer transition-[background,color] duration-150 p-0 hover:enabled:bg-[rgba(50,50,50,0.95)] hover:enabled:text-[#e0e0e0] disabled:opacity-50 disabled:cursor-default"
+          className="absolute bottom-1 right-1 w-7 h-7 rounded-full bg-surface/90 border border-white/15 text-fg-muted flex items-center justify-center cursor-pointer transition-[background,color] duration-150 p-0 hover:enabled:bg-surface-hover/95 hover:enabled:text-fg disabled:opacity-50 disabled:cursor-default"
           onClick={() => inputRef.current?.click()}
           disabled={uploading}
           aria-label="Change avatar"
@@ -75,7 +75,7 @@ export default function AvatarPicker({ image }: Props) {
       </div>
 
       {error && (
-        <p className="text-[12px] text-[#f28b82] font-[Arial,sans-serif] text-center">Image unable to load, please try again later</p>
+        <p className="text-[12px] text-unfriendly font-[Arial,sans-serif] text-center">Image unable to load, please try again later</p>
       )}
     </div>
   );

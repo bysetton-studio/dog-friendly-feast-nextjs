@@ -34,22 +34,22 @@ export default function SubmitBanner({ place, onDismiss, inList }: Props) {
         onCancel={() => setShowTypeModal(false)}
       />
     )}
-    <div className="w-full max-w-82.5 bg-white border border-[#e8eaed] rounded-xl px-4 py-3 flex items-center justify-between gap-3 shadow-[0_2px_8px_rgba(0,0,0,0.08)] flex-wrap">
+    <div className="w-full max-w-82.5 bg-white border border-ink-border rounded-xl px-4 py-3 flex items-center justify-between gap-3 shadow-[0_2px_8px_rgba(0,0,0,0.08)] flex-wrap">
       <div className="flex flex-col gap-0.5 min-w-0">
         {!inList && (
-          <span className="text-sm font-semibold text-[#202124] whitespace-nowrap overflow-hidden text-ellipsis">Not in our list, is it dog friendly?</span>
+          <span className="text-sm font-semibold text-ink whitespace-nowrap overflow-hidden text-ellipsis">Not in our list, is it dog friendly?</span>
         )}
-        <span className="text-xs text-[#9aa0a6]">{place.name as string}</span>
+        <span className="text-xs text-fg-muted">{place.name as string}</span>
       </div>
 
       {submitted !== null ? (
-        <div className={`text-[13px] font-medium flex items-center gap-2.5 shrink-0 ${submitted ? 'text-[#1e7e34]' : 'text-[#c5221f]'}`}>
+        <div className={`text-[13px] font-medium flex items-center gap-2.5 shrink-0 ${submitted ? 'text-friendly-dark' : 'text-unfriendly-dark'}`}>
           🐾 Marked as friendly
         </div>
       ) : (
         <div className="flex gap-2 shrink-0">
           <button
-            className="border-none rounded-lg py-1.75 px-3.5 text-[13px] font-medium cursor-pointer transition-opacity duration-150 hover:opacity-85 bg-[#e6f4ea] text-[#1e7e34]"
+            className="border-none rounded-lg py-1.75 px-3.5 text-[13px] font-medium cursor-pointer transition-opacity duration-150 hover:opacity-85 bg-friendly-light text-friendly-dark"
             onClick={() => setShowTypeModal(true)}
             disabled={submitting !== null}
           >

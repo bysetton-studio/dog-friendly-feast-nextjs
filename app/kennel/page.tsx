@@ -58,16 +58,16 @@ export default async function KennelPage() {
               <AvatarPicker image={session.user.image ?? null} />
               <DogAvatars initial={dogs.map((d) => ({ id: d.id, image: d.image }))} />
             </div>
-            <h1 className="text-[32px] font-semibold text-[#e0e0e0] m-0 font-[Arial,sans-serif]">{session.user.name}&apos;s Kennel</h1>
+            <h1 className="text-[32px] font-semibold text-fg m-0 font-[Arial,sans-serif]">{session.user.name}&apos;s Kennel</h1>
           </div>
 
         <div className="w-full bg-[rgb(30,30,30)] rounded-2xl relative z-1 text-left p-6">
-          <h2 className="text-[15px] font-semibold text-[#e0e0e0] mt-0 mb-4">Your Submissions</h2>
+          <h2 className="text-[15px] font-semibold text-fg mt-0 mb-4">Your Submissions</h2>
 
           {suggestedLocations.length === 0 ? (
             <div className="flex flex-col items-start gap-4">
-              <p className="text-[14px] text-[#9aa0a6] m-0">No submissions yet, go find somewhere dog-friendly! 🐾</p>
-              <Link href="/" className="text-[14px] font-[Arial,sans-serif] text-[#e0e0e0] bg-white/8 border border-white/12 rounded-lg py-2.25 px-4 no-underline transition-[background] duration-150 hover:bg-white/13">Find a spot →</Link>
+              <p className="text-[14px] text-fg-muted m-0">No submissions yet, go find somewhere dog-friendly! 🐾</p>
+              <Link href="/" className="text-[14px] font-[Arial,sans-serif] text-fg bg-white/8 border border-white/12 rounded-lg py-2.25 px-4 no-underline transition-[background] duration-150 hover:bg-white/13">Find a spot →</Link>
             </div>
           ) : (() => {
             const approved = suggestedLocations.filter((l) => l.isAdminApproved);
@@ -77,19 +77,19 @@ export default async function KennelPage() {
               <>
                 <div className="flex items-center justify-center mb-7">
                   <div className="flex-1 flex flex-col items-center gap-1">
-                    <span className="text-[64px] font-bold leading-none font-[Arial,sans-serif] text-[#6fcf97]">{approved.length}</span>
-                    <span className="text-[11px] uppercase tracking-[0.8px] text-[#9aa0a6] font-[Arial,sans-serif]">Verified</span>
+                    <span className="text-[64px] font-bold leading-none font-[Arial,sans-serif] text-friendly">{approved.length}</span>
+                    <span className="text-[11px] uppercase tracking-[0.8px] text-fg-muted font-[Arial,sans-serif]">Verified</span>
                   </div>
                   <div className="w-px h-15 bg-white/8 shrink-0 mx-4" />
                   <div className="flex-1 flex flex-col items-center gap-1">
-                    <span className="text-[64px] font-bold leading-none font-[Arial,sans-serif] text-[#9aa0a6]">{pending.length}</span>
-                    <span className="text-[11px] uppercase tracking-[0.8px] text-[#9aa0a6] font-[Arial,sans-serif]">Pending</span>
+                    <span className="text-[64px] font-bold leading-none font-[Arial,sans-serif] text-fg-muted">{pending.length}</span>
+                    <span className="text-[11px] uppercase tracking-[0.8px] text-fg-muted font-[Arial,sans-serif]">Pending</span>
                   </div>
                 </div>
 
                 {approved.length > 0 && (
                   <div className="mb-8 last:mb-0">
-                    <p className="text-[11px] uppercase tracking-[0.8px] mt-0 mb-2 font-[Arial,sans-serif] text-[#6fcf97]">Verified</p>
+                    <p className="text-[11px] uppercase tracking-[0.8px] mt-0 mb-2 font-[Arial,sans-serif] text-friendly">Verified</p>
                     <ul className="list-none m-0 p-0 flex flex-col gap-px">
                       {approved.map((loc) => <KennelLocationRow key={loc.id} loc={loc} />)}
                     </ul>
@@ -98,7 +98,7 @@ export default async function KennelPage() {
 
                 {pending.length > 0 && (
                   <div className={`mb-8 last:mb-0${approved.length > 0 ? ' pt-6 border-t border-white/6' : ''}`}>
-                    <p className="text-[11px] uppercase tracking-[0.8px] mt-0 mb-2 font-[Arial,sans-serif] text-[#9aa0a6]">Pending</p>
+                    <p className="text-[11px] uppercase tracking-[0.8px] mt-0 mb-2 font-[Arial,sans-serif] text-fg-muted">Pending</p>
                     <ul className="list-none m-0 p-0 flex flex-col gap-px">
                       {pending.map((loc) => <KennelLocationRow key={loc.id} loc={loc} canEdit />)}
                     </ul>

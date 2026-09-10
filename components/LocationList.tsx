@@ -84,7 +84,7 @@ export default function LocationList({ onSelect, grouped, expandedCities, expand
             ref={onlyCity ? groupRef : undefined}
           >
             <h2
-              className="text-[13px] font-semibold text-[#e0e0e0] m-0 px-4 py-3.5 cursor-pointer flex justify-between items-center transition-[background] duration-150 select-none"
+              className="text-[13px] font-semibold text-fg m-0 px-4 py-3.5 cursor-pointer flex justify-between items-center transition-[background] duration-150 select-none"
               onClick={(e) => {
                 if (!isCityOpen && onCityClickCapture) {
                   const groupEl = (e.currentTarget as HTMLElement).closest('[data-location-group]');
@@ -93,10 +93,10 @@ export default function LocationList({ onSelect, grouped, expandedCities, expand
                 toggleCity(city);
               }}
             >
-              <span className="text-sm font-semibold text-[#e0e0e0]">{city}</span>
+              <span className="text-sm font-semibold text-fg">{city}</span>
               <span className="flex items-center gap-2.5">
-                <span className="text-[11px] font-semibold bg-white/10 text-[#9aa0a6] rounded-[20px] py-0.5 px-2">{totalCount}</span>
-                <span className="text-[10px] text-[#9aa0a6]">{isCityOpen ? '▲' : '▼'}</span>
+                <span className="text-[11px] font-semibold bg-white/10 text-fg-muted rounded-[20px] py-0.5 px-2">{totalCount}</span>
+                <span className="text-[10px] text-fg-muted">{isCityOpen ? '▲' : '▼'}</span>
               </span>
             </h2>
 
@@ -111,13 +111,13 @@ export default function LocationList({ onSelect, grouped, expandedCities, expand
                     return (
                       <div key={suburb} className="rounded-[10px] overflow-hidden">
                         <h3
-                          className="text-xs font-semibold text-[#9aa0a6] bg-white/4 m-0 px-3 py-2 cursor-pointer flex justify-between items-center transition-[background] duration-150 select-none hover:bg-white/8"
+                          className="text-xs font-semibold text-fg-muted bg-white/4 m-0 px-3 py-2 cursor-pointer flex justify-between items-center transition-[background] duration-150 select-none hover:bg-white/8"
                           onClick={() => toggleSuburb(suburb)}
                         >
-                          <span className="text-xs font-semibold text-[#9aa0a6]">{suburb}</span>
+                          <span className="text-xs font-semibold text-fg-muted">{suburb}</span>
                           <span className="flex items-center gap-2">
-                            <span className="text-[11px] font-semibold bg-white/10 text-[#9aa0a6] rounded-[20px] py-0.5 px-2">{suburbCount}</span>
-                            <span className="text-[10px] text-[#9aa0a6]">{isSuburbOpen ? '▲' : '▼'}</span>
+                            <span className="text-[11px] font-semibold bg-white/10 text-fg-muted rounded-[20px] py-0.5 px-2">{suburbCount}</span>
+                            <span className="text-[10px] text-fg-muted">{isSuburbOpen ? '▲' : '▼'}</span>
                           </span>
                         </h3>
 
@@ -140,15 +140,15 @@ export default function LocationList({ onSelect, grouped, expandedCities, expand
                                     <span
                                       className={
                                         isFriendly
-                                          ? 'text-[13px] font-semibold text-[#e0e0e0] whitespace-nowrap overflow-hidden text-ellipsis transition-colors duration-150 group-hover:text-white'
-                                          : 'text-[13px] font-semibold text-[#f28b82] whitespace-nowrap overflow-hidden text-ellipsis transition-colors duration-150 group-hover:text-[#ff9a94]'
+                                          ? 'text-[13px] font-semibold text-fg whitespace-nowrap overflow-hidden text-ellipsis transition-colors duration-150 group-hover:text-white'
+                                          : 'text-[13px] font-semibold text-unfriendly whitespace-nowrap overflow-hidden text-ellipsis transition-colors duration-150 group-hover:text-unfriendly-soft'
                                       }
                                     >
                                       {name}
                                     </span>
-                                    <span className="text-[11px] text-[#9aa0a6] mt-0.5 whitespace-nowrap overflow-hidden text-ellipsis">{address}</span>
+                                    <span className="text-[11px] text-fg-muted mt-0.5 whitespace-nowrap overflow-hidden text-ellipsis">{address}</span>
                                     {!isApproved && (
-                                      <span className="text-[10px] font-medium text-[#b06000] bg-[#fff3e0] rounded px-1.5 mt-0.75 inline-block w-fit">Community suggested</span>
+                                      <span className="text-[10px] font-medium text-community bg-community-light rounded px-1.5 mt-0.75 inline-block w-fit">Community suggested</span>
                                     )}
                                   </span>
                                 </li>

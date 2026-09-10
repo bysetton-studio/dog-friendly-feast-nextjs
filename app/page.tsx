@@ -93,8 +93,8 @@ export default function HomePage() {
         <div className="relative w-full max-w-6xl flex flex-col items-center gap-8">
           <AddSticker />
           <div className="text-center">
-            <h1 className="text-[98px] font-bold text-[#e0e0e0] mb-2 font-['Comic_Neue','Comic_Sans_MS','Comic_Sans',cursive]">Dog World</h1>
-            <p className="text-base text-[#e0e0e0]font-[Arial,sans-serif]">Find dog-friendly restaurants near you</p>
+            <h1 className="text-[98px] font-bold text-fg mb-2 font-['Comic_Neue','Comic_Sans_MS','Comic_Sans',cursive]">Dog World</h1>
+            <p className="text-base text-fgfont-[Arial,sans-serif]">Find dog-friendly restaurants near you</p>
           </div>
 
           <LocationSearch
@@ -172,7 +172,7 @@ export default function HomePage() {
             </div>
           )}
 
-          <Link href="/add" className="text-[13px] text-[#9aa0a6] underline font-[Arial,sans-serif] -mt-3 hover:text-[#e0e0e0]">
+          <Link href="/add" className="text-[13px] text-fg-muted underline font-[Arial,sans-serif] -mt-3 hover:text-fg">
             Don&apos;t see your spot? Add a restaurant →
           </Link>
 
