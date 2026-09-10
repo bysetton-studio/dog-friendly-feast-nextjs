@@ -329,7 +329,7 @@ export default function MapView({
   }, [selected]);
 
   return (
-    <div className={`w-full max-w-6xl rounded-2xl overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.12)] relative h-[550px]${onMapClick ? ' map-container--clickable' : ''}`}>
+    <div className={`w-full max-w-6xl rounded-2xl overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.12)] relative h-[550px] ${onMapClick ? ' map-container--clickable' : ''}`}>
       <div ref={containerRef} className="w-full h-full" />
       <div className={`absolute inset-0 flex items-center justify-center bg-black/80 text-white text-center text-[32px] font-[Arial,sans-serif] pointer-events-none z-10 rounded-2xl transition-opacity duration-300${isMobile && oneFinger ? ' opacity-100' : ' opacity-0'}`}>
         Use two fingers to move the map
