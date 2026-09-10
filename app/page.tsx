@@ -115,7 +115,7 @@ export default function HomePage() {
             />
           )}
 
-          <div className="flex flex-row items-start gap-4 w-full max-w-6xl max-sm:flex-col max-sm:items-stretch">
+          <div className="flex flex-row items-start gap-4 w-full max-w-6xl max-sm:flex-col max-sm:items-stretch z-100">
             {expandedCity && (
               <LocationList
                 onSelect={setSelected}
