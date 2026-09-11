@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
+import DogAnimation from '@/components/DogAnimation';
 import dynamic from 'next/dynamic';
 import Button from '@/components/Button';
 import type { Map as LeafletMap } from 'leaflet';
@@ -41,6 +42,7 @@ export default function HomePage() {
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [emailCopied, setEmailCopied] = useState(false);
   const mapRef = useRef<LeafletMap | null>(null);
+
   const { resolved: allResolved, loading: resolvedLoading, capReached } = useResolvedLocations();
   const resolved = useMemo(
     () => approvedOnly ? allResolved.filter((r) => r.isApproved) : allResolved,
@@ -77,6 +79,12 @@ export default function HomePage() {
 
   return (
     <main className="flex-1 flex flex-col items-center justify-start gap-8 pt-15 px-5 pb-10">
+        <DogAnimation
+          url="/dog_animation_spinnner.gif"
+          pauseUrl="/dog_animation_spinnner_idle.gif"
+          duration={16840}
+          className="fixed top-2 sm:top-4 left-0 z-0 origin-top-left scale-150 sm:scale-80"
+        />
         <nav className="fixed top-5 left-6 flex gap-2 z-200">
           <Button href="/about">About</Button>
           <div className="relative">
@@ -90,7 +98,7 @@ export default function HomePage() {
             : <Button href="/auth">Sign up / Log in</Button>
           }
         </nav>
-<div className="relative w-full max-w-6xl flex flex-col items-center gap-8">
+        <div className="relative w-full max-w-6xl flex flex-col items-center gap-8">
           <AddSticker />
           <div className="mt-4 text-center">
             <h1 className="leading-[1.2] text-[72px] sm:text-[98px] font-bold text-fg mb-2 font-['Comic_Neue','Comic_Sans_MS','Comic_Sans',cursive]">Dog <br className="sm:hidden" /> World</h1>
