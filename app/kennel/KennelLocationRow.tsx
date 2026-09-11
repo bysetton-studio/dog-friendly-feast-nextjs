@@ -6,6 +6,7 @@ import { Pencil } from 'lucide-react';
 import { TYPE_FILTERS } from '@/components/TypeFilter';
 import Modal from '@/components/Modal';
 import Button from '@/components/Button';
+import IconButton from '@/components/IconButton';
 
 interface Location {
   id: string;
@@ -154,17 +155,14 @@ export default function KennelLocationRow({ loc, canEdit = false }: Props) {
           </span>
           <span className="flex items-center gap-1.5 shrink-0">
             {canEdit && (
-              <button
-                className="flex items-center justify-center w-5.5 h-5.5 rounded-md border border-white/10 bg-transparent text-fg-muted cursor-pointer opacity-0 group-hover/loc:opacity-100 transition-[opacity,background,color] duration-150 p-0 shrink-0 hover:bg-white/8 hover:text-fg"
+              <IconButton
+                className="w-5.5! h-5! rounded-md! shrink-0 opacity-0 group-hover/loc:opacity-100 transition-opacity duration-150"
                 onClick={() => setEditing(true)}
                 aria-label="Edit type"
               >
                 <Pencil size={12} strokeWidth={2.5} />
-              </button>
+              </IconButton>
             )}
-            <span className={`text-[11px] py-0.5 px-2 rounded-full shrink-0 ${isFriendly ? 'bg-friendly-dark/15 text-friendly' : 'bg-unfriendly-vivid/12 text-unfriendly'}`}>
-              {isFriendly ? '🐾 Friendly' : '✕ Not friendly'}
-            </span>
           </span>
         </div>
         <div className="flex justify-between items-center gap-2">
