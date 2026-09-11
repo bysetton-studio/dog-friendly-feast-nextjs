@@ -13,6 +13,8 @@ export const TYPE_FILTERS: TypeFilterOption[] = [
   { key: 'park',       label: 'Park',       emoji: '🌳', types: ['park'] },
   { key: 'other',      label: 'Other',      emoji: '🦴', types: [] },
 ];
+import Chip from '@/components/Chip';
+
 interface Props {
   selected: Set<string>;
   onChange: (types: Set<string>) => void;
@@ -25,32 +27,14 @@ export default function TypeFilter({ selected, onChange }: Props) {
     onChange(next);
   }
 
-  const chipBase = 'flex items-center gap-[6px] px-[14px] py-[6px] rounded-full bg-surface/70 border border-white/10 text-fg-muted text-[13px] font-[Arial,sans-serif] cursor-pointer select-none transition-[background,color,border-color] duration-150 hover:bg-surface-hover/85 hover:text-fg';
-  const chipOn = 'bg-accent border-accent text-white font-semibold';
-
   return (
     <div className="flex flex-wrap gap-2 justify-center w-full max-w-145.5">
-      <button
-        className={`${chipBase}${selected.size === 0 ? ` ${chipOn}` : ''}`}
-        onClick={() => onChange(new Set())}
-      >
-        <span className="leading-none">All</span>
-      </button>
-      {TYPE_FILTERS.map(({ key, label, emoji }) => {
-        const checked = selected.has(key);
-        return (
-          <label key={key} className={`${chipBase}${checked ? ` ${chipOn}` : ''}`}>
-            <input
-              type="checkbox"
-              className="hidden"
-              checked={checked}
-              onChange={() => toggle(key)}
-            />
-            <span className="text-[14px] leading-none">{emoji}</span>
-            <span className="leading-none">{label}</span>
-          </label>
-        );
-      })}
+      <Chip selected={selected.size === 0} onClick={() => onChange(new Set())}>All</Chip>
+      {TYPE_FILTERS.map(({ key, label, emoji }) => (
+        <Chip key={key} emoji={emoji} selected={selected.has(key)} onClick={() => toggle(key)}>
+          {label}
+        </Chip>
+      ))}
     </div>
   );
 }

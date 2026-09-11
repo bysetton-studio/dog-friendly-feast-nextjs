@@ -5,6 +5,7 @@ import Link from 'next/link';
 import LocationSearch from '@/components/LocationSearch';
 import { useSubmitLocation } from '@/hooks/useSubmitLocation';
 import { useLocations } from '@/hooks/useLocations';
+import Button from '@/components/Button';
 import type { Place } from '@/types';
 
 export default function AddLocationPage() {
@@ -48,28 +49,18 @@ export default function AddLocationPage() {
               {submitted
                 ? '🐾 Submitted as dog-friendly — thanks!'
                 : '✕ Submitted as not dog-friendly — thanks!'}
-              <button className="bg-transparent border border-ink-border rounded-md px-2.5 py-0.5 text-xs text-ink-soft cursor-pointer ml-auto hover:bg-ink-dim" onClick={() => { setSelected(null); }}>
-                Add another
-              </button>
+              <Button variant="secondary" className="ml-auto" onClick={() => { setSelected(null); }}>Add another</Button>
             </div>
           ) : (
             <div>
               <p className="text-[15px] font-medium text-ink m-0 mb-3.5">Is this restaurant dog-friendly?</p>
               <div className="flex flex-col gap-2.5">
-                <button
-                  className="w-full border-none rounded-[10px] px-5 py-3.5 text-[15px] font-medium cursor-pointer text-center bg-friendly-light text-friendly-dark transition-opacity hover:opacity-85 disabled:opacity-50"
-                  onClick={() => submit(selected, true)}
-                  disabled={submitting !== null}
-                >
+                <Button intent="info" className="w-full" onClick={() => submit(selected, true)} disabled={submitting !== null}>
                   {submitting === true ? '...' : '🐾 Yes, dogs are welcome'}
-                </button>
-                <button
-                  className="w-full border-none rounded-[10px] px-5 py-3.5 text-[15px] font-medium cursor-pointer text-center bg-unfriendly-light text-unfriendly-dark transition-opacity hover:opacity-85 disabled:opacity-50"
-                  onClick={() => submit(selected, false)}
-                  disabled={submitting !== null}
-                >
+                </Button>
+                <Button intent="alert" className="w-full" onClick={() => submit(selected, false)} disabled={submitting !== null}>
                   {submitting === false ? '...' : '✕ No, dogs are not allowed'}
-                </button>
+                </Button>
               </div>
             </div>
           )}

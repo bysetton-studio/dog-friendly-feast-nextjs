@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useSubmitLocation } from '@/hooks/useSubmitLocation';
 import FriendlyTypeModal from './FriendlyTypeModal';
+import Button from '@/components/Button';
 import type { Place } from '@/types';
 
 interface Props {
@@ -48,15 +49,11 @@ export default function SubmitBanner({ place, onDismiss, inList }: Props) {
         </div>
       ) : (
         <div className="flex gap-2 shrink-0">
-          <button
-            className="border-none rounded-lg py-1.75 px-3.5 text-[13px] font-medium cursor-pointer transition-opacity duration-150 hover:opacity-85 bg-friendly-light text-friendly-dark"
-            onClick={() => setShowTypeModal(true)}
-            disabled={submitting !== null}
-          >
+          <Button intent="info" onClick={() => setShowTypeModal(true)} disabled={submitting !== null}>
             {submitting === true ? (
               <span className="inline-block w-3.5 h-3.5 border-2 border-current border-t-transparent rounded-full animate-spin align-middle opacity-60" />
             ) : 'Add'}
-          </button>
+          </Button>
         </div>
       )}
     </div>

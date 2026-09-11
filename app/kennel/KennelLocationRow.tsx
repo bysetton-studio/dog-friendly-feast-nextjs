@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Pencil } from 'lucide-react';
 import { TYPE_FILTERS } from '@/components/TypeFilter';
+import Modal from '@/components/Modal';
+import Button from '@/components/Button';
 
 interface Location {
   id: string;
@@ -68,8 +70,7 @@ function EditTypeModal({
   }
 
   return (
-    <div className="fixed inset-0 bg-black/55 flex items-center justify-center z-200 p-4" onClick={onClose}>
-      <div className="dialog pt-7 px-6 pb-6 w-full max-w-90 font-[Arial,sans-serif]" onClick={(e) => e.stopPropagation()}>
+    <Modal open onClose={onClose} maxWidth="max-w-90">
         <h2 className="text-[17px] font-semibold text-fg mt-0 mb-1.5">Edit place</h2>
         <p className="text-[13px] text-fg-muted mt-0 mb-5 whitespace-nowrap overflow-hidden text-ellipsis">{location.name}</p>
 
@@ -118,22 +119,10 @@ function EditTypeModal({
         </div>
 
         <div className="flex gap-2.5">
-          <button
-            className="flex-1 py-2.5 rounded-lg text-[14px] font-[Arial,sans-serif] cursor-pointer transition-[background] duration-[0.12s] bg-transparent border border-white/10 text-fg-muted hover:border-white/20 hover:text-fg"
-            onClick={onClose}
-          >
-            Cancel
-          </button>
-          <button
-            className="flex-1 py-2.5 rounded-lg text-[14px] font-[Arial,sans-serif] cursor-pointer transition-[background] duration-[0.12s] bg-friendly-dark/20 border border-friendly-dark/40 text-friendly hover:bg-friendly-dark/30"
-            onClick={handleSave}
-            disabled={saving}
-          >
-            {saving ? 'Saving…' : 'Save'}
-          </button>
+          <Button variant="secondary" className="flex-1" onClick={onClose}>Cancel</Button>
+          <Button intent="info" className="flex-1" onClick={handleSave} disabled={saving}>{saving ? 'Saving…' : 'Save'}</Button>
         </div>
-      </div>
-    </div>
+    </Modal>
   );
 }
 

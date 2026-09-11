@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { authClient } from '@/lib/auth-client';
-import NavButton from '@/components/NavButton';
+import Button from '@/components/Button';
 
 export default function AuthPage() {
   const router = useRouter();
@@ -41,7 +41,7 @@ export default function AuthPage() {
 
   return (
     <main className="min-h-screen flex flex-col items-center justify-center p-6 font-sans">
-      <NavButton href="/" className="fixed top-5 left-6 text-sm text-fg-muted no-underline hover:text-fg">← Back to map</NavButton>
+      <Button href="/" className="fixed top-5 left-6">← Back to map</Button>
 
       <div className="card w-full max-w-95 p-8 z-1">
         <div className="flex gap-1 bg-black/6 rounded-lg p-1 mb-7">
@@ -104,9 +104,9 @@ export default function AuthPage() {
 
           {error && <p className="text-[13px] text-unfriendly-dark m-0">{error}</p>}
 
-          <button className="mt-1 py-2.75 bg-black/8 border border-black/12 rounded-lg text-card-fg text-[15px] font-sans cursor-pointer transition-colors duration-150 hover:bg-black/14 disabled:opacity-50 disabled:cursor-default" type="submit" disabled={loading}>
+          <Button type="submit" className="mt-1 w-full" disabled={loading}>
             {loading ? '...' : mode === 'signup' ? 'Create account' : 'Log in'}
-          </button>
+          </Button>
         </form>
       </div>
     </main>

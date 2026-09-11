@@ -11,6 +11,10 @@
   --color-surface-fg:       #f5efe0;   /* primary text on dark bg   → text-surface-fg       */
   --color-surface-fg-muted: #c8a880;   /* muted text on dark bg     → text-surface-fg-muted */
 
+  /* ── Brand primary ── */
+  --color-primary:       #500016;   /* main brand color → bg-primary, text-primary */
+  --color-primary-hover: #6e0020;   /* hover state      → bg-primary-hover         */
+
   /* ── Dark surfaces ── */
   /* Use slash modifier for opacity: bg-surface/90, bg-overlay/98, etc. */
   --color-surface:       rgb(80 0 22);    /* nav pills, chips     → bg-surface        */
@@ -48,6 +52,27 @@
   --color-card-bg:          #f5efe0;   /* card background              → bg-card-bg          */
   --color-card-fg:          #1a1210;   /* primary text on card         → text-card-fg        */
   --color-card-fg-muted:    #6b5a4e;   /* muted text on card           → text-card-fg-muted  */
+
+  /* ── Button: base (sunshine) ── */
+  --color-btn-base-from:   #ffe04b;   /* gradient top    */
+  --color-btn-base-to:     #e6a800;   /* gradient bottom */
+  --color-btn-base-border: #b88600;
+  --color-btn-base-text:   #4a3000;
+  --color-btn-base-muted:  #b88600;   /* secondary / tertiary fg */
+
+  /* ── Button: info (electric blue) ── */
+  --color-btn-info-from:   #4db8ff;
+  --color-btn-info-to:     #0066cc;
+  --color-btn-info-border: #0055aa;
+  --color-btn-info-text:   #ffffff;
+  --color-btn-info-muted:  #0066cc;
+
+  /* ── Button: alert (cherry red) ── */
+  --color-btn-alert-from:   #ff4f4f;
+  --color-btn-alert-to:     #cc0000;
+  --color-btn-alert-border: #aa0000;
+  --color-btn-alert-text:   #ffffff;
+  --color-btn-alert-muted:  #cc0000;
 }
 
 :root {
@@ -77,17 +102,6 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-.bg-art {
-  position: fixed;
-  font-size: 10px;
-  line-height: 1.1;
-  pointer-events: none;
-  user-select: none;
-  white-space: pre;
-  color: #c7c7c7;
-  z-index: 0;
-}
-
 @media (max-width: 600px) {
   .bg-art {
     font-size: 5px;
@@ -107,37 +121,6 @@ a {
 }
 
 
-/* ── Toggle switch ── */
-.toggle-switch {
-  width: 44px;
-  height: 24px;
-  background: #dadce0;
-  border-radius: 999px;
-  position: relative;
-  cursor: pointer;
-  transition: background 0.2s;
-  flex-shrink: 0;
-}
-
-.toggle-switch--on {
-  background: #FFB830;
-}
-
-.toggle-switch__thumb {
-  position: absolute;
-  top: 3px;
-  left: 3px;
-  width: 18px;
-  height: 18px;
-  background: #fff;
-  border-radius: 50%;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-  transition: transform 0.2s;
-}
-
-.toggle-switch--on .toggle-switch__thumb {
-  transform: translateX(20px);
-}
 
 /* ── Sticker animations ── */
 @keyframes sticker-spin {
@@ -194,118 +177,7 @@ a {
   .support_sticker_group:hover .support_sticker_option:nth-child(3):hover { transform: translate(0, 0) scale(1.2); }
 }
 
-/* ── Kennel dropdown ── */
-.kennel-dropdown {
-  position: relative;
-}
 
-.kennel-dropdown__trigger {
-  border: none;
-  cursor: pointer;
-}
-
-.kennel-dropdown__menu {
-  position: absolute;
-  top: calc(100% + 8px);
-  right: 0;
-  min-width: 160px;
-  background: color-mix(in srgb, rgb(65 10 25) 97%, transparent);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  padding: 6px;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.kennel-dropdown__item {
-  display: block;
-  width: 100%;
-  padding: 9px 12px;
-  border-radius: 8px;
-  font-size: 14px;
-  font-family: Arial, sans-serif;
-  color: #c0c0c0;
-  text-decoration: none;
-  background: transparent;
-  border: none;
-  text-align: left;
-  cursor: pointer;
-  transition: background 0.12s, color 0.12s;
-}
-
-.kennel-dropdown__item:hover {
-  background: rgba(255, 255, 255, 0.07);
-  color: #e0e0e0;
-}
-
-.kennel-dropdown__item--danger {
-  color: #f28b82;
-}
-
-.kennel-dropdown__item--danger:hover {
-  background: rgba(255, 80, 80, 0.1);
-  color: #f28b82;
-}
-
-.kennel-dropdown__divider {
-  height: 1px;
-  background: rgba(255, 255, 255, 0.07);
-  margin: 2px 0;
-}
-
-.kennel-dropdown__confirm {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 8px;
-}
-
-.kennel-dropdown__confirm-label {
-  font-size: 13px;
-  color: #9aa0a6;
-  font-family: Arial, sans-serif;
-  flex-shrink: 0;
-}
-
-.kennel-dropdown__confirm-yes,
-.kennel-dropdown__confirm-no {
-  flex: 1;
-  padding: 6px 8px;
-  border-radius: 6px;
-  font-size: 12px;
-  font-family: Arial, sans-serif;
-  cursor: pointer;
-  border: 1px solid;
-  transition: background 0.12s;
-}
-
-.kennel-dropdown__confirm-yes {
-  background: rgba(255, 80, 80, 0.15);
-  border-color: rgba(255, 80, 80, 0.3);
-  color: #f28b82;
-}
-
-.kennel-dropdown__confirm-yes:hover:not(:disabled) {
-  background: rgba(255, 80, 80, 0.25);
-}
-
-.kennel-dropdown__confirm-yes:disabled {
-  opacity: 0.5;
-  cursor: default;
-}
-
-.kennel-dropdown__confirm-no {
-  background: transparent;
-  border-color: rgba(255, 255, 255, 0.1);
-  color: #9aa0a6;
-}
-
-.kennel-dropdown__confirm-no:hover {
-  border-color: rgba(255, 255, 255, 0.2);
-  color: #e0e0e0;
-}
 
 @layer components {
   .card {
@@ -313,7 +185,7 @@ a {
   }
 
   .dialog {
-    @apply bg-overlay/98 border border-white/10 rounded-2xl;
+    @apply bg-card-bg rounded-2xl text-card-fg;
   }
 }
 

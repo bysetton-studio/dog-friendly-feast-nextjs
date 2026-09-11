@@ -1,7 +1,7 @@
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
-import NavButton from '@/components/NavButton';
+import Button from '@/components/Button';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import AvatarPicker from '@/components/AvatarPicker';
@@ -30,10 +30,10 @@ export default async function KennelPage() {
   return (
     <main className="min-h-screen flex flex-col items-center justify-center pt-20 px-6 pb-12 font-[Arial,sans-serif]">
       <nav className="fixed top-5 left-6 flex gap-2 z-200">
-        <NavButton href="/about">About</NavButton>
+        <Button href="/about">About</Button>
       </nav>
       <nav className="fixed top-5 right-6 flex gap-2 z-300">
-        <NavButton href="/">Map</NavButton>
+        <Button href="/">Map</Button>
         <LogoutButton />
       </nav>
 

@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
-import NavButton from '@/components/NavButton';
+import Button from '@/components/Button';
 import type { Map as LeafletMap } from 'leaflet';
 import { authClient } from '@/lib/auth-client';
 import KennelDropdown from '@/components/KennelDropdown';
@@ -78,19 +78,19 @@ export default function HomePage() {
   return (
     <main className="flex-1 flex flex-col items-center justify-start gap-8 pt-15 px-5 pb-10">
         <nav className="fixed top-5 left-6 flex gap-2 z-200">
-          <NavButton href="/about">About</NavButton>
+          <Button href="/about">About</Button>
           <div className="relative">
-            <NavButton onClick={() => setBoneOpen((v) => !v)}>🦴</NavButton>
+            <Button onClick={() => setBoneOpen((v) => !v)}>🦴</Button>
             <SupportSticker open={boneOpen} onClose={() => setBoneOpen(false)} />
           </div>
         </nav>
         <nav className="fixed top-5 right-6 flex gap-2 z-300">
           {session
             ? <KennelDropdown />
-            : <NavButton href="/auth">Sign up / Log in</NavButton>
+            : <Button href="/auth">Sign up / Log in</Button>
           }
         </nav>
-        <div className="relative w-full max-w-6xl flex flex-col items-center gap-8">
+<div className="relative w-full max-w-6xl flex flex-col items-center gap-8">
           <AddSticker />
           <div className="text-center">
             <h1 className="text-[98px] font-bold text-fg mb-2 font-['Comic_Neue','Comic_Sans_MS','Comic_Sans',cursive]">Dog World</h1>

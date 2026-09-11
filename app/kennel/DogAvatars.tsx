@@ -4,6 +4,8 @@ import { useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Camera, X } from 'lucide-react';
 import { resizeToSquare } from '@/lib/resizeToSquare';
+import Modal from '@/components/Modal';
+import Button from '@/components/Button';
 
 interface Dog {
   id: string;
@@ -160,21 +162,13 @@ export default function DogAvatars({ initial }: Props) {
         onChange={handleFile}
       />
 
-      {confirmDeleteId && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-100 pointer-events-auto" onClick={() => setConfirmDeleteId(null)}>
-          <div className="dialog pt-7 px-6 pb-6 w-full max-w-80 font-[Arial,sans-serif]" onClick={(e) => e.stopPropagation()}>
-            <p className="text-[15px] text-fg mt-0 mb-6 text-center">Remove this pup?</p>
-            <div className="flex gap-2.5">
-              <button className="flex-1 py-2.5 rounded-lg text-[14px] font-[Arial,sans-serif] cursor-pointer transition-[background] duration-150 bg-transparent border border-white/10 text-fg-muted hover:text-fg hover:border-white/25" onClick={() => setConfirmDeleteId(null)}>
-                Cancel
-              </button>
-              <button className="flex-1 py-2.5 rounded-lg text-[14px] font-[Arial,sans-serif] cursor-pointer transition-[background] duration-150 bg-unfriendly-vivid/15 border border-unfriendly-vivid/30 text-unfriendly hover:enabled:bg-unfriendly-vivid/25 disabled:opacity-50 disabled:cursor-default" onClick={handleConfirmRemove} disabled={deleting}>
-                {deleting ? 'Removing…' : 'Remove'}
-              </button>
-            </div>
-          </div>
+      <Modal open={!!confirmDeleteId} onClose={() => setConfirmDeleteId(null)}>
+        <p className="text-[15px] text-card-fg mt-0 mb-6 text-center">Remove this pup?</p>
+        <div className="flex gap-2.5">
+          <Button variant="secondary" className="flex-1" onClick={() => setConfirmDeleteId(null)}>Cancel</Button>
+          <Button intent="alert" className="flex-1" onClick={handleConfirmRemove} disabled={deleting}>{deleting ? 'Removing…' : 'Remove'}</Button>
         </div>
-      )}
+      </Modal>
     </div>
   );
 }

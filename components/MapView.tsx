@@ -134,7 +134,7 @@ export default function MapView({
     const map = L.map(containerRef.current, {
       center: DEFAULT_CENTER,
       zoom: DEFAULT_ZOOM,
-      dragging: isMobile ? twoFingersUsed : true,
+      dragging: !isMobile,
     });
 
     L.tileLayer(TILE_URL, {
@@ -179,6 +179,16 @@ export default function MapView({
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [capReached]);
+
+  // Sync dragging on mobile based on touch count
+  useEffect(() => {
+    if (!mapRef.current || !isMobile) return;
+    if (twoFingersUsed) {
+      mapRef.current.dragging.enable();
+    } else {
+      mapRef.current.dragging.disable();
+    }
+  }, [twoFingersUsed, isMobile]);
 
   // Sync map markers from resolved locations
   useEffect(() => {
@@ -329,17 +339,17 @@ export default function MapView({
   }, [selected]);
 
   return (
-    <div className={`w-full max-w-6xl rounded-2xl overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.12)] relative h-[550px] ${onMapClick ? ' map-container--clickable' : ''}`}>
-      <div ref={containerRef} className="w-full h-full" />
-      <div className={`absolute inset-0 flex items-center justify-center bg-black/80 text-white text-center text-[32px] font-[Arial,sans-serif] pointer-events-none z-10 rounded-2xl transition-opacity duration-300${isMobile && oneFinger ? ' opacity-100' : ' opacity-0'}`}>
+    <div className={`w-full max-w-6xl rounded-2xl overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.12)] relative h-138 ${onMapClick ? ' map-container--clickable' : ''}`}>
+      <div className={`absolute inset-0 flex items-center justify-center bg-black/80 text-white text-center text-[32px] font-[Arial,sans-serif] pointer-events-none z-401 rounded-2xl transition-opacity duration-300${isMobile && oneFinger ? ' opacity-100' : ' opacity-0'}`}>
         Use two fingers to move the map
       </div>
-      <label className="absolute top-3 right-3 z-10 flex items-center gap-2.5 text-[13px] font-medium text-ink bg-white border border-ink-border rounded-full px-3.5 py-2 shadow-[0_2px_8px_rgba(0,0,0,0.12)] cursor-pointer select-none whitespace-nowrap" onClick={onApprovedOnlyToggle}>
+      <label className="absolute top-3 right-3 z-401 flex items-center gap-2.5 text-[13px] font-medium text-ink bg-white border border-ink-border rounded-full px-3.5 py-2 shadow-[0_2px_8px_rgba(0,0,0,0.12)] cursor-pointer select-none whitespace-nowrap" onClick={onApprovedOnlyToggle}>
         <span>Verified only</span>
-        <div className={`toggle-switch${approvedOnly ? ' toggle-switch--on' : ''}`}>
-          <div className="toggle-switch__thumb" />
+        <div className={`w-11 h-6 rounded-full relative cursor-pointer transition-colors duration-200 shrink-0 ${approvedOnly ? 'bg-accent' : 'bg-[#dadce0]'}`}>
+          <div className={`absolute top-[3px] left-[3px] w-[18px] h-[18px] bg-white rounded-full shadow-[0_1px_3px_rgba(0,0,0,0.2)] transition-transform duration-200${approvedOnly ? ' translate-x-5' : ''}`} />
         </div>
       </label>
+      <div ref={containerRef} className="w-full h-full" />
       {(locationsLoading || resolvedLoading) && (
         <div className="absolute inset-0 bg-white/75 flex flex-col items-center justify-center gap-3 z-10 backdrop-blur-sm">
           <div className="map-loading__spinner" />
@@ -353,7 +363,7 @@ export default function MapView({
         </div>
       )}
       {onMapClick && !selected && (
-        <div className="absolute bottom-3 right-3 z-10 bg-white/92 border border-ink-border rounded-lg px-3 py-1.5 text-xs text-ink-soft pointer-events-none whitespace-nowrap">Click anywhere to get the address</div>
+        <div className="absolute bottom-3 right-3 z-401 bg-white/92 border border-ink-border rounded-lg px-3 py-1.5 text-xs text-ink-soft pointer-events-none whitespace-nowrap">Click anywhere to get the address</div>
       )}
     </div>
   );

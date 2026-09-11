@@ -1,10 +1,10 @@
 import CopyEmail from '@/components/CopyEmail';
-import NavButton from '@/components/NavButton';
+import Button from '@/components/Button';
 
 export default function AboutPage() {
   return (
     <main className="max-w-160 mx-auto px-6 pt-15 pb-20 font-sans text-fg">
-      <NavButton href="/" className="inline-block mb-10 text-sm no-underline">← Back to map</NavButton>
+      <Button href="/" className="mb-10">← Back to map</Button>
 
       <h1 className="text-[36px] font-normal m-0 mb-10">About Dog World</h1>
 
