@@ -18,7 +18,7 @@ export default function DogAnimation({ url, pauseUrl, duration, className }: Dog
   const playingRef = useRef(false);
 
   useEffect(() => {
-    scheduleNext(PAUSE_BETWEEN_PLAYS);
+    scheduleNext(0);
     return () => { if (timeoutRef.current) clearTimeout(timeoutRef.current); };
   }, [url, duration]);
 

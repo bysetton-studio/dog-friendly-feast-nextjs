@@ -78,12 +78,12 @@ export default function HomePage() {
   const showSubmitBanner = selected && !resolvedLoading && !isGeographic(selected) && !isInList(selected, allResolved);
 
   return (
-    <main className="flex-1 flex flex-col items-center justify-start gap-8 pt-15 px-5 pb-10">
+    <main className="relative flex-1 flex flex-col items-center justify-start gap-8 pt-15 px-5 pb-10">
         <DogAnimation
           url="/dog_animation_spinnner.gif"
           pauseUrl="/dog_animation_spinnner_idle.gif"
           duration={16840}
-          className="fixed top-2 sm:top-4 left-0 z-0 origin-top-left scale-150 sm:scale-80"
+          className="absolute top-2 sm:top-4 left-0 z-0 origin-top-left scale-150 sm:scale-80"
         />
         <nav className="fixed top-5 left-6 flex gap-2 z-200">
           <Button href="/about">About</Button>
