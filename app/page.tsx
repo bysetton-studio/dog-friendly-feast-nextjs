@@ -83,7 +83,7 @@ export default function HomePage() {
           url="/dog_animation_spinnner.gif"
           pauseUrl="/dog_animation_spinnner_idle.gif"
           duration={16840}
-          className="absolute top-2 sm:top-4 left-0 z-0 origin-top-left scale-150 sm:scale-80"
+          className="absolute top-2 sm:top-0 left-0 z-0 origin-top-left scale-150 sm:scale-80"
         />
         <nav className="fixed top-5 left-6 flex gap-2 z-200">
           <Button href="/about">About</Button>
