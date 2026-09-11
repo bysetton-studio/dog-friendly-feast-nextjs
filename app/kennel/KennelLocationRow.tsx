@@ -7,6 +7,7 @@ import { TYPE_FILTERS } from '@/components/TypeFilter';
 import Modal from '@/components/Modal';
 import Button from '@/components/Button';
 import IconButton from '@/components/IconButton';
+import RadioGroup from '@/components/RadioGroup';
 
 interface Location {
   id: string;
@@ -40,7 +41,6 @@ function EditTypeModal({
   onSaved: (types: string[], isFriendly: boolean) => void;
 }) {
   const [selected, setSelected] = useState(currentKey(location.types));
-  const [friendly, setFriendly] = useState(location.isFriendly);
   const [saving, setSaving] = useState(false);
 
   async function handleSave() {
@@ -54,18 +54,16 @@ function EditTypeModal({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ types }),
       }),
-      friendly !== location.isFriendly
-        ? fetch(`/api/locations/${location.id}/friendly`, {
+      fetch(`/api/locations/${location.id}/friendly`, {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ isFriendly: friendly }),
+            body: JSON.stringify({ isFriendly: true }),
           })
-        : Promise.resolve({ ok: true } as Response),
     ]);
 
     setSaving(false);
     if (typesRes.ok && friendlyRes.ok) {
-      onSaved(types, friendly);
+      onSaved(types, true);
       onClose();
     }
   }
@@ -75,49 +73,16 @@ function EditTypeModal({
         <h2 className="text-[17px] font-semibold text-fg mt-0 mb-1.5">Edit place</h2>
         <p className="text-[13px] text-fg-muted mt-0 mb-5 whitespace-nowrap overflow-hidden text-ellipsis">{location.name}</p>
 
-        <p className="text-[11px] uppercase tracking-[0.7px] text-fg-muted mt-0 mb-2 font-[Arial,sans-serif]">Place type</p>
-        <div className="grid grid-cols-2 gap-2 mb-5">
-          {TYPE_FILTERS.map(({ key, label, emoji }) => (
-            <button
-              key={key}
-              className={`flex items-center gap-2 px-3 py-2.5 rounded-[10px] border text-[14px] font-[Arial,sans-serif] cursor-pointer transition-[background,border-color,color] duration-[0.12s] text-left ${
-                selected === key
-                  ? 'border-friendly-dark/60 bg-friendly-dark/15 text-friendly'
-                  : 'border-white/8 bg-white/4 text-fg-soft hover:bg-white/8 hover:text-fg'
-              }`}
-              onClick={() => setSelected(key)}
-            >
-              <span className="text-[16px] shrink-0">{emoji}</span>
-              {label}
-            </button>
-          ))}
-        </div>
-
-        <p className="text-[11px] uppercase tracking-[0.7px] text-fg-muted mt-0 mb-2 font-[Arial,sans-serif]">Dog friendly?</p>
-        <div className="grid grid-cols-2 gap-2 mb-5">
-          <button
-            className={`flex items-center gap-2 px-3 py-2.5 rounded-[10px] border text-[14px] font-[Arial,sans-serif] cursor-pointer transition-[background,border-color,color] duration-[0.12s] text-left ${
-              friendly
-                ? 'border-friendly-dark/60 bg-friendly-dark/15 text-friendly'
-                : 'border-white/8 bg-white/4 text-fg-soft hover:bg-white/8 hover:text-fg'
-            }`}
-            onClick={() => setFriendly(true)}
-          >
-            <span className="text-[16px] shrink-0">🐾</span>
-            Friendly
-          </button>
-          <button
-            className={`flex items-center gap-2 px-3 py-2.5 rounded-[10px] border text-[14px] font-[Arial,sans-serif] cursor-pointer transition-[background,border-color,color] duration-[0.12s] text-left ${
-              !friendly
-                ? 'border-unfriendly-vivid/50 bg-unfriendly-vivid/12 text-unfriendly'
-                : 'border-white/8 bg-white/4 text-fg-soft hover:bg-white/8 hover:text-fg'
-            }`}
-            onClick={() => setFriendly(false)}
-          >
-            <span className="text-[16px] shrink-0">✕</span>
-            Not friendly
-          </button>
-        </div>
+        <p className="text-[11px] tracking-[0.7px] text-fg-muted mt-0 mb-2">Place type</p>
+        <RadioGroup
+          className="grid grid-cols-2 mb-5 gap-2"
+          options={TYPE_FILTERS.map(({ key, label, emoji }) => ({
+            value: key,
+            label: <><span className="text-[16px] shrink-0">{emoji}</span>{label}</>,
+          }))}
+          value={selected}
+          onChange={setSelected}
+        />
 
         <div className="flex gap-2.5">
           <Button variant="secondary" className="flex-1" onClick={onClose}>Cancel</Button>
