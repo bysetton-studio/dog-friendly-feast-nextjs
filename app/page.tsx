@@ -92,8 +92,8 @@ export default function HomePage() {
         </nav>
 <div className="relative w-full max-w-6xl flex flex-col items-center gap-8">
           <AddSticker />
-          <div className="text-center">
-            <h1 className="text-[98px] font-bold text-fg mb-2 font-['Comic_Neue','Comic_Sans_MS','Comic_Sans',cursive]">Dog World</h1>
+          <div className="mt-4 text-center">
+            <h1 className="leading-[1.2] text-[72px] sm:text-[98px] font-bold text-fg mb-2 font-['Comic_Neue','Comic_Sans_MS','Comic_Sans',cursive]">Dog <br className="sm:hidden" /> World</h1>
             <p className="text-base text-fgfont-[Arial,sans-serif]">Find dog-friendly restaurants near you</p>
           </div>
 

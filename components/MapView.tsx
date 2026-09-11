@@ -339,7 +339,7 @@ export default function MapView({
   }, [selected]);
 
   return (
-    <div className={`border-34 [border-style:ridge] border-btn-base-from w-full max-w-6xl overflow-hidden relative h-138 ${onMapClick ? ' map-container--clickable' : ''}`}>
+    <div className={`border-18 sm:border-34 sm:[border-style:ridge] [border-style:ridge] border-btn-base-from w-full max-w-6xl overflow-hidden relative h-138 ${onMapClick ? ' map-container--clickable' : ''}`}>
       {/* Gradient edge bars */}
       <div className={`absolute inset-0 flex items-center justify-center bg-black/80 text-white text-center text-[32px] font-[Arial,sans-serif] pointer-events-none z-401 rounded-2xl transition-opacity duration-300${isMobile && oneFinger ? ' opacity-100' : ' opacity-0'}`}>
         Use two fingers to move the map
