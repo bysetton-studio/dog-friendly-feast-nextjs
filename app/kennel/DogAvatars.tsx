@@ -6,6 +6,7 @@ import { Camera, X } from 'lucide-react';
 import { resizeToSquare } from '@/lib/resizeToSquare';
 import Modal from '@/components/Modal';
 import Button from '@/components/Button';
+import IconButton from '@/components/IconButton';
 
 interface Dog {
   id: string;
@@ -115,7 +116,7 @@ export default function DogAvatars({ initial }: Props) {
           className="absolute pointer-events-auto group/dog"
           style={{ ...arcPosition(i, dogs.length), zIndex: dogs.length - i }}
         >
-          <div className="w-21 h-21 rounded-full bg-card border-3 border-black flex items-center justify-center overflow-hidden relative">
+          <div className=" w-21 h-21 rounded-full border-6 [border-style:ridge] border-btn-base-from flex items-center justify-center overflow-hidden relative">
             {dog.image
               ? <img src={dog.image} alt="dog" className="w-full h-full object-cover" />
               : <span className="text-[28px]">🐶</span>
@@ -123,35 +124,36 @@ export default function DogAvatars({ initial }: Props) {
             {uploading === dog.id && <div className="absolute inset-0 bg-black/45 rounded-full" />}
           </div>
 
-          <button
-            className="absolute bottom-0.5 right-0.5 w-5 h-5 rounded-full border border-white/12 bg-surface/92 text-fg-muted flex items-center justify-center cursor-pointer p-0 opacity-0 group-hover/dog:opacity-100 transition-[opacity,background,color] duration-150 hover:enabled:bg-surface-hover/95 hover:enabled:text-fg disabled:opacity-30 disabled:cursor-default"
+          <IconButton
+            className="absolute bottom-0.5 right-0.5 w-5! h-5! opacity-0 group-hover/dog:opacity-100 transition-opacity duration-150"
             onClick={() => handleChangeImage(dog.id)}
             disabled={uploading !== null}
             aria-label="Change dog photo"
           >
             <Camera size={10} strokeWidth={2.5} />
-          </button>
+          </IconButton>
 
-          <button
-            className="absolute top-0.5 right-0.5 w-5 h-5 rounded-full border border-white/12 bg-surface/92 text-fg-muted flex items-center justify-center cursor-pointer p-0 opacity-0 group-hover/dog:opacity-100 transition-[opacity,background,color] duration-150 hover:enabled:bg-[rgba(255,125,125,0.9)] hover:enabled:text-unfriendly-dark hover:enabled:border-unfriendly-vivid/30 disabled:opacity-30 disabled:cursor-default"
+          <IconButton
+            intent="alert"
+            className="absolute top-0.5 right-0.5 w-5! h-5! opacity-0 group-hover/dog:opacity-100 transition-opacity duration-150"
             onClick={() => setConfirmDeleteId(dog.id)}
             disabled={uploading !== null}
             aria-label="Remove dog"
           >
             <X size={10} strokeWidth={2.5} />
-          </button>
+          </IconButton>
         </div>
       ))}
 
       {canAdd && (
-        <button
-          className="absolute pointer-events-auto w-16 h-16 rounded-full border-2 border-dashed bg-no-repeat bg-transparent text-fg-muted hidden group-hover/avatar-area:flex items-center justify-center text-center text-[10px] font-[Arial,sans-serif] leading-[1.2] p-2 cursor-pointer transition-[left,top,color,background,opacity] duration-150 opacity-0 group-hover/avatar-area:opacity-100 hover:bg-white/4 hover:text-fg"
+        <IconButton
+          className="absolute pointer-events-auto w-16! h-16! text-[10px] leading-[1.2] p-2 text-center hidden group-hover/avatar-area:flex opacity-0 group-hover/avatar-area:opacity-100 transition-[left,top,opacity] duration-150"
           style={arcPosition(dogs.length, dogs.length + 1, ADD_BUTTON_OFFSET)}
           onClick={handleAdd}
           aria-label="Add dog"
         >
           {dogs.length === 0 ? 'add your pup' : 'add another pup'}
-        </button>
+        </IconButton>
       )}
 
       <input

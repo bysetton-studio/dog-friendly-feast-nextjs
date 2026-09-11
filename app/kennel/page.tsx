@@ -43,7 +43,7 @@ export default async function KennelPage() {
               <AvatarPicker image={session.user.image ?? null} />
               <DogAvatars initial={dogs.map((d) => ({ id: d.id, image: d.image }))} />
             </div>
-            <h1 className="text-[32px] font-semibold text-fg m-0 font-[Arial,sans-serif]">{session.user.name}&apos;s Kennel</h1>
+            <h1 className="text-[32px] font-bold text-fg m-0 font-['Comic_Neue','Comic_Sans_MS','Comic_Sans',cursive]">{session.user.name}&apos;s Kennel</h1>
           </div>
 
         <div className="card w-full relative z-1 text-left p-6">

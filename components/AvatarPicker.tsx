@@ -4,6 +4,7 @@ import { useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Camera } from 'lucide-react';
 import { resizeToSquare } from '@/lib/resizeToSquare';
+import IconButton from '@/components/IconButton';
 
 interface Props {
   image: string | null;
@@ -48,7 +49,7 @@ export default function AvatarPicker({ image }: Props) {
   return (
     <div className="flex flex-col items-center gap-2">
       <div className="relative inline-flex">
-        <div className="text-[48px] rounded-full border border-card bg-card w-42 h-42 flex items-center justify-center overflow-hidden">
+        <div className="text-[48px] rounded-full border-12 [border-style:ridge] border-btn-base-from bg-card w-42 h-42 flex items-center justify-center overflow-hidden">
           {preview ? (
             <img src={preview} alt="avatar" className="w-full h-full object-cover rounded-full" />
           ) : (
@@ -56,14 +57,14 @@ export default function AvatarPicker({ image }: Props) {
           )}
         </div>
 
-        <button
-          className="absolute bottom-1 right-1 w-7 h-7 rounded-full bg-surface/90 border border-white/15 text-fg-muted flex items-center justify-center cursor-pointer transition-[background,color] duration-150 p-0 hover:enabled:bg-surface-hover/95 hover:enabled:text-fg disabled:opacity-50 disabled:cursor-default"
+        <IconButton
+          className="absolute bottom-1 right-1"
           onClick={() => inputRef.current?.click()}
           disabled={uploading}
           aria-label="Change avatar"
         >
           <Camera size={14} strokeWidth={2.5} />
-        </button>
+        </IconButton>
 
         <input
           ref={inputRef}

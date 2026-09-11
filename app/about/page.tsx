@@ -6,7 +6,7 @@ export default function AboutPage() {
     <main className="max-w-160 mx-auto px-6 pt-15 pb-20 font-sans text-fg">
       <Button href="/" className="mb-10">← Back to map</Button>
 
-      <h1 className="text-[36px] font-normal m-0 mb-10">About Dog World</h1>
+      <h1 className="text-[36px] m-0 mb-10 font-['Comic_Neue','Comic_Sans_MS','Comic_Sans',cursive] font-bold">About Dog World</h1>
 
       <section className="mb-9">
         <h2 className="text-[18px] font-semibold m-0 mb-3">South Africa&apos;s dog-friendly restaurant directory</h2>
