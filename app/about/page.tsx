@@ -9,12 +9,12 @@ export default function AboutPage() {
       <h1 className="text-[36px] m-0 mb-10 font-['Comic_Neue','Comic_Sans_MS','Comic_Sans',cursive] font-bold">About Dog World</h1>
 
       <section className="mb-9">
-        <h2 className="text-[18px] font-semibold m-0 mb-3">South Africa&apos;s dog-friendly restaurant directory</h2>
+        <h2 className="text-[18px] font-semibold m-0 mb-3">The worldwide dog-friendly restaurant directory</h2>
         <p className="text-[15px] leading-[1.7] text-fg-soft m-0 mb-2">
           Finding restaurants that allow our furry friends can be a real pain – we&apos;re here to help take the guesswork out of it!
         </p>
         <p className="text-[15px] leading-[1.7] text-fg-soft m-0 mb-2">
-          Dog World is a community-driven map of spots across South Africa where you can bring your dog and feel welcomed.
+          Dog World is a community-driven map of dog-friendly spots near you, wherever you are in the world.
         </p>
       </section>
 
