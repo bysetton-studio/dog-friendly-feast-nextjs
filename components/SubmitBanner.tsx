@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { X } from 'lucide-react';
 import { useSubmitLocation } from '@/hooks/useSubmitLocation';
-import FriendlyTypeModal from './FriendlyTypeModal';
+import EditLocationModal from './EditLocationModal';
 import Button from '@/components/Button';
 import type { Place } from '@/types';
 
@@ -30,8 +30,10 @@ export default function SubmitBanner({ place, onDismiss, inList }: Props) {
   return (
     <>
     {showTypeModal && (
-      <FriendlyTypeModal
-        placeName={place.name as string}
+      <EditLocationModal
+        title="What kind of place is this?"
+        initialName={place.name as string}
+        confirmLabel="Add"
         onConfirm={(types, name) => { setShowTypeModal(false); submit({ ...place, name }, true, types); }}
         onCancel={() => setShowTypeModal(false)}
       />

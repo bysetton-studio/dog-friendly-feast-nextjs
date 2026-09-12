@@ -24,8 +24,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ predictions: [] }, { status: 429 });
   }
 
+  const countryCode = (req.headers.get('x-vercel-ip-country') ?? 'ZA').toLowerCase();
   const query = encodeURIComponent(input);
-  const url = `https://api.geoapify.com/v1/geocode/autocomplete?text=${query}&filter=countrycode:za&limit=5&format=json&apiKey=${API_KEY}`;
+  const url = `https://api.geoapify.com/v1/geocode/autocomplete?text=${query}&filter=countrycode:${countryCode}&limit=5&format=json&apiKey=${API_KEY}`;
   const res = await fetch(url);
 
   if (!res.ok) {
