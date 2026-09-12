@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Camera, X } from 'lucide-react';
 import { resizeToSquare } from '@/lib/resizeToSquare';
@@ -27,6 +27,7 @@ const GAP       = -10;   // fixed pixel gap between adjacent dog circles
 const STEP_DEG  = (2 * Math.asin((DOG_SIZE + GAP) / (2 * ARC_R))) * (180 / Math.PI);
 
 const ADD_BUTTON_OFFSET = 25; // extra degrees away from the last dog
+const NEW_DOG_SENTINEL = 'new';
 
 // index 0 = leftmost, arc centered at 90° (top)
 function arcPosition(index: number, total: number, extraOffset = 0): React.CSSProperties {
@@ -47,18 +48,32 @@ export default function DogAvatars({ initial }: Props) {
   const [uploading, setUploading] = useState<string | null>(null);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [activeDogId, setActiveDogId] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const pendingDogId = useRef<string | null>(null);
+  const dogElemsRef = useRef<Map<string, HTMLDivElement>>(new Map());
+
+  useEffect(() => {
+    if (!activeDogId) return;
+    function handleClickOutside(e: MouseEvent) {
+      const el = dogElemsRef.current.get(activeDogId!);
+      if (el && !el.contains(e.target as Node)) {
+        setActiveDogId(null);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('touchstart', handleClickOutside as EventListener);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside as EventListener);
+    };
+  }, [activeDogId]);
 
   const canAdd = dogs.length < MAX_DOGS;
 
   async function handleAdd() {
     if (!canAdd) return;
-    const res = await fetch('/api/dogs', { method: 'POST' });
-    if (!res.ok) return;
-    const dog: Dog = await res.json();
-    setDogs((prev) => [...prev, dog]);
-    pendingDogId.current = dog.id;
+    pendingDogId.current = NEW_DOG_SENTINEL;
     inputRef.current?.click();
   }
 
@@ -70,8 +85,20 @@ export default function DogAvatars({ initial }: Props) {
   async function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     e.target.value = '';
-    const dogId = pendingDogId.current;
-    if (!file || !dogId) return;
+    const pending = pendingDogId.current;
+    if (!file || !pending) return;
+
+    let dogId: string;
+    if (pending === NEW_DOG_SENTINEL) {
+      const res = await fetch('/api/dogs', { method: 'POST' });
+      if (!res.ok) { pendingDogId.current = null; return; }
+      const dog: Dog = await res.json();
+      dogId = dog.id;
+      setDogs((prev) => [...prev, { id: dogId, image: null }]);
+      pendingDogId.current = dogId;
+    } else {
+      dogId = pending;
+    }
 
     setUploading(dogId);
     try {
@@ -113,8 +140,13 @@ export default function DogAvatars({ initial }: Props) {
       {dogs.map((dog, i) => (
         <div
           key={dog.id}
+          ref={(el) => { if (el) dogElemsRef.current.set(dog.id, el); else dogElemsRef.current.delete(dog.id); }}
           className="absolute pointer-events-auto group/dog"
           style={{ ...arcPosition(i, dogs.length), zIndex: dogs.length - i }}
+          onClick={(e) => {
+            if ((e.target as HTMLElement).closest('button')) return;
+            setActiveDogId(prev => prev === dog.id ? null : dog.id);
+          }}
         >
           <div className=" w-21 h-21 rounded-full border-6 [border-style:ridge] border-btn-base-from flex items-center justify-center overflow-hidden relative">
             {dog.image
@@ -125,8 +157,8 @@ export default function DogAvatars({ initial }: Props) {
           </div>
 
           <IconButton
-            className="absolute bottom-0.5 right-0.5 w-5! h-5! opacity-0 group-hover/dog:opacity-100 transition-opacity duration-150"
-            onClick={() => handleChangeImage(dog.id)}
+            className={`absolute bottom-0.5 right-0.5 w-5! h-5! transition-opacity duration-150 ${activeDogId === dog.id ? 'opacity-100' : 'opacity-0 group-hover/dog:opacity-100'}`}
+            onClick={() => { handleChangeImage(dog.id); setActiveDogId(null); }}
             disabled={uploading !== null}
             aria-label="Change dog photo"
           >
@@ -135,8 +167,8 @@ export default function DogAvatars({ initial }: Props) {
 
           <IconButton
             intent="alert"
-            className="absolute top-0.5 right-0.5 w-5! h-5! opacity-0 group-hover/dog:opacity-100 transition-opacity duration-150"
-            onClick={() => setConfirmDeleteId(dog.id)}
+            className={`absolute top-0.5 right-0.5 w-5! h-5! transition-opacity duration-150 ${activeDogId === dog.id ? 'opacity-100' : 'opacity-0 group-hover/dog:opacity-100'}`}
+            onClick={() => { setConfirmDeleteId(dog.id); setActiveDogId(null); }}
             disabled={uploading !== null}
             aria-label="Remove dog"
           >
@@ -147,12 +179,13 @@ export default function DogAvatars({ initial }: Props) {
 
       {canAdd && (
         <IconButton
-          className="absolute pointer-events-auto w-16! h-16! text-[10px] leading-[1.2] p-2 text-center hidden group-hover/avatar-area:flex opacity-0 group-hover/avatar-area:opacity-100 transition-[left,top,opacity] duration-150"
+          className="absolute pointer-events-auto w-10 h-10 sm:w-16! sm:h-16! text-[10px] leading-[1.2] p-2 text-center flex opacity-100 sm:hidden sm:group-hover/avatar-area:flex sm:opacity-0 sm:group-hover/avatar-area:opacity-100 transition-[left,top,opacity] duration-150"
           style={arcPosition(dogs.length, dogs.length + 1, ADD_BUTTON_OFFSET)}
           onClick={handleAdd}
           aria-label="Add dog"
         >
-          {dogs.length === 0 ? 'add your pup' : 'add another pup'}
+          <span className="sm:hidden">{dogs.length === 0 ? 'add pup' : <span className="text-2xl">+</span>}</span>
+          <span className="hidden sm:inline">{dogs.length === 0 ? 'add your pup' : 'add another pup'}</span>
         </IconButton>
       )}
 

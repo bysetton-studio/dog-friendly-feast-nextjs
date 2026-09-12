@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { X } from 'lucide-react';
 import { useSubmitLocation } from '@/hooks/useSubmitLocation';
 import FriendlyTypeModal from './FriendlyTypeModal';
 import Button from '@/components/Button';
@@ -35,7 +36,14 @@ export default function SubmitBanner({ place, onDismiss, inList }: Props) {
         onCancel={() => setShowTypeModal(false)}
       />
     )}
-    <div className="w-full max-w-82.5 bg-white border border-ink-border rounded-xl px-4 py-3 flex items-center justify-between gap-3 shadow-[0_2px_8px_rgba(0,0,0,0.08)] flex-wrap">
+    <div className="relative w-full max-w-82.5 bg-white border border-ink-border rounded-xl px-4 py-3 flex items-center justify-between shadow-[0_2px_8px_rgba(0,0,0,0.08)] flex-wrap">
+      <button
+        onClick={onDismiss}
+        aria-label="Dismiss"
+        className="absolute top-0.5 right-0.5 w-5 h-5 flex items-center justify-center rounded-full text-ink-soft hover:text-ink hover:bg-black/6 transition-colors"
+      >
+        <X size={12} strokeWidth={2.5} />
+      </button>
       <div className="flex flex-col gap-0.5 min-w-0">
         {!inList && (
           <span className="text-sm font-semibold text-ink whitespace-nowrap overflow-hidden text-ellipsis">Not in our list, is it dog friendly?</span>
@@ -48,7 +56,7 @@ export default function SubmitBanner({ place, onDismiss, inList }: Props) {
           🐾 Marked as friendly
         </div>
       ) : (
-        <div className="flex gap-2 shrink-0">
+        <div className="flex gap-2 shrink-0 mr-2">
           <Button intent="info" onClick={() => setShowTypeModal(true)} disabled={submitting !== null}>
             {submitting === true ? (
               <span className="inline-block w-3.5 h-3.5 border-2 border-current border-t-transparent rounded-full animate-spin align-middle opacity-60" />

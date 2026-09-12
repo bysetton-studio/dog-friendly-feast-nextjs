@@ -341,7 +341,7 @@ export default function MapView({
   return (
     <div className={`border-18 sm:border-34 sm:[border-style:ridge] [border-style:ridge] border-btn-base-from w-full max-w-6xl overflow-hidden relative h-138 ${onMapClick ? ' map-container--clickable' : ''}`}>
       {/* Gradient edge bars */}
-      <div className={`absolute inset-0 flex items-center justify-center bg-black/80 text-white text-center text-[32px] font-[Arial,sans-serif] pointer-events-none z-401 rounded-2xl transition-opacity duration-300${isMobile && oneFinger ? ' opacity-100' : ' opacity-0'}`}>
+      <div className={`absolute inset-0 flex items-center justify-center bg-black/80 text-white text-center text-[32px] font-[Arial,sans-serif] pointer-events-none z-401 transition-opacity duration-300${isMobile && oneFinger ? ' opacity-100' : ' opacity-0'}`}>
         Use two fingers to move the map
       </div>
       <label className="absolute top-3 right-3 z-401 flex items-center gap-2.5 text-[13px] font-medium text-ink bg-white border border-ink-border rounded-full px-3.5 py-2 shadow-[0_2px_8px_rgba(0,0,0,0.12)] cursor-pointer select-none whitespace-nowrap" onClick={onApprovedOnlyToggle}>
