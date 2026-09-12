@@ -37,8 +37,6 @@ export async function POST(req: NextRequest) {
   const data = await res.json();
   const results: Record<string, unknown>[] = data.results ?? [];
 
-  console.log(results);
-
   const predictions = results
     .filter((f) => f.place_id)
     .map((f) => {

@@ -1,41 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const DAILY_LIMIT = 900;
-
-// Module-level counter — persists across requests within a single server process.
-// Note: resets on server restart and won't coordinate across multiple instances.
-let dailyCount = 0;
-let countDate = new Date().toDateString();
-
-function incrementCount(): boolean {
-  const today = new Date().toDateString();
-  if (today !== countDate) {
-    dailyCount = 0;
-    countDate = today;
-  }
-  if (dailyCount >= DAILY_LIMIT) return false;
-  dailyCount++;
-  return true;
-}
-
 export async function GET(req: NextRequest) {
-  const forwarded = req.headers.get('x-forwarded-for');
-  const ip = forwarded ? forwarded.split(',')[0].trim() : req.headers.get('x-real-ip') ?? '';
+  console.log( req.headers, ' req.headers')
+  const country = req.headers.get('x-vercel-ip-country');
+  const city = req.headers.get('x-vercel-ip-city');
+  console.log(city, 'city')
+  console.log(country, 'country')
+  const latStr = req.headers.get('x-vercel-ip-latitude');
+  const lngStr = req.headers.get('x-vercel-ip-longitude');
 
-  if (!incrementCount()) {
-    return NextResponse.json({ city: null, limitReached: true });
-  }
+  const lat = latStr ? parseFloat(latStr) : null;
+  const lng = lngStr ? parseFloat(lngStr) : null;
 
-  try {
-    const url = ip ? `https://ipapi.co/${ip}/json/` : 'https://ipapi.co/json/';
-    const res = await fetch(url);
-    const data = await res.json();
-    const city = typeof data?.city === 'string' ? data.city : null;
-    const lat = typeof data?.latitude === 'number' ? data.latitude : null;
-    const lng = typeof data?.longitude === 'number' ? data.longitude : null;
-    return NextResponse.json({ city, lat, lng });
-  } catch {
-    dailyCount--; // don't count failed requests
-    return NextResponse.json({ city: null });
-  }
+  return NextResponse.json({
+    city: city ? decodeURIComponent(city) : null,
+    lat: lat !== null && !isNaN(lat) ? lat : null,
+    lng: lng !== null && !isNaN(lng) ? lng : null,
+  });
 }
