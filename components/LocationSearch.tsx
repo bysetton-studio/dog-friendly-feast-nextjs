@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useRef, useState } from 'react';
+import { MapPin } from 'lucide-react';
 import { getPredictions, getPlaceDetails } from '@/hooks/usePlacesCache';
 import TypeFilter from '@/components/TypeFilter';
 import type { Prediction, Place } from '@/types';
@@ -34,7 +35,7 @@ export default function LocationSearch({ onSelect, mapRef: _mapRef, onToggleFilt
     debounceRef.current = setTimeout(async () => {
       const results = await getPredictions(value);
       setPredictions(results);
-      setOpen(results.length > 0);
+      setOpen(true);
     }, DEBOUNCE_MS);
   }, []);
 
@@ -62,7 +63,7 @@ export default function LocationSearch({ onSelect, mapRef: _mapRef, onToggleFilt
 
   return (
     <div className="flex flex-col items-center w-full max-w-145.5 relative gap-2">
-      <div className={`flex items-center w-full border border-ink-border bg-white px-4 py-2.5 relative z-20 transition-[box-shadow,border-color] duration-200 ${open ? 'rounded-[24px_24px_0_0] border-transparent border-b-ink-dim shadow-[0_4px_12px_rgba(0,0,0,0.15)]' : 'rounded-3xl shadow-none focus-within:shadow-[0_4px_12px_rgba(0,0,0,0.15)] focus-within:border-transparent'}`}>
+      <div className={`flex items-center w-full border border-ink-border bg-white px-4 py-2.5 relative z-200 transition-[box-shadow,border-color] duration-200 ${open ? 'rounded-[24px_24px_0_0] border-transparent border-b-ink-dim shadow-[0_4px_12px_rgba(0,0,0,0.15)]' : 'rounded-3xl shadow-none focus-within:shadow-[0_4px_12px_rgba(0,0,0,0.15)] focus-within:border-transparent'}`}>
         <span className="flex items-center mr-3 shrink-0">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20">
             <path
@@ -101,8 +102,8 @@ export default function LocationSearch({ onSelect, mapRef: _mapRef, onToggleFilt
       )}
 
       {open && (
-        <ul className="absolute top-full left-0 right-0 bg-white border border-transparent border-t-ink-dim rounded-[0_0_24px_24px] shadow-[0_4px_12px_rgba(0,0,0,0.15)] list-none m-0 pt-1 pb-2 z-20 overflow-hidden">
-          {predictions.map((p) => (
+        <ul className="absolute top-full left-0 right-0 bg-white border border-transparent border-t-ink-dim rounded-[0_0_24px_24px] shadow-[0_4px_12px_rgba(0,0,0,0.15)] list-none m-0 pt-1 pb-2 z-200 overflow-hidden">
+          {!!predictions.length ? predictions.map((p) => (
             <li
               key={p.place_id}
               className="flex flex-col px-4 pt-2.5 pb-2.5 pl-13 cursor-pointer transition-colors duration-100 hover:bg-ink-dim"
@@ -111,7 +112,12 @@ export default function LocationSearch({ onSelect, mapRef: _mapRef, onToggleFilt
               <span className="text-[14px] text-ink">{p.structured_formatting.main_text}</span>
               <span className="text-[12px] text-ink-soft mt-0.5">{p.structured_formatting.secondary_text}</span>
             </li>
-          ))}
+          )) : (
+            <li className="flex items-center gap-2.5 px-4 py-3 text-[13px] text-ink-soft">
+              <MapPin size={15} strokeWidth={2} className="shrink-0 text-fg-muted" />
+              Can&apos;t find it? Drop a pin on the map instead
+            </li>
+          )}
         </ul>
       )}
     </div>
