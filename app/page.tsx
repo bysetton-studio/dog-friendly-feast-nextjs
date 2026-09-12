@@ -55,7 +55,6 @@ export default function HomePage() {
   useEffect(() => {
     if (hasAutoExpanded.current) return;
 
-    console.log(ipCity, 'ipCity')
     if (!ipCity || Object.keys(grouped).length === 0) return;
     const match = Object.keys(grouped).find(
       (c) => c.toLowerCase().includes(ipCity.city.toLowerCase()) || ipCity.city.toLowerCase().includes(c.toLowerCase())
