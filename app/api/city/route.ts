@@ -31,7 +31,9 @@ export async function GET(req: NextRequest) {
     const res = await fetch(url);
     const data = await res.json();
     const city = typeof data?.city === 'string' ? data.city : null;
-    return NextResponse.json({ city });
+    const lat = typeof data?.latitude === 'number' ? data.latitude : null;
+    const lng = typeof data?.longitude === 'number' ? data.longitude : null;
+    return NextResponse.json({ city, lat, lng });
   } catch {
     dailyCount--; // don't count failed requests
     return NextResponse.json({ city: null });

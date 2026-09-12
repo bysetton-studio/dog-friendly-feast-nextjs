@@ -56,7 +56,7 @@ export default function HomePage() {
     if (hasAutoExpanded.current) return;
     if (!ipCity || Object.keys(grouped).length === 0) return;
     const match = Object.keys(grouped).find(
-      (c) => c.toLowerCase().includes(ipCity.toLowerCase()) || ipCity.toLowerCase().includes(c.toLowerCase())
+      (c) => c.toLowerCase().includes(ipCity.city.toLowerCase()) || ipCity.city.toLowerCase().includes(c.toLowerCase())
     );
     if (match) {
       hasAutoExpanded.current = true;
@@ -85,7 +85,7 @@ export default function HomePage() {
           duration={16840}
           className="absolute top-2 sm:top-0 left-0 z-0 origin-top-left scale-150 sm:scale-80"
         />
-        <nav className="fixed top-5 left-6 flex gap-2 z-200">
+        <nav className="fixed top-5 left-6 flex gap-2 z-300">
           <Button href="/about">About</Button>
           <div className="relative">
             <Button onClick={() => setBoneOpen((v) => !v)}>🦴</Button>
@@ -140,6 +140,7 @@ export default function HomePage() {
             )}
             <MapView
               selected={selected}
+              initialCenter={ipCity ? [ipCity.lat, ipCity.lng] : undefined}
               mapRef={mapRef}
               selectedSuburbs={selectedSuburbs}
               selectedCity={selectedCity}

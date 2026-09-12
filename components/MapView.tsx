@@ -30,6 +30,7 @@ interface MarkerEntry {
 
 interface Props {
   selected: Place | null;
+  initialCenter?: L.LatLngTuple;
   mapRef: React.RefObject<L.Map | null>;
   selectedSuburbs: string[] | null;
   selectedCity: string | null;
@@ -104,6 +105,7 @@ function buildPopupContent(name: string, address: string): string {
 
 export default function MapView({
   selected,
+  initialCenter,
   mapRef,
   selectedSuburbs,
   selectedCity,
@@ -132,7 +134,7 @@ export default function MapView({
     if (mapRef.current) return;
 
     const map = L.map(containerRef.current, {
-      center: DEFAULT_CENTER,
+      center: initialCenter ?? DEFAULT_CENTER,
       zoom: DEFAULT_ZOOM,
       dragging: !isMobile,
     });

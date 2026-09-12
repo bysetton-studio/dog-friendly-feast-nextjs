@@ -29,7 +29,7 @@ export default async function KennelPage() {
 
   return (
     <main className="min-h-screen flex flex-col items-center justify-center pt-20 px-6 pb-12 font-[Arial,sans-serif]">
-      <nav className="fixed top-5 left-6 flex gap-2 z-200">
+      <nav className="fixed top-5 left-6 flex gap-2 z-300">
         <Button href="/about">About</Button>
       </nav>
       <nav className="fixed top-5 right-6 flex gap-2 z-300">
