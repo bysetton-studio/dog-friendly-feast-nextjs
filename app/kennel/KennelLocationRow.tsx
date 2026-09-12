@@ -2,9 +2,11 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Pencil } from 'lucide-react';
+import { Pencil, Trash2 } from 'lucide-react';
 import { TYPE_FILTERS } from '@/components/TypeFilter';
 import IconButton from '@/components/IconButton';
+import Modal from '@/components/Modal';
+import Button from '@/components/Button';
 import EditLocationModal from '@/components/EditLocationModal';
 
 interface Location {
@@ -37,8 +39,11 @@ interface Props {
 export default function KennelLocationRow({ loc, canEdit = false }: Props) {
   const router = useRouter();
   const [editing, setEditing] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [types, setTypes] = useState(loc.types);
   const [name, setName] = useState(loc.name);
+  const [deleted, setDeleted] = useState(false);
 
   async function handleConfirm(newTypes: string[], newName: string) {
     await Promise.all([
@@ -64,6 +69,16 @@ export default function KennelLocationRow({ loc, canEdit = false }: Props) {
     router.refresh();
   }
 
+  async function handleDelete() {
+    setDeleting(true);
+    await fetch(`/api/locations/${loc.id}`, { method: 'DELETE' });
+    setDeleted(true);
+    setConfirmDelete(false);
+    router.refresh();
+  }
+
+  if (deleted) return null;
+
   return (
     <>
       <li className={`py-3 border-b border-white/6 flex flex-col gap-1 first:pt-0 last:border-b-0 last:pb-0${canEdit ? ' group/loc' : ''}`}>
@@ -75,13 +90,23 @@ export default function KennelLocationRow({ loc, canEdit = false }: Props) {
           </span>
           <span className="flex items-center gap-1.5 shrink-0">
             {canEdit && (
-              <IconButton
-                className="w-5.5! h-5! rounded-md! shrink-0 opacity-100 sm:opacity-0 sm:group-hover/loc:opacity-100 transition-opacity duration-150"
-                onClick={() => setEditing(true)}
-                aria-label="Edit location"
-              >
-                <Pencil size={12} strokeWidth={2.5} />
-              </IconButton>
+              <>
+                <IconButton
+                  className="w-5.5! h-5! rounded-md! shrink-0 opacity-100 sm:opacity-0 sm:group-hover/loc:opacity-100 transition-opacity duration-150"
+                  onClick={() => setEditing(true)}
+                  aria-label="Edit location"
+                >
+                  <Pencil size={12} strokeWidth={2.5} />
+                </IconButton>
+                <IconButton
+                  intent="alert"
+                  className="w-5.5! h-5! rounded-md! shrink-0 opacity-100 sm:opacity-0 sm:group-hover/loc:opacity-100 transition-opacity duration-150"
+                  onClick={() => setConfirmDelete(true)}
+                  aria-label="Delete location"
+                >
+                  <Trash2 size={12} strokeWidth={2.5} />
+                </IconButton>
+              </>
             )}
           </span>
         </div>
@@ -100,6 +125,15 @@ export default function KennelLocationRow({ loc, canEdit = false }: Props) {
           onCancel={() => setEditing(false)}
         />
       )}
+
+      <Modal open={confirmDelete} onClose={() => setConfirmDelete(false)}>
+        <p className="text-[15px] text-card-fg mt-0 mb-1.5 font-semibold">Delete this submission?</p>
+        <p className="text-[13px] text-card-fg-muted mt-0 mb-6 whitespace-nowrap overflow-hidden text-ellipsis">{name}</p>
+        <div className="flex gap-2.5">
+          <Button variant="secondary" className="flex-1" onClick={() => setConfirmDelete(false)}>Cancel</Button>
+          <Button intent="alert" className="flex-1" onClick={handleDelete} disabled={deleting}>{deleting ? 'Deleting…' : 'Delete'}</Button>
+        </div>
+      </Modal>
     </>
   );
 }
