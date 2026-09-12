@@ -23,7 +23,7 @@ export default function Modal({ open, onClose, children, maxWidth = 'max-w-80' }
 
   return (
     <div
-      className="fixed inset-0 bg-black/60 flex items-center justify-center z-100 pointer-events-auto"
+      className="fixed inset-0 bg-black/60 flex items-center justify-center z-500 pointer-events-auto"
       onClick={onClose}
     >
       <div

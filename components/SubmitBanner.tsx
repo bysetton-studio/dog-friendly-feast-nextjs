@@ -46,7 +46,7 @@ export default function SubmitBanner({ place, onDismiss, inList }: Props) {
       </button>
       <div className="flex flex-col gap-0.5 min-w-0">
         {!inList && (
-          <span className="text-sm font-semibold text-ink whitespace-nowrap overflow-hidden text-ellipsis">Not in our list, is it dog friendly?</span>
+          <span className="text-sm sm:text-base font-semibold text-ink whitespace-nowrap overflow-hidden text-ellipsis">Not in our list, is it dog friendly?</span>
         )}
         <span className="text-xs text-fg-muted">{place.name as string}</span>
       </div>
