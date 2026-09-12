@@ -113,7 +113,7 @@ export default function KennelLocationRow({ loc, canEdit = false }: Props) {
     <>
       <li className={`py-3 border-b border-white/6 flex flex-col gap-1 first:pt-0 last:border-b-0 last:pb-0${canEdit ? ' group/loc' : ''}`}>
         <div className="flex justify-between items-center gap-2">
-          <span>
+          <span className="overflow-hidden text-ellipsis flex">
             <span className="text-[16px] shrink-0">{typeEmoji(types)}</span>
             <span className="inline-block w-2" />
             <span className="text-[14px] text-fg font-medium whitespace-nowrap overflow-hidden text-ellipsis">{loc.name}</span>
@@ -121,7 +121,7 @@ export default function KennelLocationRow({ loc, canEdit = false }: Props) {
           <span className="flex items-center gap-1.5 shrink-0">
             {canEdit && (
               <IconButton
-                className="w-5.5! h-5! rounded-md! shrink-0 opacity-0 group-hover/loc:opacity-100 transition-opacity duration-150"
+                className="w-5.5! h-5! rounded-md! shrink-0 opacity-100 sm:opacity-0 sm:group-hover/loc:opacity-100 transition-opacity duration-150"
                 onClick={() => setEditing(true)}
                 aria-label="Edit type"
               >
