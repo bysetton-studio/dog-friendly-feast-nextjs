@@ -8,23 +8,32 @@ import RadioGroup from '@/components/RadioGroup';
 
 interface Props {
   placeName: string;
-  onConfirm: (types: string[]) => void;
+  onConfirm: (types: string[], name: string) => void;
   onCancel: () => void;
 }
 
 export default function FriendlyTypeModal({ placeName, onConfirm, onCancel }: Props) {
   const [selected, setSelected] = useState(TYPE_FILTERS[0].key);
+  const [name, setName] = useState(placeName);
 
   function handleConfirm() {
     const filter = TYPE_FILTERS.find((f) => f.key === selected)!;
-    onConfirm(filter.types.length > 0 ? filter.types : [selected]);
+    onConfirm(filter.types.length > 0 ? filter.types : [selected], name.trim() || placeName);
   }
 
   return (
     <Modal open onClose={onCancel} maxWidth="max-w-90">
       <h2 className="text-[17px] font-semibold text-fg mt-0 mb-1.5">What kind of place is this?</h2>
-      <p className="text-[13px] text-fg-muted mt-0 mb-5 whitespace-nowrap overflow-hidden text-ellipsis">{placeName}</p>
 
+      <p className="text-[11px] tracking-[0.7px] text-fg-muted mt-0 mb-1.5">Name</p>
+      <input
+        type="text"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        className="w-full mb-5 px-3 py-2 text-[14px] text-fg bg-white border border-ink-border rounded-lg outline-none transition-colors"
+      />
+
+      <p className="text-[11px] tracking-[0.7px] text-fg-muted mt-0 mb-2">Place type</p>
       <RadioGroup
         className="grid grid-cols-2 gap-2 mb-5"
         options={TYPE_FILTERS.map(({ key, label, emoji }) => ({

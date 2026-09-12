@@ -32,7 +32,7 @@ export default function SubmitBanner({ place, onDismiss, inList }: Props) {
     {showTypeModal && (
       <FriendlyTypeModal
         placeName={place.name as string}
-        onConfirm={(types) => { setShowTypeModal(false); submit(place, true, types); }}
+        onConfirm={(types, name) => { setShowTypeModal(false); submit({ ...place, name }, true, types); }}
         onCancel={() => setShowTypeModal(false)}
       />
     )}
