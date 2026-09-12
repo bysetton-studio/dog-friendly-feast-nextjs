@@ -41,8 +41,11 @@ export default function EditLocationModal({ title, initialName, initialTypeKey, 
         type="text"
         value={name}
         onChange={(e) => setName(e.target.value)}
-        className="w-full mb-5 px-3 py-2 text-[14px] text-fg bg-white border border-ink-border rounded-lg outline-none transition-colors"
+        className="w-full mb-1.5 px-3 py-2 text-[14px] text-fg bg-white border border-ink-border rounded-lg outline-none transition-colors"
       />
+      <p className="text-[11px] text-amber-600 bg-amber-50 border border-amber-200 rounded-md px-2.5 py-1.5 mt-0 mb-5 items-center gap-1.5">
+        <span>⚠️</span> Name auto-filled, <span className="font-bold">double check</span> it looks right before submitting.
+      </p>
 
       <p className="text-[11px] tracking-[0.7px] text-fg-muted mt-0 mb-2">Place type</p>
       <RadioGroup

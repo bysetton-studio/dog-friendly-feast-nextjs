@@ -38,7 +38,7 @@ export default function SubmitBanner({ place, onDismiss, inList }: Props) {
         onCancel={() => setShowTypeModal(false)}
       />
     )}
-    <div className="relative w-full max-w-82.5 bg-white border border-ink-border rounded-xl px-4 py-3 flex items-center justify-between shadow-[0_2px_8px_rgba(0,0,0,0.08)] flex-wrap">
+    <div className="relative w-full max-w-100 bg-white border border-ink-border rounded-xl px-4 py-3 flex items-center justify-between shadow-[0_2px_8px_rgba(0,0,0,0.08)]">
       <button
         onClick={onDismiss}
         aria-label="Dismiss"
@@ -46,7 +46,7 @@ export default function SubmitBanner({ place, onDismiss, inList }: Props) {
       >
         <X size={12} strokeWidth={2.5} />
       </button>
-      <div className="flex flex-col gap-0.5 min-w-0">
+      <div className="flex flex-col gap-0.5 min-w-0 w-full">
         {!inList && (
           <span className="text-sm sm:text-base font-semibold text-ink whitespace-nowrap overflow-hidden text-ellipsis">Not in our list, is it dog friendly?</span>
         )}
